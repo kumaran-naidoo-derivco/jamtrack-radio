@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh issue create --title \"Task 0.2: Update Ubuntu Packages\" --body \"Update and upgrade package index inside WSL Ubuntu to ensure latest security patches and tools.\n\n**Commands (WSL Ubuntu)**:\n\\`\\`\\`bash\nsudo apt update && sudo apt upgrade -y\n\\`\\`\\`\n\n**Estimated Effort**: Small\n**Dependencies**: Task 0.1\" --label \"setup,environment,wsl\" --milestone 1)",
+      "Bash(gh issue create --title \"Task 0.3: Install Git inside WSL\" --body \"Install Git CLI tools, configure global username and email for commits, and verify installation.\n\n**Commands (WSL Ubuntu)**:\n\\`\\`\\`bash\nsudo apt install -y git\ngit config --global user.name \"\"Your Name\"\"\ngit config --global user.email \"\"your_email@example.com\"\"\ngit --version\n\\`\\`\\`\n\n**Estimated Effort**: Small\n**Dependencies**: Task 0.2\" --label \"setup,git,wsl\" --milestone 1)",
+      "Bash(gh issue create --title \"Task 0.4: Install VS Code on Windows via Command Line\" --body \"Install Visual Studio Code using Winget, verify CLI access for extensions and remote WSL usage.\n\n**Commands (Windows PowerShell)**:\n\\`\\`\\`powershell\nwinget install --id Microsoft.VisualStudioCode --source winget\ncode --version\n\\`\\`\\`\n\n**Estimated Effort**: Medium\n**Dependencies**: Task 0.1\" --label \"setup,vscode,windows\" --milestone 1)",
+      "Bash(gh label create \"environment\" --description \"Environment configuration\" --color \"1d76db\")",
+      "Bash(gh label create \"windows\" --description \"Windows-specific tasks\" --color \"5319e7\")",
+      "Bash(gh issue create --title \"Task 0.1: Install WSL 2 with Ubuntu\" --body \"Enable Windows Subsystem for Linux (WSL) and Virtual Machine Platform, set WSL 2 as default, install Ubuntu, and verify installation.\n\n**Commands (Windows PowerShell)**:\n\\`\\`\\`powershell\ndism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart\ndism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart\nwsl --set-default-version 2\nwsl --install -d Ubuntu\nwsl --list --verbose\n\\`\\`\\`\n\n**Estimated Effort**: Medium\n**Dependencies**: None\" --label \"setup,environment,windows,wsl,phase-0\" --milestone 1)",
+      "Bash(gh issue create --title \"Task 0.8: Test SSH Connection to GitHub\" --body \"Verify SSH authentication to GitHub works from WSL.\n\n**Commands (WSL Ubuntu)**:\n\\`\\`\\`bash\nssh -T git@github.com\n\\`\\`\\`\n\nIf prompted, type \\`yes\\` to trust the fingerprint.\n\n**Estimated Effort**: Small\n**Dependencies**: Task 0.7\" --label \"setup,ssh,github,phase-0\" --milestone \"Phase 0: Environment Setup\")",
+      "Bash(gh project item-add 2 --owner kumaran-naidoo-derivco --url https://github.com/kumaran-naidoo-derivco/jamtrack-radio/issues/3)",
+      "Bash(gh project item-add 2 --owner kumaran-naidoo-derivco --url https://github.com/kumaran-naidoo-derivco/jamtrack-radio/issues/4)",
+      "Bash(gh issue close 7 --repo kumaran-naidoo-derivco/jamtrack-radio --comment \"Completed: SSH key generated in WSL.\")",
+      "Bash(gh project item-add 2 --owner kumaran-naidoo-derivco --url https://github.com/kumaran-naidoo-derivco/jamtrack-radio/issues/12)",
+      "Bash(gh project item-add 2 --owner kumaran-naidoo-derivco --url https://github.com/kumaran-naidoo-derivco/jamtrack-radio/issues/13)",
+      "Bash(gh project item-add 2 --owner kumaran-naidoo-derivco --url https://github.com/kumaran-naidoo-derivco/jamtrack-radio/issues/14)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
