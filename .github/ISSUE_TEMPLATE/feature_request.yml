@@ -1,0 +1,168 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ✨ Feature Request
+        Thank you for suggesting a new feature! Please fill out the information below to help us understand your proposal.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature Summary
+      description: A brief summary of the feature you'd like to see
+      placeholder: Brief description of the feature...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? Is your feature request related to a problem?
+      placeholder: "I'm always frustrated when..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: Describe your proposed solution...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative solutions or features?
+      placeholder: Describe any alternatives you've considered...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - High - Critical for project success
+        - Medium - Important but not blocking
+        - Low - Nice to have
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Project Phase
+      description: Which phase would this feature fit into?
+      options:
+        - Phase 1 - Repository Documentation
+        - Phase 2 - Local Development Environment
+        - Phase 3 - Docker & Local Kubernetes
+        - Phase 4 - Azure Deployment
+        - Phase 5 - AWS Deployment
+        - Phase 6 - Monitoring & Observability
+        - Phase 7 - Final Documentation
+        - Future Enhancement (post-Phase 7)
+        - Not phase-specific
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature Category
+      description: What category does this feature fall into?
+      options:
+        - Backend API
+        - Database & Data Model
+        - Infrastructure (Terraform, Kubernetes, Helm)
+        - CI/CD Pipeline
+        - Monitoring & Logging
+        - Documentation
+        - Testing
+        - Security
+        - Performance
+        - User Interface (if applicable)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: What are the benefits of implementing this feature?
+      placeholder: |
+        - Benefit 1
+        - Benefit 2
+        - Benefit 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Describe specific use cases for this feature
+      placeholder: |
+        1. As a user, I want to...
+        2. As a developer, I want to...
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical-details
+    attributes:
+      label: Technical Considerations
+      description: Any technical details, requirements, or dependencies?
+      placeholder: |
+        - Required technologies or libraries
+        - Potential technical challenges
+        - Dependencies on other features
+    validations:
+      required: false
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups / Examples
+      description: If applicable, provide mockups, diagrams, or examples (drag and drop images here)
+      placeholder: Drag and drop images, or paste links to mockups...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, links, or examples about the feature request
+      placeholder: Any additional information that might be helpful...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have clearly described the problem this feature solves
+          required: true
+        - label: I have provided a proposed solution
+          required: true
+        - label: I am willing to contribute to implementing this feature
+          required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Thank you for your feature suggestion! We'll review it and consider it for the project roadmap. 🎵**

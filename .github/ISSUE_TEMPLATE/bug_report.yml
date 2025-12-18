@@ -1,0 +1,146 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 Bug Report
+        Thank you for taking the time to report a bug! Please fill out the information below to help us understand and resolve the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe the bug...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Describe what should have happened...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Describe what actually happened...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this bug?
+      options:
+        - Critical - System is unusable
+        - High - Major functionality broken
+        - Medium - Functionality impaired
+        - Low - Minor issue
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Project Phase
+      description: Which phase does this bug relate to?
+      options:
+        - Phase 0 - Environment Setup
+        - Phase 1 - Repository Documentation
+        - Phase 2 - Local Development Environment
+        - Phase 3 - Docker & Local Kubernetes
+        - Phase 4 - Azure Deployment
+        - Phase 5 - AWS Deployment
+        - Phase 6 - Monitoring & Observability
+        - Phase 7 - Final Documentation
+        - Not phase-specific
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide information about your environment
+      placeholder: |
+        - OS: [e.g., Windows 11 with WSL 2 Ubuntu 22.04]
+        - .NET Version: [e.g., .NET 8.0.1]
+        - Docker Version: [e.g., 24.0.6]
+        - PostgreSQL Version: [e.g., 15.2]
+        - Browser (if applicable): [e.g., Chrome 120]
+      value: |
+        - OS:
+        - .NET Version:
+        - Docker Version:
+        - PostgreSQL Version:
+        - Browser (if applicable):
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs / Error Messages
+      description: Please paste any relevant logs or error messages
+      placeholder: Paste logs here...
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem (drag and drop images here)
+      placeholder: Drag and drop screenshots here...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here
+      placeholder: Any additional information that might be helpful...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have provided all required information above
+          required: true
+        - label: I have included relevant logs or error messages
+          required: false
+        - label: I have included screenshots (if applicable)
+          required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Thank you for reporting this bug! We'll review it as soon as possible. 🎵**

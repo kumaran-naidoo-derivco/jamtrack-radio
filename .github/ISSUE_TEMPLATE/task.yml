@@ -1,0 +1,206 @@
+name: 📋 Task
+description: Create a new project task or work item
+title: "[Task]: "
+labels: ["task"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📋 Task
+        Use this template to create a new project task or work item. Tasks are discrete units of work that contribute to project phases.
+
+  - type: input
+    id: task-id
+    attributes:
+      label: Task ID
+      description: Task identifier (e.g., Task 2.1, Task 3.5)
+      placeholder: "Task X.Y"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Task Description
+      description: A clear and detailed description of what needs to be done
+      placeholder: Describe the task in detail...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Project Phase
+      description: Which phase does this task belong to?
+      options:
+        - Phase 0 - Environment Setup
+        - Phase 1 - Repository Documentation
+        - Phase 2 - Local Development Environment
+        - Phase 3 - Docker & Local Kubernetes
+        - Phase 4 - Azure Deployment
+        - Phase 5 - AWS Deployment
+        - Phase 6 - Monitoring & Observability
+        - Phase 7 - Final Documentation
+        - Cross-phase (multiple phases)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Estimated Effort
+      description: How much effort will this task require?
+      options:
+        - Small (< 2 hours)
+        - Medium (2-8 hours)
+        - Large (> 8 hours)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: What is the priority of this task?
+      options:
+        - High - Must be completed soon
+        - Medium - Should be completed
+        - Low - Can be deferred
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What needs to be true for this task to be considered complete?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: List any tasks or issues this depends on
+      placeholder: |
+        - Depends on #123
+        - Blocks #456
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical-approach
+    attributes:
+      label: Technical Approach
+      description: Describe the technical approach or implementation strategy
+      placeholder: |
+        1. Step 1
+        2. Step 2
+        3. Step 3
+    validations:
+      required: false
+
+  - type: textarea
+    id: commands
+    attributes:
+      label: Commands / Scripts
+      description: Any commands or scripts needed to complete this task
+      placeholder: |
+        ```bash
+        # Example commands
+        dotnet build
+        docker compose up
+        ```
+      render: shell
+
+  - type: textarea
+    id: files-affected
+    attributes:
+      label: Files / Components Affected
+      description: Which files or components will be modified?
+      placeholder: |
+        - src/Api/Controllers/TracksController.cs
+        - src/Core/Services/ITrackService.cs
+        - tests/UnitTests/TrackServiceTests.cs
+
+  - type: textarea
+    id: testing-strategy
+    attributes:
+      label: Testing Strategy
+      description: How will this task be tested?
+      placeholder: |
+        - Unit tests for service layer
+        - Integration tests for API endpoints
+        - Manual testing steps
+    validations:
+      required: false
+
+  - type: textarea
+    id: documentation
+    attributes:
+      label: Documentation Updates
+      description: What documentation needs to be updated?
+      placeholder: |
+        - Update README.md
+        - Add API documentation
+        - Update ARCHITECTURE.md
+
+  - type: checkboxes
+    id: task-type
+    attributes:
+      label: Task Type
+      description: Select all that apply
+      options:
+        - label: Development (writing code)
+        - label: Testing (writing or running tests)
+        - label: Documentation (writing or updating docs)
+        - label: DevOps (CI/CD, infrastructure)
+        - label: Configuration (settings, environment)
+        - label: Research / Investigation
+        - label: Code Review
+        - label: Refactoring
+
+  - type: textarea
+    id: resources
+    attributes:
+      label: Resources / References
+      description: Links to relevant documentation, examples, or resources
+      placeholder: |
+        - https://docs.microsoft.com/...
+        - Similar implementation: https://github.com/...
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      description: Any additional information or context
+      placeholder: Any other details that might be helpful...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following before submitting
+      options:
+        - label: I have provided a clear task description
+          required: true
+        - label: I have defined acceptance criteria
+          required: true
+        - label: I have specified the phase and effort level
+          required: true
+        - label: I have checked for duplicate tasks
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Thank you for creating this task! It will be reviewed and added to the project backlog. 🎵**
