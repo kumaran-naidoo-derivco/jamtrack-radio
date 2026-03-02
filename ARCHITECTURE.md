@@ -120,3 +120,129 @@ flowchart LR
 - **Refresh tokens hashed in PostgreSQL** — raw refresh tokens are never stored; only hashes, so a database breach doesn't expose valid tokens
 - **OAuth tokens never persisted** — authorisation codes and provider access tokens are exchanged immediately and discarded; only the normalised user profile is retained
 - **YARP as API Gateway** — lightweight, runs in-process as ASP.NET Core middleware, no separate infrastructure needed for local dev
+
+---
+
+## Create Account Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser as Web Browser
+    participant GW as API Gateway (YARP)
+    participant IS as Identity Service
+    participant DB as PostgreSQL
+
+    User->>Browser: Fill in email, password, display name
+    Browser->>GW: POST /auth/register
+    GW->>IS: gRPC RegisterUser(email, password, name)
+
+    IS->>DB: SELECT user WHERE email = ?
+    DB-->>IS: no rows returned
+
+    alt Email already registered
+        IS-->>GW: gRPC error ALREADY_EXISTS
+        GW-->>Browser: 409 Conflict
+        Browser-->>User: "An account with this email already exists"
+    else Email is available
+        IS->>IS: Hash password (BCrypt)
+        IS->>DB: INSERT user (email, password_hash, name)
+        DB-->>IS: user created
+
+        IS->>IS: Generate JWT (RS256, 15 min expiry)
+        IS->>IS: Generate refresh token
+        IS->>DB: INSERT refresh_token_hash
+        DB-->>IS: stored
+
+        IS-->>GW: gRPC response (jwt, refreshToken)
+        GW-->>Browser: 201 Created { jwt, refreshToken }
+        Browser-->>User: Redirect to dashboard
+    end
+```
+
+---
+
+## Login Flow
+
+### Email Login
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser as Web Browser
+    participant GW as API Gateway (YARP)
+    participant IS as Identity Service
+    participant DB as PostgreSQL
+
+    User->>Browser: Enter email and password
+    Browser->>GW: POST /auth/login
+    GW->>IS: gRPC LoginUser(email, password)
+
+    IS->>DB: SELECT user WHERE email = ?
+    DB-->>IS: user record (or no rows)
+
+    alt User not found
+        IS-->>GW: gRPC error UNAUTHENTICATED
+        GW-->>Browser: 401 Unauthorized
+        Browser-->>User: "Invalid email or password"
+    else User found
+        IS->>IS: Verify password against BCrypt hash
+
+        alt Password invalid
+            IS-->>GW: gRPC error UNAUTHENTICATED
+            GW-->>Browser: 401 Unauthorized
+            Browser-->>User: "Invalid email or password"
+        else Password valid
+            IS->>IS: Generate JWT (RS256, 15 min expiry)
+            IS->>IS: Generate refresh token
+            IS->>DB: INSERT refresh_token_hash
+            DB-->>IS: stored
+
+            IS-->>GW: gRPC response (jwt, refreshToken)
+            GW-->>Browser: 200 OK { jwt, refreshToken }
+            Browser-->>User: Redirect to dashboard
+        end
+    end
+```
+
+### OAuth Login (Google / Apple / Facebook)
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser as Web Browser
+    participant GW as API Gateway (YARP)
+    participant IS as Identity Service
+    participant OP as OAuth Provider
+    participant DB as PostgreSQL
+
+    User->>Browser: Click "Login with Google / Apple / Facebook"
+    Browser->>OP: Redirect to provider authorisation URL
+
+    OP->>User: Show provider login page
+    User->>OP: Authenticate with provider credentials
+    OP-->>Browser: Redirect to callback URL with auth code
+
+    Browser->>GW: POST /auth/oauth/callback { code, provider }
+    GW->>IS: gRPC OAuthLogin(code, provider)
+
+    IS->>OP: Exchange auth code for access token + user profile
+    OP-->>IS: { email, name, provider_id }
+
+    IS->>DB: SELECT user WHERE provider = ? AND provider_id = ?
+    DB-->>IS: user record (or no rows)
+
+    alt New user
+        IS->>DB: INSERT user (email, name, provider, provider_id)
+        DB-->>IS: user created
+    end
+
+    IS->>IS: Generate JWT (RS256, 15 min expiry)
+    IS->>IS: Generate refresh token
+    IS->>DB: INSERT refresh_token_hash
+    DB-->>IS: stored
+
+    IS-->>GW: gRPC response (jwt, refreshToken)
+    GW-->>Browser: 200 OK { jwt, refreshToken }
+    Browser-->>User: Redirect to dashboard
+```
