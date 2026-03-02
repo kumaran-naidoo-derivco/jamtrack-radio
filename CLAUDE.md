@@ -34,7 +34,7 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 | Phase | Description | Status |
 |-------|-------------|--------|
 | Phase 0 | Environment Setup | ✅ Complete (16/16) |
-| Phase 1 | Repo Documentation & Templates | ✅ Complete (8/8 tasks) |
+| Phase 1 | Repo Documentation & Templates | 🔄 80% (8/10 tasks) |
 | Phase 2 | Local Dev Environment (C# + Postgres) | 🔄 Up next |
 | Phase 3 | Docker & Local K8s | ⏳ Not started |
 | Phase 4 | Azure Deployment | ⏳ Not started |
@@ -42,9 +42,14 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 | Phase 6 | Monitoring & Observability | ⏳ Not started |
 | Phase 7 | Final Docs & Packaging | ⏳ Not started |
 
-## Remaining Tasks
+## Remaining Phase 1 Tasks
 
-- **Phase 2** (Issue tracking TBD): Local Dev Environment — C# + PostgreSQL
+- **Task 1.9** (Issue #25): Set up PR workflow, branch protection rules, and CI checks on PRs
+- **Task 1.10** (Issue #26): Install and configure Rancher Desktop on Windows
+
+## Up Next
+
+- **Phase 2**: Local Dev Environment — C# + PostgreSQL + Dapper
 
 ## Key Decisions
 
