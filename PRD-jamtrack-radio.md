@@ -147,6 +147,8 @@ so that I can quickly find the track I'm looking for.
 - `playlist_tracks` — playlist_id, track_id, position
 
 ### Infrastructure
+- **Dapper** used for all database access (SQL-first micro-ORM)
+- **FluentMigrator** used for schema migrations (versioned, code-defined migration scripts)
 - **Dapr** used for service invocation and pub/sub (e.g. "track uploaded" event triggers storage processing)
 - **Docker Compose** for local development
 - **Kubernetes + Helm** for staging and production deployments

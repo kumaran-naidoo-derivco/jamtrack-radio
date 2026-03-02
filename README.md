@@ -72,7 +72,8 @@ Through building Jamtrack Radio, you will gain practical experience in:
 - **Framework**: ASP.NET Core Web API
 - **API Protocols**: REST & gRPC
 - **Database**: PostgreSQL
-- **ORM**: Entity Framework Core
+- **Data Access**: Dapper (micro-ORM)
+- **Migrations**: FluentMigrator
 - **Authentication**: JWT tokens
 - **Logging**: Serilog with structured logging
 
@@ -120,7 +121,7 @@ The project is structured into manageable phases, each focusing on specific skil
 ### 📋 Phase 2: Local Development Environment
 - Install .NET SDK, PostgreSQL, and Docker Desktop
 - Create basic C# Web API project structure
-- Set up database with Entity Framework Core
+- Set up database with Dapper and FluentMigrator
 - Implement basic CRUD operations for songs and playlists
 
 ### 🐳 Phase 3: Docker & Local Kubernetes

@@ -234,10 +234,9 @@ and clarified PostgreSQL configuration.
 
 **Chore:**
 ```
-chore(deps): update Entity Framework Core to 8.0.1
+chore(deps): update Dapper to 2.1.35
 
-Updated EF Core packages to latest stable version.
-Includes migration compatibility updates.
+Updated Dapper and FluentMigrator packages to latest stable versions.
 ```
 
 ### Best Practices
@@ -420,7 +419,7 @@ src/
 │   └── Services/               # Service implementations
 └── JamtrackRadio.Infrastructure/ # Data access
     ├── Data/                   # DbContext, repositories
-    └── Migrations/             # EF Core migrations
+    └── Migrations/             # FluentMigrator migrations
 ```
 
 ### EditorConfig

@@ -4,7 +4,7 @@
 
 Jamtrack Radio is a music streaming platform built as a hands-on learning project. It covers:
 - **Backend**: C# / ASP.NET Core microservices with gRPC internal APIs
-- **Database**: PostgreSQL with Dapr
+- **Database**: PostgreSQL with Dapper (data access) + FluentMigrator (schema migrations)
 - **Infrastructure**: Docker, Kubernetes (K8s), Helm Charts, Terraform
 - **Cloud**: Azure (primary), AWS (secondary)
 - **Monitoring**: ELK Stack, structured logging, Clickhouse, Clickstack

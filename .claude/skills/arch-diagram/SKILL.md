@@ -48,8 +48,8 @@ flowchart TD
     UI -->|"HTTPS / REST"| GW
     GW -->|"gRPC"| PS
     GW -->|"gRPC"| TS
-    PS -->|"SQL / EF Core"| DB
-    TS -->|"SQL / EF Core"| DB
+    PS -->|"SQL / Dapper"| DB
+    TS -->|"SQL / Dapper"| DB
     TS -->|"Cache read/write"| CACHE
 ```
 

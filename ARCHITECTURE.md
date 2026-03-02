@@ -47,9 +47,9 @@ flowchart TD
     GW -->|"gRPC"| PS
     GW -->|"gRPC"| StrmS
 
-    IS -->|"SQL / EF Core"| DB
-    TS -->|"SQL / EF Core"| DB
-    PS -->|"SQL / EF Core"| DB
+    IS -->|"SQL / Dapper"| DB
+    TS -->|"SQL / Dapper"| DB
+    PS -->|"SQL / Dapper"| DB
 
     TS -->|"gRPC"| SS
     StrmS -->|"gRPC"| SS
@@ -95,7 +95,7 @@ flowchart LR
 
     UI -->|"HTTPS / REST"| GW
     GW -->|"gRPC"| IS
-    IS -->|"SQL / EF Core"| DB
+    IS -->|"SQL / Dapper"| DB
     IS <-->|"HTTPS / OAuth 2.0"| OAUTH
 ```
 
@@ -106,7 +106,7 @@ flowchart LR
 | 1 | Web Browser | User-facing client, renders UI and manages tokens | Browser |
 | 2 | API Gateway | Single entry point, routes external REST to internal gRPC | YARP (ASP.NET Core) |
 | 3 | Identity Service | Handles registration, login, OAuth, JWT issuance | ASP.NET Core |
-| 4 | PostgreSQL | Persists user records and refresh token hashes | PostgreSQL / EF Core |
+| 4 | PostgreSQL | Persists user records and refresh token hashes | PostgreSQL / Dapper |
 | 5 | OAuth Providers | Third-party identity providers for social login | Google / Apple / Facebook |
 
 ### Interaction Flows
