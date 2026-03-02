@@ -27,7 +27,8 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 - **Working directory (Windows)**: `C:\training\jamtrack-radio`
 - **Working directory (WSL)**: `/mnt/c/training/jamtrack-radio`
 - **GitHub repo**: `https://github.com/kumaran-naidoo-derivco/jamtrack-radio`
-- **GitHub CLI**: Authenticated and available (`gh` commands work)
+- **GitHub CLI**: Use Windows `gh` — WSL `gh` is not authenticated
+- **git commands**: Run via WSL — `wsl bash -c "cd /mnt/c/training/jamtrack-radio && git ..."`
 
 ## Project Phase Status
 
