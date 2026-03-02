@@ -246,3 +246,178 @@ sequenceDiagram
     GW-->>Browser: 200 OK { jwt, refreshToken }
     Browser-->>User: Redirect to dashboard
 ```
+
+---
+
+## Upload Track Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser as Web Browser
+    participant GW as API Gateway (YARP)
+    participant TS as Track Service
+    participant SS as Storage Service
+    participant Blob as Blob Storage (Azure / S3)
+    participant DB as PostgreSQL
+    participant Dapr as Dapr (pub/sub)
+
+    User->>Browser: Select audio file, enter metadata and optional artwork
+    Browser->>GW: POST /tracks (multipart: file, metadata, artwork) + JWT
+
+    GW->>GW: Validate JWT
+    alt JWT invalid or expired
+        GW-->>Browser: 401 Unauthorized
+        Browser-->>User: "Session expired, please log in"
+    else JWT valid
+        GW->>TS: gRPC UploadTrack(userId, metadata, fileStream)
+
+        TS->>SS: gRPC StoreFile(audioBytes, contentType)
+        SS->>Blob: PUT audio file
+        Blob-->>SS: storage_ref
+        SS-->>TS: storage_ref
+
+        opt Artwork provided
+            TS->>SS: gRPC StoreFile(artworkBytes, "image/jpeg")
+            SS->>Blob: PUT artwork file
+            Blob-->>SS: artwork_ref
+            SS-->>TS: artwork_ref
+        end
+
+        TS->>DB: INSERT track (user_id, title, artist, genre, bpm, musical_key, duration, storage_ref, artwork_ref)
+        DB-->>TS: track (id, created_at)
+
+        TS->>Dapr: Publish "track.uploaded" { trackId, userId }
+
+        TS-->>GW: gRPC response (trackId, metadata)
+        GW-->>Browser: 201 Created { trackId, title, ... }
+        Browser-->>User: Track uploaded successfully
+    end
+```
+
+---
+
+## Stream Track Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser as Web Browser
+    participant GW as API Gateway (YARP)
+    participant StrmS as Streaming Service
+    participant TS as Track Service
+    participant SS as Storage Service
+    participant Blob as Blob Storage (Azure / S3)
+    participant DB as PostgreSQL
+
+    User->>Browser: Click play on track
+    Browser->>GW: GET /tracks/{trackId}/stream + JWT + Range: bytes=0-
+
+    GW->>GW: Validate JWT
+    alt JWT invalid or expired
+        GW-->>Browser: 401 Unauthorized
+        Browser-->>User: "Session expired, please log in"
+    else JWT valid
+        GW->>StrmS: gRPC StreamTrack(trackId, userId, byteRange)
+
+        StrmS->>TS: gRPC GetTrack(trackId, userId)
+        TS->>DB: SELECT track WHERE id = ? AND user_id = ?
+        DB-->>TS: track record (or no rows)
+
+        alt Track not found or not owned by user
+            TS-->>StrmS: gRPC error NOT_FOUND
+            StrmS-->>GW: gRPC error NOT_FOUND
+            GW-->>Browser: 404 Not Found
+            Browser-->>User: "Track not found"
+        else Track found
+            TS-->>StrmS: TrackMetadata(storage_ref, mimeType, duration)
+            StrmS->>SS: gRPC FetchBytes(storage_ref, byteRange)
+            SS->>Blob: GET with Range header
+            Blob-->>SS: 206 Partial Content (audio bytes)
+            SS-->>StrmS: audio bytes
+            StrmS-->>GW: partial audio data + Content-Range
+            GW-->>Browser: 206 Partial Content (audio bytes)
+            Browser-->>User: Buffers and begins playback
+        end
+    end
+```
+
+---
+
+## Create Playlist Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser as Web Browser
+    participant GW as API Gateway (YARP)
+    participant PS as Playlist Service
+    participant DB as PostgreSQL
+
+    User->>Browser: Enter playlist name and submit
+    Browser->>GW: POST /playlists { name } + JWT
+
+    GW->>GW: Validate JWT
+    alt JWT invalid or expired
+        GW-->>Browser: 401 Unauthorized
+        Browser-->>User: "Session expired, please log in"
+    else JWT valid
+        GW->>PS: gRPC CreatePlaylist(userId, name)
+
+        alt Invalid name (empty or exceeds 100 chars)
+            PS-->>GW: gRPC error INVALID_ARGUMENT
+            GW-->>Browser: 422 Unprocessable Entity
+            Browser-->>User: "Playlist name is invalid"
+        else Name is valid
+            PS->>DB: INSERT playlist (user_id, name, created_at)
+            DB-->>PS: playlist (id, created_at)
+            PS-->>GW: gRPC response (playlistId, name, createdAt)
+            GW-->>Browser: 201 Created { playlistId, name, createdAt }
+            Browser-->>User: Playlist created, navigate to playlist view
+        end
+    end
+```
+
+---
+
+## Get Playlist Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser as Web Browser
+    participant GW as API Gateway (YARP)
+    participant PS as Playlist Service
+    participant TS as Track Service
+    participant DB as PostgreSQL
+
+    User->>Browser: Navigate to playlist
+    Browser->>GW: GET /playlists/{playlistId} + JWT
+
+    GW->>GW: Validate JWT
+    alt JWT invalid or expired
+        GW-->>Browser: 401 Unauthorized
+        Browser-->>User: "Session expired, please log in"
+    else JWT valid
+        GW->>PS: gRPC GetPlaylist(playlistId, userId)
+
+        PS->>DB: SELECT playlist WHERE id = ? AND user_id = ?
+        DB-->>PS: playlist record (or no rows)
+
+        alt Playlist not found or not owned by user
+            PS-->>GW: gRPC error NOT_FOUND
+            GW-->>Browser: 404 Not Found
+            Browser-->>User: "Playlist not found"
+        else Playlist found
+            PS->>DB: SELECT tracks JOIN playlist_tracks WHERE playlist_id = ? ORDER BY position
+            DB-->>PS: ordered track_ids
+            PS->>TS: gRPC GetTracksBatch(trackIds[])
+            TS->>DB: SELECT tracks WHERE id IN (...)
+            DB-->>TS: track records (title, artist, genre, bpm, duration, artwork_ref)
+            TS-->>PS: track details[]
+            PS-->>GW: gRPC response (playlist + tracks[])
+            GW-->>Browser: 200 OK { playlistId, name, tracks[] }
+            Browser-->>User: Render playlist with tracks
+        end
+    end
+```
