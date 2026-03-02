@@ -34,18 +34,17 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 | Phase | Description | Status |
 |-------|-------------|--------|
 | Phase 0 | Environment Setup | ✅ Complete (16/16) |
-| Phase 1 | Repo Documentation & Templates | 🔄 71% (5/7 tasks) |
-| Phase 2 | Local Dev Environment (C# + Postgres) | ⏳ Not started |
+| Phase 1 | Repo Documentation & Templates | ✅ Complete (8/8 tasks) |
+| Phase 2 | Local Dev Environment (C# + Postgres) | 🔄 Up next |
 | Phase 3 | Docker & Local K8s | ⏳ Not started |
 | Phase 4 | Azure Deployment | ⏳ Not started |
 | Phase 5 | AWS Deployment | ⏳ Not started |
 | Phase 6 | Monitoring & Observability | ⏳ Not started |
 | Phase 7 | Final Docs & Packaging | ⏳ Not started |
 
-## Remaining Phase 1 Tasks
+## Remaining Tasks
 
-- **Task 1.5** (Issue #19): Configure Project Board Views — done via GitHub web UI
-- **Task 1.6** (Issue #23): Create `ARCHITECTURE.md` — Large task, needs Mermaid diagrams
+- **Phase 2** (Issue tracking TBD): Local Dev Environment — C# + PostgreSQL
 
 ## Key Decisions
 
