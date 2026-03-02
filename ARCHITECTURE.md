@@ -4,6 +4,69 @@ This document captures the architecture diagrams and interaction flows for the J
 
 ---
 
+## Full System Architecture
+
+A high-level view of all services, data stores, and infrastructure components. Solid arrows represent synchronous request paths; dashed arrows represent async or observability flows.
+
+```mermaid
+flowchart TD
+    subgraph Client["Client Layer"]
+        UI["Web Browser"]
+    end
+
+    subgraph Gateway["API Layer"]
+        GW["API Gateway\n(YARP)"]
+    end
+
+    subgraph Services["Service Layer"]
+        IS["Identity Service\n(ASP.NET Core)"]
+        TS["Track Service\n(ASP.NET Core)"]
+        PS["Playlist Service\n(ASP.NET Core)"]
+        StrmS["Streaming Service\n(ASP.NET Core)"]
+        SS["Storage Service\n(ASP.NET Core)"]
+    end
+
+    subgraph Data["Data Layer"]
+        DB[("PostgreSQL")]
+        Blob[("Blob Storage\n(Azure Blob / S3)")]
+    end
+
+    subgraph Infra["Infrastructure"]
+        Dapr["Dapr\n(pub/sub)"]
+        ELK["ELK + ClickStack\n(Monitoring)"]
+    end
+
+    subgraph External["External"]
+        OAUTH["OAuth Providers\n(Google / Apple / Facebook)"]
+    end
+
+    UI -->|"HTTPS / REST"| GW
+
+    GW -->|"gRPC"| IS
+    GW -->|"gRPC"| TS
+    GW -->|"gRPC"| PS
+    GW -->|"gRPC"| StrmS
+
+    IS -->|"SQL / EF Core"| DB
+    TS -->|"SQL / EF Core"| DB
+    PS -->|"SQL / EF Core"| DB
+
+    TS -->|"gRPC"| SS
+    StrmS -->|"gRPC"| SS
+    SS -->|"SDK"| Blob
+
+    TS -.->|"publish event"| Dapr
+    IS <-->|"OAuth 2.0"| OAUTH
+
+    IS -.->|"logs / metrics"| ELK
+    TS -.->|"logs / metrics"| ELK
+    PS -.->|"logs / metrics"| ELK
+    StrmS -.->|"logs / metrics"| ELK
+    SS -.->|"logs / metrics"| ELK
+```
+
+---
+
 ## Create Account and Login
 
 ### Block Diagram
@@ -420,4 +483,78 @@ sequenceDiagram
             Browser-->>User: Render playlist with tracks
         end
     end
+```
+
+---
+
+## Data Model
+
+Entity relationships for the PostgreSQL database. All primary keys are UUIDs.
+
+```mermaid
+erDiagram
+    users {
+        uuid id PK
+        string email
+        string password_hash "nullable — null for OAuth users"
+        string provider "nullable — e.g. google, apple"
+        string provider_id "nullable — provider's user ID"
+        string display_name
+        timestamp created_at
+    }
+
+    refresh_tokens {
+        uuid id PK
+        uuid user_id FK
+        string token_hash
+        timestamp expires_at
+        timestamp created_at
+    }
+
+    tracks {
+        uuid id PK
+        uuid user_id FK
+        string title
+        string artist
+        string genre
+        int bpm
+        string musical_key
+        int duration "seconds"
+        string storage_ref "blob storage path"
+        string artwork_ref "nullable — blob storage path"
+        timestamp created_at
+    }
+
+    tags {
+        uuid id PK
+        uuid user_id FK
+        string name
+    }
+
+    track_tags {
+        uuid track_id FK
+        uuid tag_id FK
+    }
+
+    playlists {
+        uuid id PK
+        uuid user_id FK
+        string name
+        timestamp created_at
+    }
+
+    playlist_tracks {
+        uuid playlist_id FK
+        uuid track_id FK
+        int position "1-based ordering"
+    }
+
+    users ||--o{ refresh_tokens : "has"
+    users ||--o{ tracks : "owns"
+    users ||--o{ tags : "owns"
+    users ||--o{ playlists : "owns"
+    tracks ||--o{ track_tags : "tagged with"
+    tags ||--o{ track_tags : "applied to"
+    playlists ||--o{ playlist_tracks : "contains"
+    tracks ||--o{ playlist_tracks : "appears in"
 ```
