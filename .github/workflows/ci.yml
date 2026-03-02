@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ---------------------------------------------------------------
+      # Phase 1: Repository structure validation
+      # Expanded in Phase 2 to include dotnet build and test steps
+      # ---------------------------------------------------------------
+
+      - name: Verify required documentation files
+        run: |
+          echo "Checking required files exist..."
+          test -f README.md         && echo "✓ README.md"
+          test -f CONTRIBUTING.md   && echo "✓ CONTRIBUTING.md"
+          test -f ARCHITECTURE.md   && echo "✓ ARCHITECTURE.md"
+          test -f CLAUDE.md         && echo "✓ CLAUDE.md"
+          echo "Documentation check passed."
+
+      - name: Validate GitHub Actions workflow YAML
+        run: |
+          echo "Checking workflow files are valid YAML..."
+          for f in .github/workflows/*.yml; do
+            python3 -c "import yaml, sys; yaml.safe_load(open('$f'))" \
+              && echo "✓ $f" \
+              || (echo "✗ $f is invalid" && exit 1)
+          done
+          echo "Workflow YAML validation passed."
+
+      # ---------------------------------------------------------------
+      # Phase 2 additions (uncomment when C# solution exists):
+      #
+      # - name: Setup .NET
+      #   uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: '8.0.x'
+      #
+      # - name: Restore dependencies
+      #   run: dotnet restore
+      #
+      # - name: Build
+      #   run: dotnet build --no-restore --configuration Release
+      #
+      # - name: Test
+      #   run: dotnet test --no-build --configuration Release
+      # ---------------------------------------------------------------
