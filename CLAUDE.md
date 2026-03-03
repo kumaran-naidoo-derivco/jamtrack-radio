@@ -27,8 +27,9 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 - **Working directory (Windows)**: `C:\training\jamtrack-radio`
 - **Working directory (WSL)**: `/mnt/c/training/jamtrack-radio`
 - **GitHub repo**: `https://github.com/kumaran-naidoo-derivco/jamtrack-radio`
-- **git commands**: Use WSL git (primary) — `wsl bash -c "cd /mnt/c/training/jamtrack-radio && git ..."`. WSL git is configured to use Windows GCM for credentials (no auth prompts).
-- **GitHub CLI**: Use Windows `gh` (primary) — WSL `gh` is not authenticated. Fallback: Windows Git Bash `gh`.
+- **Claude Code**: Installed in both Windows and WSL Ubuntu. WSL Claude Code authenticates via `ANTHROPIC_AUTH_TOKEN` in `~/.bashrc`. Prefer running Claude Code from WSL for new sessions.
+- **git commands**: WSL git (primary). From WSL Claude Code run git directly (`git push origin ...`). From Windows Claude Code use `wsl bash -c "cd /mnt/c/training/jamtrack-radio && git ..."`. WSL git uses Windows GCM for credentials — no auth prompts.
+- **GitHub CLI**: Windows `gh` (primary) — WSL `gh` is not authenticated. Fallback: Windows Git Bash `gh`.
 
 ## Project Phase Status
 
