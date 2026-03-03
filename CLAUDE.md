@@ -45,7 +45,7 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 
 ## Remaining Phase 1 Tasks
 
-- **Task 1.9** (Issue #25): CI workflow created (`.github/workflows/ci.yml`). Branch protection blocked — free plan requires public repo. Revisit when repo goes public.
+- **Task 1.9** (Issue #25): ✅ Done — CI workflow + branch protection on main. Repo made public.
 - **Task 1.10** (Issue #26): Install and configure Rancher Desktop on Windows — not started
 
 ## Up Next
