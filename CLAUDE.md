@@ -27,8 +27,8 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 - **Working directory (Windows)**: `C:\training\jamtrack-radio`
 - **Working directory (WSL)**: `/mnt/c/training/jamtrack-radio`
 - **GitHub repo**: `https://github.com/kumaran-naidoo-derivco/jamtrack-radio`
-- **GitHub CLI**: Use Windows `gh` — WSL `gh` is not authenticated
-- **git commands**: Run via WSL — `wsl bash -c "cd /mnt/c/training/jamtrack-radio && git ..."`
+- **git commands**: Use WSL git (primary) — `wsl bash -c "cd /mnt/c/training/jamtrack-radio && git ..."`. WSL git is configured to use Windows GCM for credentials (no auth prompts).
+- **GitHub CLI**: Use Windows `gh` (primary) — WSL `gh` is not authenticated. Fallback: Windows Git Bash `gh`.
 
 ## Project Phase Status
 
@@ -58,12 +58,54 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 - **WSL is preferred** for all bash commands. Git Bash on Windows is available but treat WSL as the primary shell.
 - **PostgreSQL client VS Code extension** (`cweijan.vscode-postgresql-client2`) was skipped — install when needed in Phase 2.
 
-## Conventions
+## Git Workflow (mandatory — always follow this)
 
-### Git / Commits
-- Use **Conventional Commits**: `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`
+Every change, no matter how small, must go through a branch and PR. Never commit directly to `main`.
+
+### Step-by-step
+
+1. **Sync main** before starting any new work:
+   ```bash
+   wsl bash -c "cd /mnt/c/training/jamtrack-radio && git checkout main && git pull origin main"
+   ```
+
+2. **Create a branch** using the naming convention:
+   ```bash
+   wsl bash -c "cd /mnt/c/training/jamtrack-radio && git checkout -b kumarann/<type>/<description>"
+   ```
+
+3. **Make changes** and commit using Conventional Commits:
+   ```bash
+   wsl bash -c "cd /mnt/c/training/jamtrack-radio && git add <files> && git commit -m '<type>: <subject>'"
+   ```
+
+4. **Push the branch** via WSL git:
+   ```bash
+   wsl bash -c "cd /mnt/c/training/jamtrack-radio && git push origin kumarann/<type>/<description>"
+   ```
+
+5. **Create a PR** via Windows `gh`:
+   ```bash
+   gh pr create --repo kumaran-naidoo-derivco/jamtrack-radio --base main --head kumarann/<type>/<description> --title "..." --body "..."
+   ```
+
+6. **Wait for CI** to pass (`build` check must be green).
+
+7. **Merge the PR** (squash merge, delete branch):
+   ```bash
+   gh pr merge <number> --repo kumaran-naidoo-derivco/jamtrack-radio --squash --delete-branch
+   ```
+
+8. **Sync local main**:
+   ```bash
+   wsl bash -c "cd /mnt/c/training/jamtrack-radio && git checkout main && git pull origin main"
+   ```
+
+### Conventions
+- Use **Conventional Commits**: `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`, `ci:`
 - Branch naming: `kumarann/<type>/<description>` — e.g. `kumarann/feature/playlist-service`, `kumarann/docs/update-readme`
-- Always push from WSL: `git push origin main`
+- Stage specific files by name — never `git add .` or `git add -A`
+- Squash merge preferred for feature/docs/chore branches
 
 ### Code Style (C#)
 - Follow Microsoft C# conventions
