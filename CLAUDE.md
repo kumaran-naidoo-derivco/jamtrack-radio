@@ -112,6 +112,17 @@ Every change, no matter how small, must go through a branch and PR. Never commit
 - XML doc comments on public APIs
 - AAA pattern for tests (Arrange, Act, Assert)
 
+### Architecture (server-side projects only)
+- Use **Clean Architecture** for all server-side C# projects
+- Four layers, strictly enforced:
+  - `Domain` — entities, value objects, domain events; no dependencies
+  - `Application` — use cases, interfaces, DTOs; depends on Domain only
+  - `Infrastructure` — Dapper repositories, FluentMigrator migrations, external service adapters; depends on Application
+  - `Api` — ASP.NET Core controllers, gRPC endpoints, middleware; depends on Application
+- **Dependency rule**: outer layers depend on inner layers, never the reverse
+- Domain and Application layers must have **zero framework dependencies** (no ASP.NET, no Dapper references)
+- Infrastructure implements interfaces defined in Application (repository pattern)
+
 ### Task Tracking
 - Each task maps to a GitHub Issue
 - Milestones = Phases
