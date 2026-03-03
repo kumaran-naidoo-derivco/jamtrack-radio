@@ -62,7 +62,7 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 
 ### Git / Commits
 - Use **Conventional Commits**: `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`
-- Branch naming: `feature/`, `bugfix/`, `hotfix/`, `docs/`, `chore/`
+- Branch naming: `kumarann/<type>/<description>` — e.g. `kumarann/feature/playlist-service`, `kumarann/docs/update-readme`
 - Always push from WSL: `git push origin main`
 
 ### Code Style (C#)

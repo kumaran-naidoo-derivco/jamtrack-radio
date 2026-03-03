@@ -83,7 +83,7 @@ git push origin main
 Create a new branch for your work (see [Branching Strategy](#branching-strategy)):
 
 ```bash
-git checkout -b feature/your-feature-name
+git checkout -b kumarann/feature/your-feature-name
 ```
 
 ### 3. Make Changes
@@ -105,7 +105,7 @@ git commit -m "feat: add user authentication service"
 ### 5. Push to Your Fork
 
 ```bash
-git push origin feature/your-feature-name
+git push origin kumarann/feature/your-feature-name
 ```
 
 ### 6. Create a Pull Request
@@ -119,50 +119,52 @@ git push origin feature/your-feature-name
 
 ## Branching Strategy
 
-We follow a structured branching strategy to keep the repository organized:
+We follow a structured branching strategy to keep the repository organized.
+
+All branches are prefixed with your short username to namespace your work: `<username>/<type>/<description>`
 
 ### Branch Types
 
 #### `main`
 - **Purpose**: Production-ready code
-- **Protection**: Protected branch, requires PR reviews
+- **Protection**: Protected branch, requires PR and passing CI
 - **Naming**: `main` (default branch)
 
 #### Feature Branches
 - **Purpose**: New features or enhancements
-- **Naming**: `feature/<descriptive-name>`
+- **Naming**: `<username>/feature/<descriptive-name>`
 - **Examples**:
-  - `feature/user-authentication`
-  - `feature/playlist-crud-api`
-  - `feature/grpc-music-service`
+  - `kumarann/feature/user-authentication`
+  - `kumarann/feature/playlist-crud-api`
+  - `kumarann/feature/grpc-music-service`
 
 #### Bugfix Branches
 - **Purpose**: Non-critical bug fixes
-- **Naming**: `bugfix/<issue-number>-<short-description>`
+- **Naming**: `<username>/bugfix/<issue-number>-<short-description>`
 - **Examples**:
-  - `bugfix/42-fix-playlist-delete`
-  - `bugfix/89-null-reference-error`
+  - `kumarann/bugfix/42-fix-playlist-delete`
+  - `kumarann/bugfix/89-null-reference-error`
 
 #### Hotfix Branches
 - **Purpose**: Critical production bugs (used in later phases)
-- **Naming**: `hotfix/<issue-number>-<short-description>`
+- **Naming**: `<username>/hotfix/<issue-number>-<short-description>`
 - **Examples**:
-  - `hotfix/101-security-vulnerability`
-  - `hotfix/102-database-connection-leak`
+  - `kumarann/hotfix/101-security-vulnerability`
+  - `kumarann/hotfix/102-database-connection-leak`
 
 #### Documentation Branches
 - **Purpose**: Documentation-only changes
-- **Naming**: `docs/<description>`
+- **Naming**: `<username>/docs/<description>`
 - **Examples**:
-  - `docs/update-readme`
-  - `docs/api-documentation`
+  - `kumarann/docs/update-readme`
+  - `kumarann/docs/api-documentation`
 
 #### Chore Branches
 - **Purpose**: Maintenance tasks (dependencies, config, etc.)
-- **Naming**: `chore/<description>`
+- **Naming**: `<username>/chore/<description>`
 - **Examples**:
-  - `chore/update-dependencies`
-  - `chore/configure-docker`
+  - `kumarann/chore/update-dependencies`
+  - `kumarann/chore/configure-docker`
 
 ### Branch Lifecycle
 
