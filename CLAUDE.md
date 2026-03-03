@@ -27,7 +27,8 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 - **Working directory (Windows)**: `C:\training\jamtrack-radio`
 - **Working directory (WSL)**: `/mnt/c/training/jamtrack-radio`
 - **GitHub repo**: `https://github.com/kumaran-naidoo-derivco/jamtrack-radio`
-- **GitHub CLI**: Authenticated and available (`gh` commands work)
+- **GitHub CLI**: Use Windows `gh` — WSL `gh` is not authenticated
+- **git commands**: Run via WSL — `wsl bash -c "cd /mnt/c/training/jamtrack-radio && git ..."`
 
 ## Project Phase Status
 
@@ -44,8 +45,8 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 
 ## Remaining Phase 1 Tasks
 
-- **Task 1.9** (Issue #25): Set up PR workflow, branch protection rules, and CI checks on PRs
-- **Task 1.10** (Issue #26): Install and configure Rancher Desktop on Windows
+- **Task 1.9** (Issue #25): ✅ Done — CI workflow + branch protection on main. Repo made public.
+- **Task 1.10** (Issue #26): Install and configure Rancher Desktop on Windows — not started
 
 ## Up Next
 
@@ -61,7 +62,7 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 
 ### Git / Commits
 - Use **Conventional Commits**: `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`
-- Branch naming: `feature/`, `bugfix/`, `hotfix/`, `docs/`, `chore/`
+- Branch naming: `kumarann/<type>/<description>` — e.g. `kumarann/feature/playlist-service`, `kumarann/docs/update-readme`
 - Always push from WSL: `git push origin main`
 
 ### Code Style (C#)
