@@ -29,13 +29,13 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 - **GitHub repo**: `https://github.com/kumaran-naidoo-derivco/jamtrack-radio`
 - **Claude Code**: Installed in both Windows and WSL Ubuntu. WSL Claude Code authenticates via `ANTHROPIC_AUTH_TOKEN` in `~/.bashrc`. Prefer running Claude Code from WSL for new sessions.
 - **git commands**: WSL git (primary). From WSL Claude Code run git directly (`git push origin ...`). From Windows Claude Code use `wsl bash -c "cd /mnt/c/training/jamtrack-radio && git ..."`. WSL git uses Windows GCM for credentials — no auth prompts.
-- **GitHub CLI**: Windows `gh` (primary) — WSL `gh` is not authenticated. Fallback: Windows Git Bash `gh`.
+- **GitHub CLI**: WSL `gh` (primary) — authenticated via `GH_TOKEN` in `~/.bashrc`. Run `gh` directly from WSL. Windows `gh` no longer needed.
 
 ## Project Phase Status
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| Phase 0 | Environment Setup | ✅ Complete (16/16) |
+| Phase 0 | Environment Setup | ✅ Complete (17/17) |
 | Phase 1 | Repo Documentation & Templates | 🔄 80% (8/10 tasks) |
 | Phase 2 | Local Dev Environment (C# + Postgres) | 🔄 Up next |
 | Phase 3 | Docker & Local K8s | ⏳ Not started |
@@ -85,14 +85,14 @@ Every change, no matter how small, must go through a branch and PR. Never commit
    wsl bash -c "cd /mnt/c/training/jamtrack-radio && git push origin kumarann/<type>/<description>"
    ```
 
-5. **Create a PR** via Windows `gh`:
+5. **Create a PR** via WSL `gh`:
    ```bash
    gh pr create --repo kumaran-naidoo-derivco/jamtrack-radio --base main --head kumarann/<type>/<description> --title "..." --body "..."
    ```
 
 6. **Wait for CI** to pass (`build` check must be green).
 
-7. **Merge the PR** (squash merge, delete branch):
+7. **Merge the PR** via WSL `gh` (squash merge, delete branch):
    ```bash
    gh pr merge <number> --repo kumaran-naidoo-derivco/jamtrack-radio --squash --delete-branch
    ```
