@@ -35,7 +35,7 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| Phase 0 | Environment Setup | ✅ Complete (18/18) |
+| Phase 0 | Environment Setup | ✅ Complete (19/19) |
 | Phase 1 | Repo Documentation & Templates | 🔄 80% (8/10 tasks) |
 | Phase 2 | Local Dev Environment (C# + Postgres) | 🔄 Up next |
 | Phase 3 | Docker & Local K8s | ⏳ Not started |
