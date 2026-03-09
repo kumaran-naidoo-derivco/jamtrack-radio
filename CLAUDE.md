@@ -80,9 +80,9 @@ Every change, no matter how small, must go through a branch and PR. Never commit
    wsl bash -c "cd /mnt/c/training/jamtrack-radio && git push origin kumarann/<type>/<description>"
    ```
 
-5. **Create a PR** via WSL `gh`:
+5. **Create a PR** via WSL `gh` (use `--body-file` to load the template):
    ```bash
-   gh pr create --repo kumaran-naidoo-derivco/jamtrack-radio --base main --head kumarann/<type>/<description> --title "..." --body "..."
+   gh pr create --repo kumaran-naidoo-derivco/jamtrack-radio --base main --head kumarann/<type>/<description> --title "..." --body-file .github/pull_request_template.md
    ```
 
 6. **Wait for CI** to pass (`build` check must be green).
@@ -102,6 +102,7 @@ Every change, no matter how small, must go through a branch and PR. Never commit
 - Branch naming: `kumarann/<type>/<description>` — e.g. `kumarann/feature/playlist-service`, `kumarann/docs/update-readme`
 - Stage specific files by name — never `git add .` or `git add -A`
 - Squash merge preferred for feature/docs/chore branches
+- PR body must follow the template in `.github/pull_request_template.md`. Use `--body-file .github/pull_request_template.md` or match the template structure when passing `--body` inline.
 
 ### Code Style (C#)
 - Follow Microsoft C# conventions
