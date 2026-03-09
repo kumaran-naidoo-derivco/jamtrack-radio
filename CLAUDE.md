@@ -120,6 +120,17 @@ Every change, no matter how small, must go through a branch and PR. Never commit
 - Domain and Application layers must have **zero framework dependencies** (no ASP.NET, no Dapper references)
 - Infrastructure implements interfaces defined in Application (repository pattern)
 
+### Testing (server-side projects only)
+- Implement automated tests for the external facing endpoints or methods 
+- Implement many test cases to test all combinations of input and output throughout the entire call chain
+- Do not write unit tests unless there is a complex calculation
+- For DB tests, ensure that the data is consistent in th associated DB
+
+### Testing (client-side projects only)
+- Implement automated tests for all clickable and input related aspects of the UI
+- Check the resultant page to ensure that the results are as expected
+
+
 ### Task Tracking
 - Each task maps to a GitHub Issue
 - Milestones = Phases
