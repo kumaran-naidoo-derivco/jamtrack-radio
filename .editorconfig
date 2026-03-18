@@ -1,0 +1,76 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{csproj,props,targets,sln}]
+indent_size = 2
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+# C# conventions (Microsoft style)
+[*.cs]
+indent_size = 2
+
+# Namespace preferences
+dotnet_style_namespace_match_folder = true
+
+# var preferences
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+# Expression-bodied members
+csharp_style_expression_bodied_methods = false:silent
+csharp_style_expression_bodied_properties = true:suggestion
+
+# Braces
+csharp_prefer_braces = true:warning
+
+# New line preferences
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+
+# Blank lines
+csharp_style_allow_blank_lines_between_consecutive_braces_experimental = false:warning
+
+# Naming rules — PascalCase for public members
+dotnet_naming_rule.public_members_pascal_case.symbols = public_members
+dotnet_naming_rule.public_members_pascal_case.style = pascal_case_style
+dotnet_naming_rule.public_members_pascal_case.severity = warning
+
+dotnet_naming_symbols.public_members.applicable_kinds = class,struct,interface,enum,property,method,field,event,delegate
+dotnet_naming_symbols.public_members.applicable_accessibilities = public
+
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+# Private fields — _camelCase
+dotnet_naming_rule.private_fields_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_camel_case.style = underscore_camel_case_style
+dotnet_naming_rule.private_fields_camel_case.severity = warning
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private,protected
+
+dotnet_naming_style.underscore_camel_case_style.capitalization = camel_case
+dotnet_naming_style.underscore_camel_case_style.required_prefix = _
+
+# Interfaces — IPascalCase
+dotnet_naming_rule.interfaces_prefix_i.symbols = interfaces
+dotnet_naming_rule.interfaces_prefix_i.style = interface_style
+dotnet_naming_rule.interfaces_prefix_i.severity = warning
+
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+dotnet_naming_style.interface_style.capitalization = pascal_case
+dotnet_naming_style.interface_style.required_prefix = I
