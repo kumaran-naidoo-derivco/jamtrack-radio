@@ -63,3 +63,5 @@ Automated CI/CD pipelines via GitHub Actions/YAML
 Monitoring with ELK Stack
 Effective structured logging throughout
 Cloud deployment to Azure and AWS
+
+After everything is done - test adding a new feature which would be an integration to a site that offers backing tracks to add to jamtrack
