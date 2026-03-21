@@ -136,22 +136,66 @@ helm/
 
 ---
 
-## Strategic Lens
+## Financial Lens (mandatory)
 
-**Financial lens (mandatory)**
-- Cloud costs are often underestimated by 3–5× at design time. Use the Azure pricing calculator and add 30% buffer.
-- Log Analytics / ELK data ingestion costs grow with load. Define data retention policies (e.g. 30 days hot, 90 days cold) from day one.
-- Reserved instances: commit 1 year on production workloads for ~40% savings. Don't commit staging.
-- Right-sizing is continuous: set up Azure Advisor cost recommendations from Phase 4 day one.
+Cloud costs compound silently. Treat every infrastructure decision as a financial decision.
 
-**Cloud architecture patterns**
-- *Cell-based architecture*: each cell is a self-contained deployment unit. Limits blast radius. Relevant at Phase 5+.
-- *Zero-trust networking*: all traffic authenticated, no implicit trust on VNet membership. Use Managed Identity + Key Vault everywhere.
-- *GitOps*: use Flux or ArgoCD to sync Helm chart state from Git to AKS. Eliminates configuration drift.
-- *Multi-region active-passive*: not needed for Jamtrack Radio yet, but design data layer to support it (PostgreSQL geo-replicas).
+- Cloud costs are routinely underestimated by 3–5× at design time. Use the Azure pricing calculator, then add a 30% buffer.
+- Log Analytics / ELK data ingestion grows with traffic. Define retention policies (30 days hot, 90 days cold archive) before deploying — not after you get the first bill.
+- Reserved instances: commit 1-year reservations on production workloads for ~40% savings. Never commit staging (you need the flexibility to resize or kill it).
+- Right-sizing is continuous: enable Azure Advisor cost recommendations from Phase 4 day one and act on them weekly in the first month.
+- Auto-shutdown for non-production: staging running 24/7 costs 3× what it needs to. Schedule a nightly shutdown (19:00–08:00) from day one.
 
-**Common cloud architecture mistakes**
-- **Over-provisioning staging**: staging doesn't need the same SKUs as production. Use Burstable VMs.
-- **Missing pod disruption budgets**: AKS node upgrades will evict all pods if PDBs are absent.
-- **No resource limits on containers**: one memory-leaking container will evict everything else on the node.
-- **Private endpoints skipped**: managed databases should always use private endpoints in production. Never expose PostgreSQL on a public IP.
+---
+
+## Best Practice Patterns
+
+**Infrastructure as Code**
+- *Everything in code*: every resource — VNet, AKS cluster, ACR, Key Vault, PostgreSQL, DNS zone — must be defined in Terraform. ClickOps (manual portal changes) creates configuration drift that is invisible until it causes an incident.
+- *Terraform state in remote backend*: use Azure Storage as the Terraform state backend with state locking. Local `terraform.tfstate` files are a disaster waiting to happen.
+- *Modules for reuse*: extract repeated patterns (AKS node pool, Key Vault access policy, private endpoint) into Terraform modules. Don't copy-paste.
+- *Plan before apply*: always run `terraform plan` and review the diff before `terraform apply`. Treat it like a code review.
+
+**Kubernetes and Helm**
+- *GitOps with Flux or ArgoCD*: sync Helm chart state from Git to AKS. This eliminates manual `helm upgrade` commands and configuration drift. Every deployed state is a commit.
+- *HPA (HorizontalPodAutoscaler) from day one*: define min/max replicas and CPU/memory targets in the Helm chart from the first deployment. Retrofitting autoscaling is painful.
+- *PodDisruptionBudgets*: define a PDB (`minAvailable: 1`) for every workload. Without it, AKS node upgrades will evict all pods simultaneously.
+- *Resource requests and limits*: every container must have CPU and memory requests/limits. No limits = one leaking pod evicts all other pods on the node.
+- *Liveness and readiness probes*: every pod must have both. Readiness prevents traffic routing to pods that haven't fully started. Liveness restarts stuck pods.
+- *Namespace isolation*: separate namespaces for `jamtrack-prod`, `jamtrack-staging`, and system workloads. Apply ResourceQuotas per namespace.
+
+**Networking and security**
+- *Zero-trust networking*: no implicit trust on VNet membership. All internal traffic must be authenticated. Use Managed Identity (not connection strings) for all Azure resource access.
+- *Private endpoints for all managed services*: PostgreSQL, Key Vault, ACR, and Blob Storage must all use private endpoints in production. No public IPs on data stores.
+- *Network policies*: restrict pod-to-pod traffic with K8s NetworkPolicies. Default-deny all ingress; allow only documented flows.
+- *Immutable container tags*: reference container images by SHA digest (not `latest` or mutable version tags) in production Helm charts. Mutable tags make rollbacks unreliable.
+
+**Reliability patterns**
+- *Cell-based architecture*: partition workloads into independently deployable cells. Limits blast radius — a problem in one cell does not cascade to others. Relevant at Phase 5+.
+- *Multi-region active-passive*: not required for Jamtrack Radio at Phase 4, but design the data layer to support it (PostgreSQL geo-replicas, region-agnostic storage references).
+- *Circuit breakers*: configure Dapr resilience policies (circuit breaker + retry with exponential backoff) on all service-to-service calls. Fail fast rather than cascade.
+- *Graceful degradation*: design the streaming service to return a useful error if the Storage service is unavailable, rather than hanging or crashing.
+
+---
+
+## Anti-Patterns / Don'ts
+
+**Infrastructure management**
+- **ClickOps (manual portal changes)**: any Azure resource created or modified via the portal is invisible to Terraform state. The next `terraform apply` may destroy or reset it. Everything goes through IaC.
+- **Hardcoded secrets in Helm values**: `values.yaml` containing passwords, connection strings, or API keys that get committed to Git. Use K8s Secrets (Phase 2–3) and Azure Key Vault (Phase 4+). Never put secrets in Helm values files.
+- **Single state file for all environments**: one Terraform workspace managing dev, staging, and prod. A bad `terraform apply` can destroy production while targeting staging. Use separate workspaces or separate state backends per environment.
+- **`terraform apply` without `terraform plan`**: always review the plan. A missing `prevent_destroy = true` lifecycle rule has caused many production database deletions.
+
+**Kubernetes anti-patterns**
+- **Running containers as root**: containers running as UID 0 have host-level privileges if they escape the container boundary. Set `runAsNonRoot: true` and `securityContext` on all pods.
+- **No resource limits**: a single memory-leaking pod will consume all node memory and trigger an OOM eviction cascade. Every container must have `resources.limits` defined.
+- **Missing liveness/readiness probes**: without probes, Kubernetes routes traffic to stuck or unready pods. Every production pod needs both probes.
+- **Pulling `latest` tag in production**: `latest` is mutable. You cannot determine what is actually running or roll back reliably. Always use versioned, immutable tags.
+- **All services in the default namespace**: the default namespace has no resource quotas, no network policies, and no access controls. Use named namespaces from the first deployment.
+- **No PodDisruptionBudget**: node upgrades and drains will evict all replicas of a workload simultaneously if no PDB is set. This causes avoidable downtime.
+
+**Cost anti-patterns**
+- **Over-provisioning staging**: staging running D4s_v5 nodes (same as production) costs 3× what a burstable B2s needs. Staging is for testing correctness, not performance.
+- **No cost alerts or budgets**: running without Azure Cost Management budgets means the first signal of runaway spend is the monthly invoice. Set a budget alert at 80% of expected monthly spend from day one.
+- **Log Analytics without retention limits**: sending all logs to Log Analytics at £2.30/GB without an ILM retention policy. Set 30-day hot retention from day one.
+- **Reserved instances on staging**: committing reserved capacity to staging removes the flexibility to resize or delete nodes when they are no longer needed.
