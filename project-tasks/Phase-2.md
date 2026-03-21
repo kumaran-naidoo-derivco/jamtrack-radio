@@ -5,7 +5,7 @@
 **Phase Description**:
 Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, Streaming) using Clean Architecture, backed by a locally Dockerised PostgreSQL database, with Dapper for data access and FluentMigrator for schema management. CI is extended to build and test dotnet projects. This phase delivers a fully running local stack before any containerisation or cloud deployment.
 
-The phase follows the full delivery lifecycle: Product Discovery → Feature Discovery (per service) → Development. Tasks 2.3–2.4 produce the foundational docs that inform every subsequent dev task.
+The phase follows the full delivery lifecycle: Product Discovery → Feature Discovery (per service) → Development. Tasks 2.3–2.5 produce the foundational docs that inform every subsequent dev task.
 
 **Priority**: High
 **Labels**: phase-2, backend, csharp, postgresql, grpc
@@ -172,14 +172,14 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 
 ---
 
-### Task 2.3: Run Product Discovery for Jamtrack Radio
+### Task 2.3: Product Discovery — Steps 1–4 (Requirements, Design & Prototypes)
 
 - **Description**:
-  Execute the full Product Discovery workflow (`PRODUCT-DISCOVERY.md`) to produce the foundational documents that all Feature Discovery cycles will inherit from. This is a one-time run at product inception.
+  Execute the first half of the Product Discovery workflow (`PRODUCT-DISCOVERY.md`) — requirements through to UI prototypes. This produces the product vision, PRD, design system, and all functional HTML screens that the architecture steps in Task 2.4 will be built upon.
 
   **Workflow to follow**: `.claude/workflows/PRODUCT-DISCOVERY.md`
 
-  **Steps** (run in order, each step gates the next):
+  **Steps covered by this task**:
 
   | Step | Skill | Output |
   |------|-------|--------|
@@ -187,35 +187,65 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
   | 2 | `/market-research` | `docs/market-research/jamtrack-radio-market-research.md` |
   | 3 | `/prd` | `docs/prds/jamtrack-radio.md` |
   | 4a | `/design-system` | `docs/design-system/jamtrack-radio-design-system.md` + `components.html` |
-  | 4b | `/ui-prototype` | `docs/prototypes/jamtrack-radio/` (7 screens + flow.md) |
-  | 5a | `/software-architect` | `docs/architecture/jamtrack-radio/software-arch.md` + ADRs |
-  | 5b | `/cloud-architect` | `docs/architecture/jamtrack-radio/cloud-arch.md` |
-  | 5c | `/data-architect` | `docs/architecture/jamtrack-radio/data-arch.md` |
-  | 5d | `/arch-security` | `docs/architecture/jamtrack-radio/security-arch.md` |
-  | 6 | `/architect` | `docs/architecture/jamtrack-radio/architect-signoff.md` |
-  | 7 | `/project-plan` | `docs/project-plan/jamtrack-radio-plan.md` + GitHub milestones |
+  | 4b | `/ui-prototype` | `docs/prototypes/jamtrack-radio/` (9 screens + flow.md) |
 
   **Key learning moments**:
   - How a Product Manager frames a learning project using commercial PM frameworks (Value Prediction, Business Case)
   - How a Product Designer creates a design system before writing any screen-level UI
-  - How four architecture views (software, cloud, data, security) produce a consistent, cost-aware system design
-  - How a Project Manager maps a delivery plan to GitHub milestones and issues
+  - How prototypes are kept functional (JS state machines, social sign-in, 2FA flows) rather than static mockups
 
   **Expected outcome**:
-  - `docs/` directory populated with all 11+ output files
-  - Design system tokens documented and component showcase renders in browser
-  - All 5 architecture files present under `docs/architecture/jamtrack-radio/`
-  - At least 3 ADRs in `docs/decisions/`
-  - GitHub milestones for Phases 2–7 created (or confirmed already exist)
+  - `docs/requirements/`, `docs/market-research/`, `docs/prds/` populated
+  - `docs/design-system/` has tokens file + component showcase
+  - `docs/prototypes/jamtrack-radio/` has 9 functional HTML screens + flow.md
+  - Design system dark teal + neon cyan theme renders correctly in browser
 
 - **Labels**: phase-2, discovery, setup
 - **Estimated Effort**: Large
-- **Status**: Todo
+- **Status**: In Progress
 - **Dependencies**: Task 2.2
 
 ---
 
-### Task 2.4: Run Feature Discovery for Identity Service
+### Task 2.4: Product Discovery — Steps 5–7 (Architecture, Sign-off & Project Plan)
+
+- **Description**:
+  Execute the second half of the Product Discovery workflow — four architecture views, architect sign-off, and project plan. This produces the system-level technical foundation that all Feature Discovery and development tasks will inherit from.
+
+  **Pre-condition**: Task 2.3 must be complete — PRD and design system must exist before architecture begins.
+
+  **Workflow to follow**: `.claude/workflows/PRODUCT-DISCOVERY.md`
+
+  **Steps covered by this task**:
+
+  | Step | Skill | Output |
+  |------|-------|--------|
+  | 5a | `/software-architect` | `docs/architecture/jamtrack-radio/software-arch.md` + ADRs in `docs/decisions/` |
+  | 5b | `/cloud-architect` | `docs/architecture/jamtrack-radio/cloud-arch.md` |
+  | 5c | `/data-architect` | `docs/architecture/jamtrack-radio/data-arch.md` |
+  | 5d | `/arch-security` | `docs/architecture/jamtrack-radio/security-arch.md` |
+  | 6 | `/architect` | `docs/architecture/jamtrack-radio/architect-signoff.md` |
+  | 7 | `/project-plan` | `docs/project-plan/jamtrack-radio-plan.md` + GitHub milestones confirmed |
+
+  **Key learning moments**:
+  - How four architecture views (software, cloud, data, security) produce a consistent, cost-aware system design
+  - How a Project Manager maps a delivery plan to GitHub milestones and issues
+  - How the architect sign-off cross-checks all four views for consistency before development begins
+
+  **Expected outcome**:
+  - All 5 architecture files present under `docs/architecture/jamtrack-radio/`
+  - At least 3 ADRs in `docs/decisions/`
+  - `docs/project-plan/jamtrack-radio-plan.md` links to all GitHub milestones
+  - GitHub milestones for Phases 2–7 confirmed to exist
+
+- **Labels**: phase-2, discovery, setup
+- **Estimated Effort**: Large
+- **Status**: Todo
+- **Dependencies**: Task 2.3
+
+---
+
+### Task 2.5: Run Feature Discovery for Identity Service
 
 - **Description**:
   Execute the Feature Discovery workflow (`DISCOVERY.md`) scoped to the Identity Service — the first service to be built. Feature Discovery produces the service-specific requirements, PRD, UX research, prototypes, and architecture that the Senior Developer will load when implementing Task 2.7.
@@ -255,16 +285,16 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 - **Labels**: phase-2, discovery, identity-service
 - **Estimated Effort**: Large
 - **Status**: Todo
-- **Dependencies**: Task 2.3
+- **Dependencies**: Task 2.4
 
 ---
 
-### Task 2.5: Run PostgreSQL locally via Docker Compose
+### Task 2.6: Run PostgreSQL locally via Docker Compose
 
 - **Description**:
   Create a `docker-compose.yml` at the repo root that runs a PostgreSQL 16 container with a persistent named volume. Add a `.env.local` (gitignored) for credentials. Verify connectivity using `psql` from WSL.
 
-  **Context**: The database schema is informed by the data architecture produced in Task 2.3 (`docs/architecture/jamtrack-radio/data-arch.md`). Load that document before creating the Docker Compose configuration to ensure the database name and user align with what's documented.
+  **Context**: The database schema is informed by the data architecture produced in Task 2.4 (`docs/architecture/jamtrack-radio/data-arch.md`). Load that document before creating the Docker Compose configuration to ensure the database name and user align with what's documented.
 
   **Files to create**:
   - `docker-compose.yml` — Postgres 16 service, named volume, health check
@@ -291,11 +321,11 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 - **Labels**: phase-2, docker, postgresql, setup
 - **Estimated Effort**: Small
 - **Status**: Todo
-- **Dependencies**: Task 2.4
+- **Dependencies**: Task 2.5
 
 ---
 
-### Task 2.6: Set up FluentMigrator — initial database schema
+### Task 2.7: Set up FluentMigrator — initial database schema
 
 - **Description**:
   Create a standalone `src/Migrations/` C# console project that uses FluentMigrator to manage schema migrations. Write the initial migration(s) to create all tables as defined in `docs/architecture/jamtrack-radio/data-arch.md`.
@@ -330,11 +360,11 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 - **Labels**: phase-2, postgresql, migrations
 - **Estimated Effort**: Medium
 - **Status**: Todo
-- **Dependencies**: Task 2.5
+- **Dependencies**: Task 2.6
 
 ---
 
-### Task 2.7: Build Identity Service (register, login, JWT)
+### Task 2.8: Build Identity Service (register, login, JWT)
 
 - **Description**:
   Implement the Identity Service end-to-end using Clean Architecture. Supports email/password registration and login, issuing a signed JWT on success. The internal API is exposed as a gRPC endpoint.
@@ -381,11 +411,11 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 - **Labels**: phase-2, grpc, identity-service
 - **Estimated Effort**: Large
 - **Status**: Todo
-- **Dependencies**: Task 2.6
+- **Dependencies**: Task 2.7
 
 ---
 
-### Task 2.8: Build Track Service (track metadata CRUD)
+### Task 2.9: Build Track Service (track metadata CRUD)
 
 - **Description**:
   Implement the Track Service end-to-end using Clean Architecture. Manages track metadata (title, artist, genre, BPM, musical key, duration, file path). Audio file upload (to local disk in this phase) is handled here. Exposed via gRPC.
@@ -414,11 +444,11 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 - **Labels**: phase-2, grpc
 - **Estimated Effort**: Large
 - **Status**: Todo
-- **Dependencies**: Task 2.7
+- **Dependencies**: Task 2.8
 
 ---
 
-### Task 2.9: Build Streaming Service (audio file delivery)
+### Task 2.10: Build Streaming Service (audio file delivery)
 
 - **Description**:
   Implement the Streaming Service, which serves audio files over HTTP using range requests (enables seek/scrub in a browser audio player). This service exposes a REST endpoint — browsers cannot use gRPC directly for media streaming. It calls Track Service (gRPC) to resolve the file path for a given track ID, then streams the file from local disk.
@@ -447,11 +477,11 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 - **Labels**: phase-2, grpc
 - **Estimated Effort**: Large
 - **Status**: Todo
-- **Dependencies**: Task 2.8
+- **Dependencies**: Task 2.9
 
 ---
 
-### Task 2.10: Update CI pipeline — dotnet build and test
+### Task 2.11: Update CI pipeline — dotnet build and test
 
 - **Description**:
   Uncomment and complete the `dotnet` steps in `.github/workflows/ci.yml`. The CI pipeline should restore, build, and run tests on every PR targeting `main`. A failing test blocks the merge.
@@ -467,11 +497,11 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 - **Labels**: phase-2, github
 - **Estimated Effort**: Small
 - **Status**: Todo
-- **Dependencies**: Task 2.9
+- **Dependencies**: Task 2.10
 
 ---
 
-### Task 2.11: Write integration tests — Identity Service
+### Task 2.12: Write integration tests — Identity Service
 
 - **Description**:
   Write integration tests for the Identity Service gRPC endpoints (`Register` and `Login`) using `Microsoft.AspNetCore.Mvc.Testing` (WebApplicationFactory) with a real test PostgreSQL database (running in Docker via `Testcontainers`). Follow the AAA pattern. Cover all significant input/output combinations.
@@ -499,11 +529,11 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 - **Labels**: phase-2, postgres, identity-service
 - **Estimated Effort**: Medium
 - **Status**: Todo
-- **Dependencies**: Task 2.10
+- **Dependencies**: Task 2.11
 
 ---
 
-### Task 2.12: Write integration tests — Track Service
+### Task 2.13: Write integration tests — Track Service
 
 - **Description**:
   Write integration tests for the Track Service gRPC endpoints using the same pattern as Task 2.11 (WebApplicationFactory + Testcontainers). Cover all CRUD operations and file storage interactions.
@@ -523,7 +553,7 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 - **Labels**: phase-2, postgres
 - **Estimated Effort**: Medium
 - **Status**: Todo
-- **Dependencies**: Task 2.11
+- **Dependencies**: Task 2.12
 
 ---
 
@@ -532,11 +562,12 @@ The phase follows the full delivery lifecycle: Product Discovery → Feature Dis
 Phase 2 delivers the **local v0.1 MVP** — three fully functional microservices running on your machine, built on a foundation of proper product and feature discovery.
 
 **Delivery sequence**:
-1. **Product Discovery** (Task 2.3) → master PRD, design system, system-level architecture, all GitHub milestones
-2. **Feature Discovery** (Task 2.4) → identity-service PRD, prototypes, service-level architecture, sprint issues
-3. **Infrastructure** (Tasks 2.5–2.6) → Postgres + FluentMigrator schema
-4. **Services** (Tasks 2.7–2.9) → three microservices implementing the Discovery-defined designs
-5. **CI + Tests** (Tasks 2.10–2.12) → green build, integration-tested against real Postgres
+1. **Product Discovery — Steps 1–4** (Task 2.3) → PRD, design system, 9 functional UI prototypes
+2. **Product Discovery — Steps 5–7** (Task 2.4) → system-level architecture (4 views), architect sign-off, project plan
+3. **Feature Discovery** (Task 2.5) → identity-service PRD, prototypes, service-level architecture, sprint issues
+4. **Infrastructure** (Tasks 2.6–2.7) → Postgres + FluentMigrator schema
+5. **Services** (Tasks 2.8–2.10) → three microservices implementing the Discovery-defined designs
+6. **CI + Tests** (Tasks 2.11–2.13) → green build, integration-tested against real Postgres
 
 | Service | Transport | What it does |
 |---|---|---|
