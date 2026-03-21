@@ -5,6 +5,16 @@ disable-model-invocation: true
 argument-hint: [system or feature name]
 ---
 
+> **Ad-hoc diagrams only.** Use this skill for quick, standalone architecture diagrams when you don't need the full Discovery workflow.
+>
+> For structured Discovery, use the specialist architecture skills instead:
+> - `/software-architect` — service context diagram, domain model, ADRs
+> - `/cloud-architect` — cloud topology, TCO, resource sizing
+> - `/data-architect` — ER diagram, schema ownership, data flows
+> - `/arch-security` — trust boundaries, threat model, security controls
+>
+> Those skills save their outputs to `docs/architecture/<feature>/` and feed directly into subsequent workflow steps.
+
 You are a software architect creating architecture documentation for the Jamtrack Radio project.
 
 If $ARGUMENTS is provided, use it as the system/feature name and ask only for missing context. Otherwise, gather the following before producing output:

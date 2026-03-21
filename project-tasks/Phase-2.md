@@ -92,33 +92,139 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
 
 ---
 
-### Task 2.2: Set up Claude Code workflows and skills
+### Task 2.2: Set up Claude Code workflows and skills ecosystem
 
 - **Description**:
-  Configure project-specific Claude Code skills and hooks to accelerate development throughout Phase 2 and beyond. This makes Claude a more effective coding assistant for this specific codebase by teaching it repeatable patterns up front.
+  Build a comprehensive Claude Code skills and workflows ecosystem that supports the **full development lifecycle** — from initial discovery through post-deployment value measurement. This three-layer system replaces ad-hoc coding assistance with a structured, role-based coaching framework.
 
-  **Skills to create** (under `.claude/skills/`):
+  **Architecture — three layers**:
 
-  1. **`new-service`** — scaffold a new Clean Architecture microservice (Domain / Application / Infrastructure / Api layers + test project) from a name prompt. Saves repeating the dotnet new + sln add + reference wiring steps every time a new service is needed.
+  ```
+  Layer 1: Workflows      — DISCOVERY → DEVELOPMENT → MONITORING
+  Layer 2: Specialist     — domain-specific skills per workflow step
+  Layer 3: Agent Personas — orchestrator skills that activate role + sequence
+  ```
 
-  2. **`new-migration`** — scaffold a new numbered FluentMigrator migration class in `src/Migrations/` with the correct version timestamp and Up/Down stubs pre-filled.
+  ---
 
-  3. **`new-grpc-endpoint`** — scaffold a new `.proto` RPC definition, the corresponding C# handler stub in the Api layer, and the Application layer command/query + handler stub, wired to the correct project.
+  **Three workflows** (under `.claude/workflows/`):
 
-  **Hooks to configure** (in `.claude/settings.json`):
-  - Post-edit hook: run `dotnet build` on the affected project to surface compile errors immediately after any file edit.
+  | Workflow | File | Purpose |
+  |----------|------|---------|
+  | Discovery | `DISCOVERY.md` | Requirements → Market Research → PRD → UI Prototypes → 4 Architecture Views → Sign-off → Project Plan |
+  | Development | `DEVELOPMENT.md` | Design → Implement → Quality Pass → Review → Test → Deploy Staging → Integration Test → Deploy Prod |
+  | Monitoring | `MONITORING.md` | Health → Errors → Performance → Report → Retrospective → Value Report |
 
-  **Files to create/update**:
-  - `.claude/skills/new-service/SKILL.md`
-  - `.claude/skills/new-migration/SKILL.md`
-  - `.claude/skills/new-grpc-endpoint/SKILL.md`
-  - `.claude/settings.json` — add PostToolUse build hook
+  Each workflow has a pre-flight checklist gate and chains to the next.
 
-  **Expected outcome**: Running `/new-service`, `/new-migration`, or `/new-grpc-endpoint` in a Claude Code session produces correct, ready-to-compile boilerplate following this project's conventions. Build hook fires after file edits to catch errors early.
+  ---
+
+  **Layer 2 — Specialist skills** (under `.claude/skills/`):
+
+  *Discovery skills (8)*:
+
+  | Skill | Purpose |
+  |-------|---------|
+  | `/requirements` | Problem, personas, constraints, success metrics, Value Prediction (financial viability) |
+  | `/market-research` | Competitor analysis, positioning map, differentiation opportunities, strategic narrative |
+  | `/ui-prototype` | Multi-screen HTML prototypes + Mermaid user flow; saves to `docs/prototypes/<feature>/` |
+  | `/software-architect` | Service context diagram, domain model, ADRs, build-vs-buy analysis |
+  | `/cloud-architect` | Cloud topology, TCO table (Dev/Staging/Prod + 2×/10× scale), cost optimisation |
+  | `/data-architect` | ER diagram, schema ownership, DDL, index strategy, retention/compliance, storage costs |
+  | `/arch-security` | Trust boundaries, STRIDE, security controls, OWASP Top 10, cost/risk tradeoffs |
+  | `/project-plan` | Creates GitHub milestone + all issues (dev + DevOps + testing) after architect sign-off |
+
+  *Development skills (existing + new)*:
+
+  | Skill | Purpose |
+  |-------|---------|
+  | `/design` | Technical design — domain model, API contract, DB schema, sequence diagram (updated to load Discovery outputs) |
+  | `/implement` | Production-quality C# across all Clean Architecture layers |
+  | `/robust` `/security` `/scalable` `/performant` | Quality pass after implement, before review |
+  | `/review` | Architecture correctness, SOLID, observability, no secrets |
+  | `/test` | Integration tests with WebApplicationFactory + Testcontainers |
+  | `/deploy-staging` `/integration-test` `/deploy-prod` | Phase-aware deployment pipeline |
+  | `/new-service` `/new-migration` `/new-grpc-endpoint` | Scaffolding skills |
+
+  *Monitoring skills (6)*:
+
+  | Skill | Purpose |
+  |-------|---------|
+  | `/monitor-health` | Health endpoint checks, pod status, migration verification (phase-aware) |
+  | `/monitor-errors` | Error rate analysis vs. pre-deploy baseline (ELK KQL + ClickHouse) |
+  | `/monitor-performance` | p50/p95/p99 latency analysis vs. baseline (ClickHouse percentile queries) |
+  | `/monitor-report` | Standalone HTML report saved to `docs/monitoring-reports/YYYY-MM-DD-PR<N>-<service>.html` |
+  | `/retrospective` | Structured retrospective — lessons, trends, action items as GitHub issues |
+  | `/value-report` | Predicted vs. actual value (run by PM 1–4 weeks post-deployment) |
+
+  ---
+
+  **Layer 3 — Agent Persona skills (5)**:
+
+  | Skill | Agent | Workflow Ownership |
+  |-------|-------|--------------------|
+  | `/product-manager` | Product Manager | DISCOVERY Steps 1–4 + MONITORING Step 6. Owns the value prediction → value validation loop. |
+  | `/architect` | Architect (orchestrator) | DISCOVERY Steps 5–6. Sequences 4 specialist architect skills + cross-view consistency review. |
+  | `/project-manager` | Project Manager | DISCOVERY Step 7 + DEVELOPMENT checkpoint. Creates/manages all GitHub milestones and issues. |
+  | `/senior-developer` | Senior Developer | DEVELOPMENT Steps 1–5. Loads Discovery outputs before designing. |
+  | `/devops-engineer` | DevOps Engineer | DEVELOPMENT Steps 6–8 + all of MONITORING. Phase-aware: Docker Compose → K8s → Azure. |
+
+  Each agent persona skill includes a Strategic Lens section with industry patterns, anti-patterns, trade-offs, and teaching notes. Financial lens is mandatory in `product-manager`, `architect`, and all four specialist architect skills.
+
+  ---
+
+  **Existing skills modified**:
+
+  | File | Change |
+  |------|--------|
+  | `.claude/skills/arch-diagram/SKILL.md` | Added "ad-hoc only" note redirecting structured Discovery to the four specialist skills |
+  | `.claude/skills/prd/SKILL.md` | Added preamble to load `/requirements` context; added Business Case (Section 12); updated handoff to `/ui-prototype` then `/architect` |
+  | `.claude/skills/design/SKILL.md` | Added pre-conditions to load Discovery architecture docs; replaced inline UI mockup section with redirect to `/ui-prototype` |
+
+  ---
+
+  **Workflow index**: `.claude/workflows/README.md` — explains all three workflows, when to use each, how they chain together, and which agent persona runs each.
+
+  **Retired**: `.claude/workflows/WORKFLOW.md` replaced with a redirect note pointing to `DEVELOPMENT.md`.
+
+  ---
+
+  **Value calculation loop** (Product Manager owns end-to-end):
+  1. `/requirements` (Discovery) — Value Prediction: estimated build cost, expected value, KPIs, payback period
+  2. `/prd` (Discovery) — Business Case section references Value Prediction
+  3. `/value-report` (Monitoring, weeks post-deployment) — Actual vs. predicted: ROI validated, verdict documented
+
+  ---
+
+  **docs/ directory convention** (created on first run by each skill):
+
+  ```
+  docs/requirements/           ← /requirements
+  docs/market-research/        ← /market-research
+  docs/prds/                   ← /prd
+  docs/prototypes/<feature>/   ← /ui-prototype
+  docs/architecture/<feature>/ ← all four specialist architect skills
+  docs/decisions/              ← ADRs from /software-architect
+  docs/project-plan/           ← /project-plan
+  docs/designs/                ← /design
+  docs/monitoring-reports/     ← /monitor-report
+  docs/retrospectives/         ← /retrospective
+  docs/value-reports/          ← /value-report
+  ```
+
+  **Expected outcome**:
+  - `ls .claude/skills/` shows 36 skill directories (17 existing + 19 new)
+  - `ls .claude/workflows/` shows 5 files: README.md, DISCOVERY.md, DEVELOPMENT.md, MONITORING.md, WORKFLOW.md (retired redirect)
+  - Running `/product-manager` activates the PM persona and begins the Discovery workflow
+  - Running `/architect` shows the 4-step orchestration sequence with cross-view consistency review
+  - Running `/senior-developer` references the Development workflow and loads architecture docs as context
+  - Running `/devops-engineer` shows phase-aware deployment + monitoring handoff
+  - Each workflow file has a pre-flight checklist gate at the top
+  - Every agent persona skill has a Strategic Lens section with real-world patterns and coaching notes
 
 - **Labels**: phase-2, setup
-- **Estimated Effort**: Medium
-- **Status**: Todo
+- **Estimated Effort**: Large
+- **Status**: Done
 - **Dependencies**: Task 2.1
 
 ---
