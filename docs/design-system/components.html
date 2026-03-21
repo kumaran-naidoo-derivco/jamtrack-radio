@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jamtrack Radio — Component Showcase</title>
+  <style>
+    /* ─────────────────────────────────────────────
+       DESIGN TOKENS  (dark teal + neon cyan/rose)
+    ───────────────────────────────────────────── */
+    :root {
+      --color-bg:             #071b1b;
+      --color-surface:        #0f2626;
+      --color-surface-raised: #163333;
+      --color-border:         #1e4040;
+      --color-border-focus:   #00e5c8;
+      --color-text-primary:   #e8f8f8;
+      --color-text-secondary: #7ec8c8;
+      --color-text-muted:     #3d7070;
+      --color-accent:         #00e5c8;
+      --color-accent-hover:   #33eedb;
+      --color-accent-subtle:  #0a2d2a;
+      --color-accent-2:       #ff2d9b;
+      --color-accent-2-hover: #ff5cb4;
+      --color-accent-2-subtle:#2a0a1e;
+      --color-success:        #00e577;
+      --color-warning:        #ffd055;
+      --color-error:          #ff5577;
+      --color-info:           #3b9af6;
+
+      --space-1:  4px;  --space-2:  8px;  --space-3:  12px;
+      --space-4:  16px; --space-5:  20px; --space-6:  24px;
+      --space-8:  32px; --space-10: 40px; --space-12: 48px;
+
+      --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+      --radius-xl: 16px; --radius-full: 9999px;
+
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.5);
+      --shadow-md:        0 4px 12px rgba(0,0,0,0.6);
+      --shadow-lg:        0 8px 32px rgba(0,0,0,0.7);
+      --shadow-focus:     0 0 0 3px rgba(0,229,200,0.4);
+      --shadow-glow-cyan: 0 0 16px rgba(0,229,200,0.25);
+      --shadow-glow-rose: 0 0 16px rgba(255,45,155,0.25);
+    }
+
+    /* ─────────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 0.9rem; line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { color: var(--color-accent-hover); }
+
+    /* ─────────────────────────────────────────────
+       SHOWCASE SHELL
+    ───────────────────────────────────────────── */
+    .showcase-header {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #071b1b 0%, #0f2e2e 50%, #071b1b 100%);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-8) var(--space-8) var(--space-6);
+    }
+    /* Decorative staff lines */
+    .showcase-header::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(
+        180deg, transparent 0px, transparent 16px,
+        rgba(0,229,200,0.06) 16px, rgba(0,229,200,0.06) 17px
+      );
+    }
+    /* Floating treble clef */
+    .showcase-header::after {
+      content: '𝄞';
+      position: absolute; right: var(--space-8); top: 50%; transform: translateY(-50%);
+      font-size: 7rem; color: rgba(0,229,200,0.08); line-height: 1;
+      pointer-events: none; user-select: none;
+    }
+    .showcase-header h1 {
+      position: relative; margin: 0 0 var(--space-2);
+      font-size: 1.75rem; font-weight: 800;
+      color: var(--color-accent);
+      text-shadow: 0 0 24px rgba(0,229,200,0.4);
+    }
+    .showcase-header p { position: relative; margin: 0; color: var(--color-text-secondary); font-size: 0.875rem; }
+
+    .showcase-nav {
+      background: var(--color-surface); border-bottom: 1px solid var(--color-border);
+      padding: 0 var(--space-8); display: flex; gap: 0; overflow-x: auto;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .showcase-nav a {
+      padding: var(--space-3) var(--space-4); font-size: 0.85rem;
+      color: var(--color-text-secondary); white-space: nowrap;
+      border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
+    }
+    .showcase-nav a:hover { color: var(--color-accent); border-bottom-color: var(--color-accent); text-decoration: none; }
+
+    .showcase-body { max-width: 960px; margin: 0 auto; padding: var(--space-8); }
+
+    .section { margin-bottom: var(--space-12); }
+    .section-title {
+      font-size: 1.25rem; font-weight: 700; margin: 0 0 var(--space-6);
+      padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border);
+      color: var(--color-text-primary);
+    }
+    .subsection-title {
+      font-size: 0.8rem; font-weight: 700; color: var(--color-text-muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin: var(--space-6) 0 var(--space-4);
+    }
+    .component-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-4); margin-bottom: var(--space-6); }
+    .component-label { font-size: 0.7rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-2); }
+
+    /* ─────────────────────────────────────────────
+       BUTTONS
+    ───────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      padding: var(--space-3) var(--space-6); border-radius: var(--radius-md);
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, color 0.15s;
+      font-family: inherit;
+    }
+    .btn:focus-visible { box-shadow: var(--shadow-focus); outline: none; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-primary { background: var(--color-accent); color: #071b1b; font-weight: 700; }
+    .btn-primary:hover:not(:disabled) { background: var(--color-accent-hover); box-shadow: var(--shadow-glow-cyan); }
+
+    .btn-secondary { background: transparent; color: var(--color-accent); border-color: var(--color-accent); }
+    .btn-secondary:hover:not(:disabled) { background: var(--color-accent-subtle); box-shadow: var(--shadow-glow-cyan); }
+
+    .btn-ghost { background: transparent; color: var(--color-text-secondary); border-color: var(--color-border); }
+    .btn-ghost:hover:not(:disabled) { color: var(--color-text-primary); border-color: var(--color-text-secondary); }
+
+    .btn-danger { background: var(--color-error); color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: #ff3366; box-shadow: 0 0 16px rgba(255,85,119,0.3); }
+
+    .btn-rose { background: var(--color-accent-2); color: #fff; font-weight: 700; }
+    .btn-rose:hover:not(:disabled) { background: var(--color-accent-2-hover); box-shadow: var(--shadow-glow-rose); }
+
+    .btn-large { padding: var(--space-4) var(--space-8); font-size: 1rem; }
+    .btn-link { background: none; border: none; color: var(--color-accent); cursor: pointer; text-decoration: underline; font-size: inherit; font-family: inherit; padding: 0; }
+
+    /* ─────────────────────────────────────────────
+       FORM CONTROLS
+    ───────────────────────────────────────────── */
+    .form-group { display: flex; flex-direction: column; gap: var(--space-2); }
+    .form-label { font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary); }
+    .form-input {
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: var(--radius-md); color: var(--color-text-primary);
+      padding: var(--space-3) var(--space-4); font-size: 0.9rem; width: 100%;
+      transition: border-color 0.15s, box-shadow 0.15s; font-family: inherit;
+    }
+    .form-input::placeholder { color: var(--color-text-muted); }
+    .form-input:focus { border-color: var(--color-border-focus); box-shadow: var(--shadow-focus); outline: none; }
+    .form-input:disabled { opacity: 0.4; cursor: not-allowed; }
+    .form-input--error { border-color: var(--color-error); }
+    .form-input--error:focus { box-shadow: 0 0 0 3px rgba(255,85,119,0.3); }
+    .form-error { font-size: 0.8rem; color: var(--color-error); }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .form-wrap { width: 280px; }
+
+    .tag-input {
+      display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center;
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); min-height: 44px;
+    }
+    .tag-input:focus-within { border-color: var(--color-border-focus); box-shadow: var(--shadow-focus); }
+    .tag-chip {
+      display: inline-flex; align-items: center; gap: var(--space-1);
+      background: var(--color-accent-subtle); border: 1px solid var(--color-accent);
+      color: var(--color-accent); border-radius: var(--radius-full);
+      padding: 2px var(--space-3); font-size: 0.8rem;
+    }
+    .tag-chip button { background: none; border: none; color: inherit; cursor: pointer; padding: 0 2px; min-width: 20px; min-height: 20px; font-size: 1rem; }
+    .tag-input__field { background: none; border: none; color: var(--color-text-primary); font-size: 0.9rem; min-width: 80px; outline: none; font-family: inherit; }
+
+    .dropzone {
+      border: 2px dashed var(--color-border); border-radius: var(--radius-lg);
+      padding: var(--space-10) var(--space-8); text-align: center; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; position: relative;
+    }
+    .dropzone:hover { border-color: var(--color-accent); background: var(--color-accent-subtle); box-shadow: var(--shadow-glow-cyan); }
+    .dropzone__icon { font-size: 2rem; display: block; margin-bottom: var(--space-3); }
+    .dropzone__label { color: var(--color-text-primary); margin: 0 0 var(--space-2); }
+    .dropzone__hint { font-size: 0.8rem; color: var(--color-text-muted); margin: 0; }
+
+    /* ─────────────────────────────────────────────
+       NAVIGATION
+    ───────────────────────────────────────────── */
+    .topnav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 var(--space-8); height: 60px;
+      background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+      background-image: repeating-linear-gradient(
+        180deg, transparent 0px, transparent 17px,
+        rgba(0,229,200,0.04) 17px, rgba(0,229,200,0.04) 18px
+      );
+    }
+    .topnav__brand { font-size: 1.1rem; font-weight: 700; color: var(--color-accent); text-decoration: none; transition: text-shadow 0.15s; }
+    .topnav__brand:hover { text-shadow: 0 0 12px rgba(0,229,200,0.6); }
+    .topnav__actions { display: flex; align-items: center; gap: var(--space-4); }
+    .topnav__user { font-size: 0.85rem; color: var(--color-text-secondary); }
+
+    .sidebar { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4); width: 220px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); }
+    .sidebar__item {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+      color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      transition: background 0.1s, color 0.1s; border-left: 2px solid transparent;
+    }
+    .sidebar__item:hover { background: var(--color-surface-raised); color: var(--color-text-primary); text-decoration: none; }
+    .sidebar__item--active { background: var(--color-accent-subtle); color: var(--color-accent); font-weight: 600; border-left-color: var(--color-accent); }
+
+    .breadcrumb { display: flex; list-style: none; gap: var(--space-2); margin: 0; padding: 0; font-size: 0.85rem; }
+    .breadcrumb__item { display: flex; align-items: center; color: var(--color-text-secondary); }
+    .breadcrumb__item + .breadcrumb__item::before { content: '/'; margin-right: var(--space-2); color: var(--color-text-muted); }
+    .breadcrumb__item a { color: var(--color-text-secondary); text-decoration: none; }
+    .breadcrumb__item a:hover { color: var(--color-accent); }
+    .breadcrumb__item--active { color: var(--color-text-primary); }
+
+    /* ─────────────────────────────────────────────
+       DATA DISPLAY
+    ───────────────────────────────────────────── */
+    .track-list { display: flex; flex-direction: column; gap: var(--space-2); }
+    .track-row {
+      display: flex; align-items: center; gap: var(--space-4);
+      padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+      background: var(--color-surface); border: 1px solid transparent;
+      transition: border-color 0.1s, background 0.1s, box-shadow 0.1s;
+    }
+    .track-row:hover { background: var(--color-surface-raised); border-color: var(--color-border); }
+    .track-row--playing {
+      border-color: var(--color-accent); background: var(--color-accent-subtle);
+      box-shadow: var(--shadow-glow-cyan);
+    }
+    .track-row--playing .track-row__title { color: var(--color-accent); }
+
+    .track-row__art { width: 44px; height: 44px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; background: var(--color-surface-raised); font-size: 1.4rem; flex-shrink: 0; }
+    .track-row__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .track-row__title { font-size: 0.9rem; font-weight: 600; color: var(--color-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .track-row__artist { font-size: 0.8rem; color: var(--color-text-secondary); }
+    .track-row__meta { display: flex; gap: var(--space-2); flex-shrink: 0; }
+    .track-row__duration { font-size: 0.8rem; color: var(--color-text-muted); font-family: 'Cascadia Code', Consolas, monospace; min-width: 36px; text-align: right; }
+
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 2px var(--space-3); border-radius: var(--radius-sm);
+      font-size: 0.75rem; font-weight: 600;
+    }
+    /* BPM = cyan (technical/tempo), Key = rose (tonality/emotional), Genre = amber */
+    .badge--bpm   { background: rgba(0,229,200,0.15);   color: #00e5c8; border: 1px solid rgba(0,229,200,0.35); }
+    .badge--key   { background: rgba(255,45,155,0.15);  color: #ff5cb4; border: 1px solid rgba(255,45,155,0.35); }
+    .badge--genre { background: rgba(255,208,85,0.15);  color: #ffd055; border: 1px solid rgba(255,208,85,0.35); }
+    .badge--tag   { background: var(--color-surface-raised); color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-full); }
+
+    .btn-icon {
+      background: none; border: none; color: var(--color-text-secondary); cursor: pointer;
+      padding: var(--space-2); border-radius: var(--radius-sm); font-size: 1rem;
+      transition: color 0.1s, background 0.1s;
+      min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+    }
+    .btn-icon:hover { color: var(--color-accent); background: var(--color-accent-subtle); }
+    .btn-icon:focus-visible { box-shadow: var(--shadow-focus); outline: none; }
+
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-4);
+      padding: var(--space-12) var(--space-8); text-align: center;
+      background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+      position: relative; overflow: hidden;
+    }
+    /* Floating note decoration */
+    .empty-state::before {
+      content: '🎵';
+      position: absolute; top: var(--space-4); right: var(--space-6);
+      font-size: 4rem; opacity: 0.06; transform: rotate(15deg); pointer-events: none;
+    }
+    .empty-state__icon { font-size: 3rem; }
+    .empty-state__heading { font-size: 1.25rem; font-weight: 700; color: var(--color-text-primary); margin: 0; }
+    .empty-state__body { color: var(--color-text-secondary); margin: 0; max-width: 320px; }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--color-surface-raised) 25%, #1a3e3e 50%, var(--color-surface-raised) 75%);
+      background-size: 200% 100%; border-radius: var(--radius-sm);
+      animation: skeleton-shimmer 1.4s infinite;
+    }
+    .skeleton--square { width: 44px; height: 44px; border-radius: var(--radius-sm); flex-shrink: 0; }
+    @keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ─────────────────────────────────────────────
+       FEEDBACK
+    ───────────────────────────────────────────── */
+    .alert {
+      display: flex; align-items: flex-start; gap: var(--space-3);
+      padding: var(--space-4); border-radius: var(--radius-md); font-size: 0.875rem;
+    }
+    .alert--error   { background: rgba(255,85,119,0.1);  border: 1px solid rgba(255,85,119,0.4);  color: #ff8fa3; }
+    .alert--success { background: rgba(0,229,119,0.1);   border: 1px solid rgba(0,229,119,0.4);   color: #6effa0; }
+    .alert--info    { background: rgba(59,154,246,0.1);  border: 1px solid rgba(59,154,246,0.4);  color: #7ec8f8; }
+    .alert--warning { background: rgba(255,208,85,0.1);  border: 1px solid rgba(255,208,85,0.4);  color: #ffe07a; }
+
+    .toast {
+      display: inline-flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-4) var(--space-5); border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg); font-size: 0.9rem; min-width: 280px;
+    }
+    .toast--success { background: #031a0d; border: 1px solid #00a855; color: #6effa0; }
+    .toast--error   { background: #1f040d; border: 1px solid #cc2244; color: #ff8fa3; }
+    .toast__close { margin-left: auto; background: none; border: none; color: inherit; cursor: pointer; font-size: 1.1rem; padding: 0 var(--space-2); min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+
+    .dialog-demo { background: rgba(0,0,0,0.6); padding: var(--space-8); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; }
+    .dialog { background: var(--color-surface-raised); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-8); max-width: 440px; width: 100%; box-shadow: var(--shadow-lg); }
+    .dialog__title { font-size: 1.25rem; font-weight: 700; color: var(--color-text-primary); margin: 0 0 var(--space-4); }
+    .dialog__body { color: var(--color-text-secondary); margin: 0 0 var(--space-6); line-height: 1.6; }
+    .dialog__actions { display: flex; justify-content: flex-end; gap: var(--space-3); }
+
+    .progress-wrap { background: var(--color-surface-raised); border-radius: var(--radius-full); height: 6px; overflow: hidden; width: 100%; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2)); border-radius: var(--radius-full); transition: width 0.3s ease; }
+    .progress-label { font-size: 0.8rem; color: var(--color-text-secondary); margin-top: var(--space-2); display: block; }
+
+    /* ─────────────────────────────────────────────
+       AUDIO PLAYER
+    ───────────────────────────────────────────── */
+    .player {
+      display: flex; align-items: center; gap: var(--space-6);
+      padding: var(--space-4) var(--space-8);
+      background: linear-gradient(135deg, #071b1b 0%, #0f2e2e 50%, #071b1b 100%);
+      border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+      background-image:
+        linear-gradient(135deg, #071b1b 0%, #0f2e2e 50%, #071b1b 100%);
+      position: relative; overflow: hidden;
+    }
+    /* Staff lines on player */
+    .player::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(
+        180deg, transparent 0px, transparent 10px,
+        rgba(0,229,200,0.05) 10px, rgba(0,229,200,0.05) 11px
+      );
+    }
+    /* Ghost note */
+    .player::after {
+      content: '𝄞';
+      position: absolute; right: var(--space-4); top: 50%; transform: translateY(-50%);
+      font-size: 3.5rem; color: rgba(0,229,200,0.05); pointer-events: none;
+    }
+    .player__info { min-width: 180px; display: flex; flex-direction: column; gap: var(--space-2); position: relative; }
+    .player__title { font-size: 0.9rem; font-weight: 600; color: var(--color-accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 8px rgba(0,229,200,0.3); }
+    .player__meta { display: flex; gap: var(--space-2); }
+    .player__controls { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; position: relative; }
+    .player__play { font-size: 1.4rem; color: var(--color-accent); text-shadow: 0 0 12px rgba(0,229,200,0.7); transition: color 0.15s, text-shadow 0.15s; }
+    .player__play:hover { color: var(--color-accent-2); text-shadow: 0 0 16px rgba(255,45,155,0.8); }
+    .player__progress { flex: 1; display: flex; align-items: center; gap: var(--space-3); position: relative; }
+    .player__seek { flex: 1; cursor: pointer; height: 4px; transition: height 0.1s; }
+    .player__seek:hover { height: 6px; }
+    .player__time { font-size: 0.75rem; color: var(--color-text-muted); font-family: 'Cascadia Code', Consolas, monospace; min-width: 32px; }
+    .player__volume { display: flex; align-items: center; gap: var(--space-2); position: relative; }
+    .player__volume-slider { width: 80px; accent-color: var(--color-accent); cursor: pointer; }
+
+    /* ─────────────────────────────────────────────
+       COLOUR SWATCHES
+    ───────────────────────────────────────────── */
+    .swatch-grid { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+    .swatch { display: flex; flex-direction: column; gap: var(--space-2); width: 110px; }
+    .swatch__block { height: 52px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.06); }
+    .swatch__name { font-size: 0.65rem; color: var(--color-text-muted); font-family: monospace; line-height: 1.3; word-break: break-all; }
+    .swatch__value { font-size: 0.7rem; color: var(--color-text-secondary); font-family: monospace; }
+  </style>
+</head>
+<body>
+
+<header class="showcase-header" aria-label="Design system header">
+  <!-- Decorative floating notes (aria-hidden) -->
+  <span style="position:absolute;left:var(--space-8);top:50%;transform:translateY(-50%);font-size:5rem;opacity:0.06;pointer-events:none;user-select:none" aria-hidden="true">🎶</span>
+  <h1>🎵 Jamtrack Radio — Component Showcase</h1>
+  <p>Design System v1.1 · Dark teal + neon cyan/rose · WCAG 2.1 AA · 2026-03-21</p>
+</header>
+
+<nav class="showcase-nav" aria-label="Sections">
+  <a href="#colours">Colours</a>
+  <a href="#buttons">Buttons</a>
+  <a href="#forms">Forms</a>
+  <a href="#navigation">Navigation</a>
+  <a href="#data-display">Data Display</a>
+  <a href="#feedback">Feedback</a>
+  <a href="#player">Player</a>
+</nav>
+
+<main class="showcase-body">
+
+  <!-- COLOURS -->
+  <section id="colours" class="section">
+    <h2 class="section-title">Colour Palette</h2>
+
+    <p class="subsection-title">Backgrounds</p>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__block" style="background:#071b1b"></div><div class="swatch__name">--color-bg</div><div class="swatch__value">#071b1b</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#0f2626"></div><div class="swatch__name">--color-surface</div><div class="swatch__value">#0f2626</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#163333"></div><div class="swatch__name">--color-surface-raised</div><div class="swatch__value">#163333</div></div>
+    </div>
+
+    <p class="subsection-title">Primary Accent — Neon Cyan</p>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__block" style="background:#00e5c8;box-shadow:0 0 12px rgba(0,229,200,0.4)"></div><div class="swatch__name">--color-accent</div><div class="swatch__value">#00e5c8</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#33eedb"></div><div class="swatch__name">--color-accent-hover</div><div class="swatch__value">#33eedb</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#0a2d2a;border:1px solid #1e4040"></div><div class="swatch__name">--color-accent-subtle</div><div class="swatch__value">#0a2d2a</div></div>
+    </div>
+
+    <p class="subsection-title">Secondary Accent — Electric Rose (psychedelic)</p>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__block" style="background:#ff2d9b;box-shadow:0 0 12px rgba(255,45,155,0.4)"></div><div class="swatch__name">--color-accent-2</div><div class="swatch__value">#ff2d9b</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#ff5cb4"></div><div class="swatch__name">--color-accent-2-hover</div><div class="swatch__value">#ff5cb4</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#2a0a1e;border:1px solid #1e4040"></div><div class="swatch__name">--color-accent-2-subtle</div><div class="swatch__value">#2a0a1e</div></div>
+    </div>
+
+    <p class="subsection-title">Semantic</p>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__block" style="background:#00e577"></div><div class="swatch__name">--color-success</div><div class="swatch__value">#00e577</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#ffd055"></div><div class="swatch__name">--color-warning</div><div class="swatch__value">#ffd055</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#ff5577"></div><div class="swatch__name">--color-error</div><div class="swatch__value">#ff5577</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#3b9af6"></div><div class="swatch__name">--color-info</div><div class="swatch__value">#3b9af6</div></div>
+    </div>
+
+    <p class="subsection-title">Text</p>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch__block" style="background:#e8f8f8"></div><div class="swatch__name">--color-text-primary</div><div class="swatch__value">#e8f8f8</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#7ec8c8"></div><div class="swatch__name">--color-text-secondary</div><div class="swatch__value">#7ec8c8</div></div>
+      <div class="swatch"><div class="swatch__block" style="background:#3d7070"></div><div class="swatch__name">--color-text-muted</div><div class="swatch__value">#3d7070</div></div>
+    </div>
+  </section>
+
+  <!-- BUTTONS -->
+  <section id="buttons" class="section">
+    <h2 class="section-title">Buttons</h2>
+
+    <p class="subsection-title">Variants</p>
+    <div class="component-row">
+      <div><div class="component-label">Primary (cyan)</div><button class="btn btn-primary">Sign in</button></div>
+      <div><div class="component-label">Rose CTA</div><button class="btn btn-rose">▶ Play Now</button></div>
+      <div><div class="component-label">Secondary</div><button class="btn btn-secondary">Cancel</button></div>
+      <div><div class="component-label">Ghost</div><button class="btn btn-ghost">View all</button></div>
+      <div><div class="component-label">Danger</div><button class="btn btn-danger">Delete</button></div>
+    </div>
+
+    <p class="subsection-title">Large</p>
+    <div class="component-row">
+      <button class="btn btn-primary btn-large">⬆️ Upload Track</button>
+      <button class="btn btn-rose btn-large">▶ Start Listening</button>
+    </div>
+
+    <p class="subsection-title">Disabled</p>
+    <div class="component-row">
+      <button class="btn btn-primary" disabled>Processing…</button>
+      <button class="btn btn-secondary" disabled>Disabled</button>
+      <button class="btn btn-ghost" disabled>Disabled</button>
+      <button class="btn btn-danger" disabled>Disabled</button>
+    </div>
+  </section>
+
+  <!-- FORMS -->
+  <section id="forms" class="section">
+    <h2 class="section-title">Form Controls</h2>
+
+    <p class="subsection-title">Text Inputs</p>
+    <div class="component-row">
+      <div class="form-wrap">
+        <div class="component-label">Default</div>
+        <div class="form-group">
+          <label class="form-label" for="inp-d">Email</label>
+          <input class="form-input" type="email" id="inp-d" placeholder="you@example.com">
+        </div>
+      </div>
+      <div class="form-wrap">
+        <div class="component-label">Error</div>
+        <div class="form-group">
+          <label class="form-label" for="inp-e">Email</label>
+          <input class="form-input form-input--error" type="email" id="inp-e" value="notanemail">
+          <span class="form-error">⚠️ Enter a valid email address.</span>
+        </div>
+      </div>
+      <div class="form-wrap">
+        <div class="component-label">Disabled</div>
+        <div class="form-group">
+          <label class="form-label" for="inp-x">Email</label>
+          <input class="form-input" type="text" id="inp-x" disabled value="disabled@example.com">
+        </div>
+      </div>
+    </div>
+
+    <p class="subsection-title">Select</p>
+    <div class="form-wrap">
+      <div class="form-group">
+        <label class="form-label" for="sel-g">Genre</label>
+        <select class="form-input" id="sel-g">
+          <option value="">Select genre…</option>
+          <option>Blues</option><option>Jazz</option><option>Funk</option><option>Rock</option>
+        </select>
+      </div>
+    </div>
+
+    <p class="subsection-title">Textarea</p>
+    <div class="form-wrap">
+      <div class="form-group">
+        <label class="form-label" for="ta-n">Track notes</label>
+        <textarea class="form-input form-textarea" id="ta-n" rows="3" placeholder="Backing track notes, key, feel…"></textarea>
+      </div>
+    </div>
+
+    <p class="subsection-title">Tag Input</p>
+    <div style="max-width:400px">
+      <div class="tag-input">
+        <span class="tag-chip">Blues <button aria-label="Remove Blues">×</button></span>
+        <span class="tag-chip">Slow <button aria-label="Remove Slow">×</button></span>
+        <span class="tag-chip">E minor <button aria-label="Remove E minor">×</button></span>
+        <input class="tag-input__field" type="text" placeholder="Add tag…" aria-label="Add a tag">
+      </div>
+    </div>
+
+    <p class="subsection-title">File Drop Zone</p>
+    <div class="dropzone" style="max-width:420px" role="region" aria-label="Audio file drop zone">
+      <span class="dropzone__icon" aria-hidden="true">⬆️</span>
+      <p class="dropzone__label">Drop audio file here or <button class="btn-link">browse</button></p>
+      <p class="dropzone__hint">MP3, FLAC, WAV · max 200 MB</p>
+    </div>
+  </section>
+
+  <!-- NAVIGATION -->
+  <section id="navigation" class="section">
+    <h2 class="section-title">Navigation</h2>
+
+    <p class="subsection-title">Top Navigation Bar</p>
+    <nav class="topnav" aria-label="Top navigation demo">
+      <a class="topnav__brand" href="#">🎵 Jamtrack Radio</a>
+      <div class="topnav__actions">
+        <span class="topnav__user">Kumaran</span>
+        <button class="btn btn-ghost">🚪 Sign out</button>
+      </div>
+    </nav>
+
+    <p class="subsection-title">Sidebar</p>
+    <nav class="sidebar" aria-label="Sidebar demo">
+      <a class="sidebar__item" href="#">🎸 Library</a>
+      <a class="sidebar__item sidebar__item--active" href="#">📋 Playlists</a>
+      <a class="sidebar__item" href="#">⬆️ Upload</a>
+      <a class="sidebar__item" href="#">⚙️ Settings</a>
+      <a class="sidebar__item" href="#">🚪 Sign out</a>
+    </nav>
+
+    <p class="subsection-title">Breadcrumbs</p>
+    <nav aria-label="Breadcrumb demo">
+      <ol class="breadcrumb">
+        <li class="breadcrumb__item"><a href="#">Library</a></li>
+        <li class="breadcrumb__item"><a href="#">Playlists</a></li>
+        <li class="breadcrumb__item breadcrumb__item--active" aria-current="page">Minor Blues — Session 1</li>
+      </ol>
+    </nav>
+  </section>
+
+  <!-- DATA DISPLAY -->
+  <section id="data-display" class="section">
+    <h2 class="section-title">Data Display</h2>
+
+    <p class="subsection-title">Track List (incl. Now Playing state)</p>
+    <div class="track-list">
+      <!-- Now playing -->
+      <div class="track-row track-row--playing" role="row">
+        <div class="track-row__art" aria-hidden="true">🖼️</div>
+        <div class="track-row__info">
+          <span class="track-row__title">Minor Blues in E ▶</span>
+          <span class="track-row__artist">Kumaran Naidoo</span>
+        </div>
+        <div class="track-row__meta">
+          <span class="badge badge--bpm">120 BPM</span>
+          <span class="badge badge--key">E minor</span>
+          <span class="badge badge--genre">Blues</span>
+        </div>
+        <span class="track-row__duration">3:42</span>
+        <button class="btn-icon" aria-label="Pause Minor Blues in E">⏸</button>
+        <button class="btn-icon" aria-label="More options">⋯</button>
+      </div>
+      <!-- Normal -->
+      <div class="track-row" role="row">
+        <div class="track-row__art" aria-hidden="true">🖼️</div>
+        <div class="track-row__info">
+          <span class="track-row__title">Funk Groove — No. 3</span>
+          <span class="track-row__artist">Session Recording</span>
+        </div>
+        <div class="track-row__meta">
+          <span class="badge badge--bpm">98 BPM</span>
+          <span class="badge badge--key">G major</span>
+          <span class="badge badge--genre">Funk</span>
+        </div>
+        <span class="track-row__duration">5:11</span>
+        <button class="btn-icon" aria-label="Play Funk Groove No. 3">▶</button>
+        <button class="btn-icon" aria-label="More options">⋯</button>
+      </div>
+      <div class="track-row" role="row">
+        <div class="track-row__art" aria-hidden="true">🖼️</div>
+        <div class="track-row__info">
+          <span class="track-row__title">Jazz Ballad in D♭</span>
+          <span class="track-row__artist">Kumaran Naidoo</span>
+        </div>
+        <div class="track-row__meta">
+          <span class="badge badge--bpm">72 BPM</span>
+          <span class="badge badge--key">D♭ major</span>
+          <span class="badge badge--genre">Jazz</span>
+          <span class="badge badge--tag">slow</span>
+        </div>
+        <span class="track-row__duration">4:28</span>
+        <button class="btn-icon" aria-label="Play Jazz Ballad in Db">▶</button>
+        <button class="btn-icon" aria-label="More options">⋯</button>
+      </div>
+    </div>
+
+    <p class="subsection-title">Loading Skeleton</p>
+    <div class="track-list">
+      <div class="track-row">
+        <div class="skeleton skeleton--square"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+          <div class="skeleton" style="width:55%;height:14px"></div>
+          <div class="skeleton" style="width:30%;height:12px"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div class="skeleton" style="width:64px;height:22px"></div>
+          <div class="skeleton" style="width:56px;height:22px"></div>
+        </div>
+      </div>
+      <div class="track-row">
+        <div class="skeleton skeleton--square"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+          <div class="skeleton" style="width:40%;height:14px"></div>
+          <div class="skeleton" style="width:25%;height:12px"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div class="skeleton" style="width:64px;height:22px"></div>
+          <div class="skeleton" style="width:56px;height:22px"></div>
+          <div class="skeleton" style="width:60px;height:22px"></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="subsection-title">Badges — BPM (cyan) · Key (rose) · Genre (amber) · Tag (neutral)</p>
+    <div class="component-row" style="align-items:center">
+      <span class="badge badge--bpm">120 BPM</span>
+      <span class="badge badge--key">E minor</span>
+      <span class="badge badge--genre">Blues</span>
+      <span class="badge badge--tag">slow-burn</span>
+      <span class="badge badge--tag">practice</span>
+      <span class="badge badge--bpm">72 BPM</span>
+      <span class="badge badge--key">D♭ major</span>
+      <span class="badge badge--genre">Jazz</span>
+    </div>
+
+    <p class="subsection-title">Empty State</p>
+    <div class="empty-state">
+      <span class="empty-state__icon" aria-hidden="true">🎸</span>
+      <h3 class="empty-state__heading">No tracks yet</h3>
+      <p class="empty-state__body">Upload your first jam track to get started. Your library will appear here.</p>
+      <a class="btn btn-primary" href="#">⬆️ Upload Track</a>
+    </div>
+  </section>
+
+  <!-- FEEDBACK -->
+  <section id="feedback" class="section">
+    <h2 class="section-title">Feedback Components</h2>
+
+    <p class="subsection-title">Alerts</p>
+    <div style="display:flex;flex-direction:column;gap:var(--space-3);max-width:500px">
+      <div class="alert alert--error"   role="alert"><span aria-hidden="true">⚠️</span> Invalid email or password. Please try again.</div>
+      <div class="alert alert--success" role="status"><span aria-hidden="true">✓</span> Track uploaded successfully.</div>
+      <div class="alert alert--warning" role="alert"><span aria-hidden="true">⚠️</span> This action cannot be undone.</div>
+      <div class="alert alert--info"    role="status"><span aria-hidden="true">ℹ️</span> Pending email verification.</div>
+    </div>
+
+    <p class="subsection-title">Toasts</p>
+    <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+      <div class="toast toast--success" role="status" aria-live="polite">
+        <span aria-hidden="true">✓</span>
+        <span>Track uploaded successfully.</span>
+        <button class="toast__close" aria-label="Dismiss">×</button>
+      </div>
+      <div class="toast toast--error" role="alert" aria-live="assertive">
+        <span aria-hidden="true">⚠️</span>
+        <span>Upload failed. Please try again.</span>
+        <button class="toast__close" aria-label="Dismiss">×</button>
+      </div>
+    </div>
+
+    <p class="subsection-title">Confirmation Dialog</p>
+    <div class="dialog-demo">
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-t">
+        <h2 class="dialog__title" id="dlg-t">Delete track?</h2>
+        <p class="dialog__body">This will permanently delete <strong>Minor Blues in E</strong>. This action cannot be undone.</p>
+        <div class="dialog__actions">
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="subsection-title">Upload Progress (cyan → rose gradient)</p>
+    <div style="max-width:400px">
+      <div class="progress-wrap" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Upload progress">
+        <div class="progress-bar" style="width:65%"></div>
+      </div>
+      <span class="progress-label">Uploading minor-blues-in-e.mp3 — 65%</span>
+    </div>
+  </section>
+
+  <!-- PLAYER -->
+  <section id="player" class="section">
+    <h2 class="section-title">Audio Player</h2>
+
+    <p class="subsection-title">Now Playing Bar (staff-line texture + neon glow)</p>
+    <div class="player" aria-label="Now playing">
+      <div class="player__info">
+        <span class="player__title">Minor Blues in E</span>
+        <div class="player__meta">
+          <span class="badge badge--bpm">120 BPM</span>
+          <span class="badge badge--key">E minor</span>
+        </div>
+      </div>
+      <div class="player__controls">
+        <button class="btn-icon" aria-label="Previous track">⏮</button>
+        <button class="btn-icon player__play" aria-label="Pause">⏸</button>
+        <button class="btn-icon" aria-label="Next track">⏭</button>
+      </div>
+      <div class="player__progress">
+        <span class="player__time">1:15</span>
+        <div class="progress-wrap player__seek" role="slider" tabindex="0"
+             aria-label="Seek" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar" style="width:33%"></div>
+        </div>
+        <span class="player__time">3:42</span>
+      </div>
+      <div class="player__volume">
+        <span aria-hidden="true">🔊</span>
+        <input type="range" min="0" max="100" value="80" class="player__volume-slider" aria-label="Volume">
+      </div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

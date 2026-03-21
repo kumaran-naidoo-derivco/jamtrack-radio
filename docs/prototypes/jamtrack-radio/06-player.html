@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jamtrack Radio — Now Playing</title>
+  <style>
+    :root {
+      --color-bg:#071b1b; --color-surface:#0f2626; --color-surface-raised:#163333;
+      --color-border:#1e4040; --color-border-focus:#00e5c8;
+      --color-accent:#00e5c8; --color-accent-hover:#33eedb; --color-accent-subtle:#0a2d2a;
+      --color-accent-2:#ff2d9b; --color-accent-2-hover:#ff5cb4;
+      --color-text-primary:#e8f8f8; --color-text-secondary:#7ec8c8; --color-text-muted:#3d7070;
+      --shadow-focus:0 0 0 3px rgba(0,229,200,0.4);
+      --shadow-glow-cyan:0 0 20px rgba(0,229,200,0.3); --shadow-glow-rose:0 0 20px rgba(255,45,155,0.3);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--color-bg); color: var(--color-text-primary); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .topnav { display:flex; align-items:center; gap:16px; padding:0 24px; height:58px; flex-shrink:0; background:var(--color-surface); border-bottom:1px solid var(--color-border); background-image:repeating-linear-gradient(180deg,transparent 0px,transparent 17px,rgba(0,229,200,0.05) 17px,rgba(0,229,200,0.05) 18px); }
+    .topnav__brand { font-size:1.1rem; font-weight:800; color:var(--color-accent); text-shadow:0 0 12px rgba(0,229,200,0.35); text-decoration:none; }
+    .breadcrumb { display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--color-text-muted); }
+    .breadcrumb a { color:var(--color-text-secondary); text-decoration:none; }
+    .breadcrumb a:hover { color:var(--color-accent); }
+    .avatar { width:32px; height:32px; border-radius:50%; background:var(--color-accent-subtle); border:1px solid var(--color-accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:var(--color-accent); margin-left:auto; text-decoration:none; cursor:pointer; }
+    .avatar:hover { box-shadow:var(--shadow-glow-cyan); }
+
+    .layout { display:flex; flex:1; overflow:hidden; }
+    .sidebar { width:210px; flex-shrink:0; background:var(--color-surface); border-right:1px solid var(--color-border); padding:16px 8px; display:flex; flex-direction:column; overflow-y:auto; }
+    .sidebar__item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:var(--color-text-secondary); text-decoration:none; font-size:0.88rem; font-weight:500; border-left:2px solid transparent; transition:all 0.1s; }
+    .sidebar__item:hover { background:var(--color-surface-raised); color:var(--color-text-primary); }
+    .sidebar__item.active { background:var(--color-accent-subtle); color:var(--color-accent); font-weight:600; border-left-color:var(--color-accent); }
+    .sidebar__divider { height:1px; background:var(--color-border); margin:12px 8px; }
+    .sidebar__label { font-size:0.7rem; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.08em; padding:4px 12px; margin-bottom:4px; }
+
+    .main { flex:1; overflow-y:auto; padding:32px; display:flex; flex-direction:column; gap:28px; }
+
+    /* Hero player */
+    .player-hero {
+      background: linear-gradient(135deg,#071b1b,#0f2e2e,#071b1b);
+      border: 1px solid var(--color-border); border-radius: 16px; padding: 32px;
+      position: relative; overflow: hidden;
+      background-image: repeating-linear-gradient(180deg,transparent 0px,transparent 12px,rgba(0,229,200,0.04) 12px,rgba(0,229,200,0.04) 13px);
+    }
+    .player-hero::after { content:'𝄞'; position:absolute; right:24px; top:50%; transform:translateY(-50%); font-size:10rem; color:rgba(0,229,200,0.04); pointer-events:none; user-select:none; }
+    .hero-top { display:flex; gap:28px; align-items:flex-start; margin-bottom:28px; }
+    .hero-art {
+      width: 140px; height: 140px; border-radius: 12px; flex-shrink: 0;
+      background: var(--color-surface-raised); border: 1px solid var(--color-border);
+      display: flex; align-items: center; justify-content: center; font-size: 4rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .hero-info { flex:1; min-width:0; padding-top:4px; }
+    .hero-title { font-size: 1.5rem; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px; }
+    .hero-artist { font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: 14px; }
+    .hero-badges { display:flex; gap:8px; flex-wrap:wrap; }
+    .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:5px; font-size:0.78rem; font-weight:600; }
+    .badge-bpm   { background:rgba(0,229,200,0.15);  color:#00e5c8; border:1px solid rgba(0,229,200,0.35); }
+    .badge-key   { background:rgba(255,45,155,0.15); color:#ff5cb4; border:1px solid rgba(255,45,155,0.35); }
+    .badge-genre { background:rgba(255,208,85,0.15); color:#ffd055; border:1px solid rgba(255,208,85,0.35); }
+    .badge-tag   { background:var(--color-surface-raised); color:var(--color-text-muted); border:1px solid var(--color-border); border-radius:999px; }
+
+    /* Waveform */
+    .waveform { display:flex; align-items:center; gap:3px; height:52px; cursor:pointer; margin-bottom:12px; }
+    .wave-bar { flex:1; background:var(--color-border); border-radius:2px; transition:background 0.1s; }
+    .wave-bar.played { background:var(--color-accent); }
+    .wave-bar.head { background:var(--color-accent-2); box-shadow:var(--shadow-glow-rose); }
+    .waveform:hover .wave-bar { opacity:0.8; }
+
+    /* Seek row */
+    .seek-row { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+    .seek-bar { flex:1; height:4px; background:var(--color-surface-raised); border-radius:999px; overflow:hidden; cursor:pointer; }
+    .seek-fill { height:100%; background:linear-gradient(90deg,var(--color-accent),var(--color-accent-2)); border-radius:999px; transition:width 0.5s linear; }
+    .time-label { font-size:0.75rem; color:var(--color-text-muted); font-family:monospace; min-width:34px; }
+
+    /* Controls */
+    .controls { display:flex; align-items:center; gap:8px; justify-content:center; margin-bottom:20px; }
+    .btn-icon { background:none; border:none; color:var(--color-text-secondary); cursor:pointer; padding:8px; border-radius:8px; font-size:1rem; min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; transition:all 0.1s; font-family:inherit; }
+    .btn-icon:hover { color:var(--color-accent); background:var(--color-accent-subtle); }
+    .btn-icon:focus-visible { box-shadow:var(--shadow-focus); outline:none; }
+    .btn-play-big { font-size:1.8rem; color:var(--color-accent); text-shadow:0 0 14px rgba(0,229,200,0.7); min-width:56px; min-height:56px; border-radius:50%; border:1px solid rgba(0,229,200,0.3); background:rgba(0,229,200,0.05); }
+    .btn-play-big:hover { color:var(--color-accent-2); text-shadow:var(--shadow-glow-rose); border-color:rgba(255,45,155,0.4); background:rgba(255,45,155,0.05); }
+    .btn-icon.active { color:var(--color-accent); }
+
+    /* Volume */
+    .vol-row { display:flex; align-items:center; gap:10px; }
+    .vol-slider { flex:1; accent-color:var(--color-accent); cursor:pointer; }
+
+    /* Track info section */
+    .info-card { background:var(--color-surface); border:1px solid var(--color-border); border-radius:12px; padding:20px; }
+    .info-card h3 { font-size:0.85rem; font-weight:700; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; }
+    .info-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--color-border); font-size:0.88rem; }
+    .info-row:last-child { border-bottom:none; }
+    .info-key { color:var(--color-text-secondary); }
+    .info-val { color:var(--color-text-primary); font-weight:500; font-family:monospace; }
+
+    /* Add to playlist */
+    .playlist-section { background:var(--color-surface); border:1px solid var(--color-border); border-radius:12px; padding:20px; }
+    .playlist-section h3 { font-size:0.85rem; font-weight:700; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; }
+    .playlist-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--color-border); cursor:pointer; border-radius:6px; transition:background 0.1s; }
+    .playlist-item:last-child { border-bottom:none; }
+    .playlist-item:hover { background:var(--color-surface-raised); padding-left:8px; }
+    .playlist-item__name { font-size:0.9rem; flex:1; }
+    .playlist-item__count { font-size:0.78rem; color:var(--color-text-muted); }
+    .playlist-item__add { font-size:0.78rem; font-weight:600; color:var(--color-accent); background:var(--color-accent-subtle); border:1px solid var(--color-accent); border-radius:999px; padding:3px 10px; cursor:pointer; white-space:nowrap; }
+    .playlist-item__added { font-size:0.78rem; font-weight:600; color:var(--color-text-muted); }
+
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+    /* Toast */
+    .toast { position:fixed; bottom:24px; right:24px; z-index:50; display:flex; align-items:center; gap:10px; padding:12px 16px; background:#031a0d; border:1px solid #00a855; color:#6effa0; border-radius:10px; box-shadow:0 8px 32px rgba(0,0,0,0.6); font-size:0.88rem; opacity:0; transform:translateY(8px); transition:opacity 0.2s,transform 0.2s; pointer-events:none; }
+    .toast.show { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a class="topnav__brand" href="04-library.html">🎵 Jamtrack Radio</a>
+    <div class="breadcrumb">
+      <a href="04-library.html">Library</a>
+      <span>/</span>
+      <span>Minor Blues in E</span>
+    </div>
+    <a class="avatar" href="09-account-settings.html" title="Account settings" aria-label="Account settings">KN</a>
+  </nav>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Sidebar">
+      <a class="sidebar__item active" href="04-library.html">🎸 Library</a>
+      <a class="sidebar__item" href="07-playlists.html">📋 Playlists</a>
+      <a class="sidebar__item" href="05-upload-track.html">⬆️ Upload</a>
+      <div class="sidebar__divider"></div>
+      <div class="sidebar__label">Settings</div>
+      <a class="sidebar__item" href="09-account-settings.html">⚙️ Account</a>
+      <div class="sidebar__divider"></div>
+      <a class="sidebar__item" href="01-welcome.html">🚪 Sign out</a>
+    </nav>
+
+    <main class="main" aria-label="Track detail">
+      <!-- Hero player -->
+      <div class="player-hero">
+        <div class="hero-top">
+          <div class="hero-art" aria-hidden="true">🎸</div>
+          <div class="hero-info">
+            <h1 class="hero-title">Minor Blues in E</h1>
+            <p class="hero-artist">Kumaran Naidoo</p>
+            <div class="hero-badges">
+              <span class="badge badge-bpm">120 BPM</span>
+              <span class="badge badge-key">E minor</span>
+              <span class="badge badge-genre">Blues</span>
+              <span class="badge badge-tag">practice</span>
+              <span class="badge badge-tag">slow</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Waveform -->
+        <div class="waveform" id="waveform" role="slider" aria-label="Waveform seek"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"></div>
+
+        <!-- Seek row -->
+        <div class="seek-row">
+          <span class="time-label" id="time-current">0:00</span>
+          <div class="seek-bar" id="seek-bar">
+            <div class="seek-fill" id="seek-fill" style="width:0%"></div>
+          </div>
+          <span class="time-label" id="time-total">3:42</span>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+          <button class="btn-icon" id="shuffle-btn" aria-label="Shuffle" title="Shuffle">🔀</button>
+          <button class="btn-icon" id="prev-btn" aria-label="Previous">⏮</button>
+          <button class="btn-icon btn-play-big" id="play-btn" aria-label="Play">▶</button>
+          <button class="btn-icon" id="next-btn" aria-label="Next">⏭</button>
+          <button class="btn-icon" id="repeat-btn" aria-label="Repeat" title="Repeat">🔁</button>
+        </div>
+
+        <!-- Volume -->
+        <div class="vol-row">
+          <button class="btn-icon" aria-label="Mute" id="mute-btn">🔊</button>
+          <input type="range" class="vol-slider" id="vol-slider" min="0" max="100" value="80" aria-label="Volume">
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Track metadata -->
+        <div class="info-card">
+          <h3>Track info</h3>
+          <div class="info-row"><span class="info-key">Title</span><span class="info-val">Minor Blues in E</span></div>
+          <div class="info-row"><span class="info-key">Artist</span><span class="info-val">Kumaran Naidoo</span></div>
+          <div class="info-row"><span class="info-key">Genre</span><span class="info-val">Blues</span></div>
+          <div class="info-row"><span class="info-key">BPM</span><span class="info-val">120</span></div>
+          <div class="info-row"><span class="info-key">Key</span><span class="info-val">E minor</span></div>
+          <div class="info-row"><span class="info-key">Duration</span><span class="info-val">3:42</span></div>
+          <div class="info-row"><span class="info-key">Format</span><span class="info-val">MP3 · 320 kbps</span></div>
+          <div class="info-row"><span class="info-key">Uploaded</span><span class="info-val">2026-03-15</span></div>
+        </div>
+
+        <!-- Add to playlist -->
+        <div class="playlist-section">
+          <h3>Add to playlist</h3>
+          <div id="playlist-list">
+            <div class="playlist-item">
+              <span style="font-size:1.2rem" aria-hidden="true">📋</span>
+              <span class="playlist-item__name">Morning Practice</span>
+              <span class="playlist-item__count">4 tracks</span>
+              <button class="playlist-item__add" onclick="addToPlaylist(this,'Morning Practice')">+ Add</button>
+            </div>
+            <div class="playlist-item">
+              <span style="font-size:1.2rem" aria-hidden="true">📋</span>
+              <span class="playlist-item__name">Blues Collection</span>
+              <span class="playlist-item__count">7 tracks</span>
+              <button class="playlist-item__add" onclick="addToPlaylist(this,'Blues Collection')">+ Add</button>
+            </div>
+            <div class="playlist-item">
+              <span style="font-size:1.2rem" aria-hidden="true">📋</span>
+              <span class="playlist-item__name">Slow Jams</span>
+              <span class="playlist-item__count">3 tracks</span>
+              <button class="playlist-item__add" onclick="addToPlaylist(this,'Slow Jams')">+ Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── Waveform generator ──
+    const TOTAL_SECS = 222; // 3:42
+    let seekPos = 0;
+    let isPlaying = false;
+    let seekInterval = null;
+
+    function buildWaveform() {
+      const wf = document.getElementById('waveform');
+      const BAR_COUNT = 80;
+      const heights = Array.from({length:BAR_COUNT}, () => 20 + Math.random() * 60);
+      wf.innerHTML = heights.map((h,i) => `<div class="wave-bar" data-i="${i}" style="height:${h}%"></div>`).join('');
+    }
+
+    function updateWaveform() {
+      const bars = document.querySelectorAll('.wave-bar');
+      const total = bars.length;
+      const head = Math.round(seekPos / TOTAL_SECS * total);
+      bars.forEach((b,i) => {
+        b.className = 'wave-bar';
+        if (i < head-1) b.classList.add('played');
+        else if (i === head-1) b.classList.add('head');
+      });
+    }
+
+    function secToMs(s) { return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60; }
+
+    function updateUI() {
+      const pct = seekPos / TOTAL_SECS * 100;
+      document.getElementById('seek-fill').style.width = pct+'%';
+      document.getElementById('time-current').textContent = secToMs(seekPos);
+      document.getElementById('seek-bar').setAttribute('aria-valuenow', Math.round(pct));
+      document.getElementById('waveform').setAttribute('aria-valuenow', Math.round(pct));
+      updateWaveform();
+    }
+
+    function startPlay() {
+      isPlaying = true;
+      document.getElementById('play-btn').textContent = '⏸';
+      document.getElementById('play-btn').setAttribute('aria-label','Pause');
+      seekInterval = setInterval(() => {
+        if (!isPlaying) return;
+        seekPos = Math.min(seekPos+1, TOTAL_SECS);
+        updateUI();
+        if (seekPos >= TOTAL_SECS) { stopPlay(); seekPos = 0; updateUI(); }
+      }, 1000);
+    }
+
+    function stopPlay() {
+      isPlaying = false;
+      document.getElementById('play-btn').textContent = '▶';
+      document.getElementById('play-btn').setAttribute('aria-label','Play');
+      clearInterval(seekInterval);
+    }
+
+    document.getElementById('play-btn').addEventListener('click', () => {
+      if (isPlaying) stopPlay(); else startPlay();
+    });
+
+    // Seek bar click
+    document.getElementById('seek-bar').addEventListener('click', function(e) {
+      const rect = this.getBoundingClientRect();
+      seekPos = Math.round((e.clientX - rect.left) / rect.width * TOTAL_SECS);
+      updateUI();
+    });
+
+    // Waveform click
+    document.getElementById('waveform').addEventListener('click', function(e) {
+      const rect = this.getBoundingClientRect();
+      seekPos = Math.round((e.clientX - rect.left) / rect.width * TOTAL_SECS);
+      updateUI();
+    });
+
+    // Volume / mute
+    let muted = false;
+    document.getElementById('mute-btn').addEventListener('click', function() {
+      muted = !muted;
+      this.textContent = muted ? '🔇' : '🔊';
+      document.getElementById('vol-slider').style.opacity = muted ? '0.4' : '1';
+    });
+
+    // Toggle buttons
+    document.getElementById('shuffle-btn').addEventListener('click', function() {
+      this.classList.toggle('active');
+      showToast(this.classList.contains('active') ? '🔀 Shuffle on' : '🔀 Shuffle off');
+    });
+    document.getElementById('repeat-btn').addEventListener('click', function() {
+      this.classList.toggle('active');
+      showToast(this.classList.contains('active') ? '🔁 Repeat on' : '🔁 Repeat off');
+    });
+    document.getElementById('prev-btn').addEventListener('click', () => { seekPos=0; updateUI(); showToast('⏮ Previous track'); });
+    document.getElementById('next-btn').addEventListener('click', () => { seekPos=0; updateUI(); showToast('⏭ Next track'); });
+
+    // Add to playlist
+    function addToPlaylist(btn, name) {
+      btn.textContent = '✓ Added';
+      btn.className = 'playlist-item__added';
+      btn.disabled = true;
+      showToast('✓ Added to "'+name+'"');
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    buildWaveform();
+    updateUI();
+    // Auto-start
+    setTimeout(startPlay, 400);
+  </script>
+</body>
+</html>

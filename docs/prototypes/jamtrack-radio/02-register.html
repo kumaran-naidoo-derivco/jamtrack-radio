@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jamtrack Radio — Create Account</title>
+  <style>
+    :root {
+      --color-bg:#071b1b; --color-surface:#0f2626; --color-surface-raised:#163333;
+      --color-border:#1e4040; --color-border-focus:#00e5c8;
+      --color-accent:#00e5c8; --color-accent-hover:#33eedb; --color-accent-subtle:#0a2d2a;
+      --color-accent-2:#ff2d9b;
+      --color-text-primary:#e8f8f8; --color-text-secondary:#7ec8c8; --color-text-muted:#3d7070;
+      --color-error:#ff5577; --color-success:#00e577;
+      --shadow-focus:0 0 0 3px rgba(0,229,200,0.4);
+      --shadow-glow-cyan:0 0 16px rgba(0,229,200,0.25);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--color-bg); color: var(--color-text-primary);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      background-image: repeating-linear-gradient(180deg, transparent 0px, transparent 28px,
+        rgba(0,229,200,0.04) 28px, rgba(0,229,200,0.04) 29px);
+    }
+    .card {
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 420px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.6);
+    }
+    .back { font-size: 0.85rem; color: var(--color-text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 24px; }
+    .back:hover { color: var(--color-accent); }
+    .brand { font-size: 1.3rem; font-weight: 800; color: var(--color-accent);
+      text-shadow: 0 0 16px rgba(0,229,200,0.4); margin-bottom: 4px; }
+    h2 { font-size: 1.1rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 28px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-label { font-size: 0.82rem; font-weight: 600; color: var(--color-text-secondary); }
+    .form-input {
+      background: var(--color-surface-raised); border: 1px solid var(--color-border);
+      border-radius: 8px; color: var(--color-text-primary);
+      padding: 11px 14px; font-size: 0.9rem; width: 100%; font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input::placeholder { color: var(--color-text-muted); }
+    .form-input:focus { border-color: var(--color-border-focus); box-shadow: var(--shadow-focus); outline: none; }
+    .form-input.invalid { border-color: var(--color-error); }
+    .form-error { font-size: 0.78rem; color: var(--color-error); display: none; }
+    .form-error.visible { display: block; }
+
+    .input-wrap { position: relative; }
+    .input-wrap .form-input { padding-right: 44px; }
+    .toggle-pw {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--color-text-muted); cursor: pointer;
+      font-size: 1rem; padding: 4px; min-width: 32px; min-height: 32px;
+    }
+    .toggle-pw:hover { color: var(--color-text-secondary); }
+
+    .strength-bar { height: 3px; border-radius: 999px; background: var(--color-surface-raised); margin-top: 6px; overflow: hidden; }
+    .strength-fill { height: 100%; width: 0; border-radius: 999px; transition: width 0.3s, background 0.3s; }
+
+    .btn {
+      display: block; width: 100%; padding: 13px 24px; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer; border: none;
+      text-decoration: none; text-align: center; transition: all 0.15s; font-family: inherit;
+      margin-top: 20px;
+    }
+    .btn-primary { background: var(--color-accent); color: #071b1b; }
+    .btn-primary:hover { background: var(--color-accent-hover); box-shadow: var(--shadow-glow-cyan); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .footer-link { text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--color-text-muted); }
+    .footer-link a { color: var(--color-accent); text-decoration: none; }
+    .footer-link a:hover { text-decoration: underline; }
+
+    .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0 16px; color: var(--color-text-muted); font-size: 0.8rem; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--color-border); }
+    .social-row { display: flex; gap: 10px; }
+    .btn-social {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px 8px; border-radius: 10px; font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--color-border);
+      background: var(--color-surface-raised); color: var(--color-text-primary);
+      transition: all 0.15s; font-family: inherit;
+    }
+    .btn-social:hover { border-color: var(--color-accent); box-shadow: var(--shadow-glow-cyan); }
+
+    /* Success overlay */
+    #success-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(7,27,27,0.9); z-index: 100;
+      align-items: center; justify-content: center; flex-direction: column;
+      gap: 16px; text-align: center; padding: 24px;
+    }
+    #success-overlay.visible { display: flex; }
+    .success-icon { font-size: 4rem; filter: drop-shadow(0 0 16px rgba(0,229,200,0.6)); }
+    .success-title { font-size: 1.4rem; font-weight: 800; color: var(--color-accent); }
+    .success-body { color: var(--color-text-secondary); max-width: 300px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <a class="back" href="01-welcome.html">← Back</a>
+    <div class="brand">🎵 Jamtrack Radio</div>
+    <h2>Create your account</h2>
+
+    <form id="register-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="display-name">Display name</label>
+        <input class="form-input" type="text" id="display-name" placeholder="e.g. Kumaran" autocomplete="name">
+        <span class="form-error" id="err-name">Please enter your display name.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email address</label>
+        <input class="form-input" type="email" id="email" placeholder="you@example.com" autocomplete="email">
+        <span class="form-error" id="err-email">Enter a valid email address.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-wrap">
+          <input class="form-input" type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password">
+          <button type="button" class="toggle-pw" aria-label="Show/hide password" onclick="togglePw('password', this)">👁</button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+        <span class="form-error" id="err-pw">Password must be at least 8 characters.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="confirm-pw">Confirm password</label>
+        <div class="input-wrap">
+          <input class="form-input" type="password" id="confirm-pw" placeholder="Repeat password" autocomplete="new-password">
+          <button type="button" class="toggle-pw" aria-label="Show/hide password" onclick="togglePw('confirm-pw', this)">👁</button>
+        </div>
+        <span class="form-error" id="err-confirm">Passwords do not match.</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submit-btn">Create Account</button>
+    </form>
+
+    <div class="divider">or sign up with</div>
+    <div class="social-row">
+      <button class="btn-social" onclick="window.location.href='04-library.html'" title="Sign up with Google">
+        <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.717v2.258h2.908C16.658 14.253 17.64 11.945 17.64 9.2z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+        Google
+      </button>
+      <button class="btn-social" onclick="window.location.href='04-library.html'" title="Sign up with Apple">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Apple
+      </button>
+      <button class="btn-social" onclick="window.location.href='04-library.html'" title="Sign up with Facebook">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        Facebook
+      </button>
+    </div>
+
+    <p class="footer-link">Already have an account? <a href="03-login.html">Sign in</a></p>
+  </div>
+
+  <!-- Success overlay -->
+  <div id="success-overlay" role="status" aria-live="polite">
+    <div class="success-icon" aria-hidden="true">🎵</div>
+    <div class="success-title">Welcome to Jamtrack Radio!</div>
+    <p class="success-body">Your account has been created.<br>Redirecting to your library…</p>
+  </div>
+
+  <script>
+    function togglePw(id, btn) {
+      const inp = document.getElementById(id);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+    }
+
+    // Password strength
+    document.getElementById('password').addEventListener('input', function() {
+      const val = this.value;
+      const fill = document.getElementById('strength-fill');
+      let score = 0;
+      if (val.length >= 8)  score++;
+      if (val.length >= 12) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const pct = (score / 5) * 100;
+      fill.style.width = pct + '%';
+      fill.style.background = score <= 1 ? '#ff5577' : score <= 3 ? '#ffd055' : '#00e577';
+    });
+
+    function showError(id, show) {
+      const el = document.getElementById(id);
+      el.classList.toggle('visible', show);
+    }
+    function markInvalid(id, invalid) {
+      const el = document.getElementById(id);
+      el.classList.toggle('invalid', invalid);
+    }
+
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name   = document.getElementById('display-name').value.trim();
+      const email  = document.getElementById('email').value.trim();
+      const pw     = document.getElementById('password').value;
+      const cpw    = document.getElementById('confirm-pw').value;
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      let valid = true;
+
+      showError('err-name',    !name);    markInvalid('display-name', !name);    if (!name) valid = false;
+      showError('err-email',   !emailRe.test(email)); markInvalid('email', !emailRe.test(email)); if (!emailRe.test(email)) valid = false;
+      showError('err-pw',      pw.length < 8); markInvalid('password', pw.length < 8);    if (pw.length < 8) valid = false;
+      showError('err-confirm', pw !== cpw);    markInvalid('confirm-pw', pw !== cpw);      if (pw !== cpw) valid = false;
+
+      if (!valid) return;
+
+      // Show success, then redirect
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('submit-btn').textContent = 'Creating account…';
+      setTimeout(() => {
+        document.getElementById('success-overlay').classList.add('visible');
+        setTimeout(() => { window.location.href = '04-library.html'; }, 1800);
+      }, 600);
+    });
+
+    // Clear errors on input
+    ['display-name','email','password','confirm-pw'].forEach(id => {
+      document.getElementById(id).addEventListener('input', function() {
+        this.classList.remove('invalid');
+        const errMap = {'display-name':'err-name','email':'err-email','password':'err-pw','confirm-pw':'err-confirm'};
+        showError(errMap[id], false);
+      });
+    });
+  </script>
+</body>
+</html>

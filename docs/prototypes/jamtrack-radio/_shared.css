@@ -1,0 +1,29 @@
+/* Jamtrack Radio — Shared Prototype CSS
+   Include this block verbatim in every prototype <style> tag */
+
+:root {
+  --color-bg:             #071b1b;
+  --color-surface:        #0f2626;
+  --color-surface-raised: #163333;
+  --color-border:         #1e4040;
+  --color-border-focus:   #00e5c8;
+  --color-text-primary:   #e8f8f8;
+  --color-text-secondary: #7ec8c8;
+  --color-text-muted:     #3d7070;
+  --color-accent:         #00e5c8;
+  --color-accent-hover:   #33eedb;
+  --color-accent-subtle:  #0a2d2a;
+  --color-accent-2:       #ff2d9b;
+  --color-accent-2-hover: #ff5cb4;
+  --color-accent-2-subtle:#2a0a1e;
+  --color-success:        #00e577;
+  --color-warning:        #ffd055;
+  --color-error:          #ff5577;
+  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px;
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+  --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-focus:     0 0 0 3px rgba(0,229,200,0.4);
+  --shadow-glow-cyan: 0 0 16px rgba(0,229,200,0.25);
+  --shadow-glow-rose: 0 0 16px rgba(255,45,155,0.25);
+}
