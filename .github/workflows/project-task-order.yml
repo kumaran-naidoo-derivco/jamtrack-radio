@@ -1,0 +1,62 @@
+name: Set project task order
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  set-task-order:
+    runs-on: ubuntu-latest
+    # Only run for issues whose title starts with "Task X.Y:"
+    if: startsWith(github.event.issue.title, 'Task ')
+    steps:
+      - name: Parse task number, add to project and set Task Order
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_PAT }}
+          PROJECT_ID: PVT_kwHOA_cKYM4BIjS2
+          FIELD_ID: PVTF_lAHOA_cKYM4BIjS2zg_8_Lk
+          ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Extract phase and minor from "Task X.Y: ..." title
+          if [[ "$ISSUE_TITLE" =~ ^Task[[:space:]]([0-9]+)\.([0-9]+): ]]; then
+            PHASE="${BASH_REMATCH[1]}"
+            MINOR="${BASH_REMATCH[2]}"
+            ORDER=$(( PHASE * 100 + MINOR ))
+            echo "Parsed Task $PHASE.$MINOR → Task Order $ORDER"
+          else
+            echo "Title does not match 'Task X.Y:' pattern — skipping"
+            exit 0
+          fi
+
+          # Add issue to the project board (idempotent — safe to call if already added)
+          ITEM_ID=$(gh api graphql -f query='
+            mutation($project: ID!, $content: ID!) {
+              addProjectV2ItemById(input: {projectId: $project, contentId: $content}) {
+                item { id }
+              }
+            }' \
+            -f project="$PROJECT_ID" \
+            -f content="$ISSUE_NODE_ID" \
+            --jq '.data.addProjectV2ItemById.item.id')
+
+          echo "Project item ID: $ITEM_ID"
+
+          # Set the Task Order numeric field
+          gh api graphql -f query='
+            mutation($proj: ID!, $item: ID!, $field: ID!, $val: Float!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $proj
+                itemId: $item
+                fieldId: $field
+                value: { number: $val }
+              }) {
+                projectV2Item { id }
+              }
+            }' \
+            -f proj="$PROJECT_ID" \
+            -f item="$ITEM_ID" \
+            -f field="$FIELD_ID" \
+            -F val="$ORDER"
+
+          echo "Task Order set to $ORDER ✓"
