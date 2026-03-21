@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jamtrack Radio — Playlists</title>
+  <style>
+    :root {
+      --color-bg:#071b1b; --color-surface:#0f2626; --color-surface-raised:#163333;
+      --color-border:#1e4040; --color-border-focus:#00e5c8;
+      --color-accent:#00e5c8; --color-accent-hover:#33eedb; --color-accent-subtle:#0a2d2a;
+      --color-accent-2:#ff2d9b;
+      --color-text-primary:#e8f8f8; --color-text-secondary:#7ec8c8; --color-text-muted:#3d7070;
+      --color-error:#ff5577; --color-success:#00e577;
+      --shadow-focus:0 0 0 3px rgba(0,229,200,0.4); --shadow-glow-cyan:0 0 16px rgba(0,229,200,0.25);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--color-bg); color: var(--color-text-primary); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    .topnav { display:flex; align-items:center; gap:16px; padding:0 24px; height:58px; flex-shrink:0; background:var(--color-surface); border-bottom:1px solid var(--color-border); background-image:repeating-linear-gradient(180deg,transparent 0px,transparent 17px,rgba(0,229,200,0.05) 17px,rgba(0,229,200,0.05) 18px); }
+    .topnav__brand { font-size:1.1rem; font-weight:800; color:var(--color-accent); text-shadow:0 0 12px rgba(0,229,200,0.35); text-decoration:none; }
+    .avatar { width:32px; height:32px; border-radius:50%; background:var(--color-accent-subtle); border:1px solid var(--color-accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:var(--color-accent); margin-left:auto; text-decoration:none; cursor:pointer; }
+    .avatar:hover { box-shadow:var(--shadow-glow-cyan); }
+
+    .layout { display:flex; flex:1; overflow:hidden; }
+    .sidebar { width:210px; flex-shrink:0; background:var(--color-surface); border-right:1px solid var(--color-border); padding:16px 8px; display:flex; flex-direction:column; }
+    .sidebar__item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:var(--color-text-secondary); text-decoration:none; font-size:0.88rem; font-weight:500; border-left:2px solid transparent; transition:all 0.1s; }
+    .sidebar__item:hover { background:var(--color-surface-raised); color:var(--color-text-primary); }
+    .sidebar__item.active { background:var(--color-accent-subtle); color:var(--color-accent); font-weight:600; border-left-color:var(--color-accent); }
+    .sidebar__divider { height:1px; background:var(--color-border); margin:12px 8px; }
+    .sidebar__label { font-size:0.7rem; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.08em; padding:4px 12px; margin-bottom:4px; }
+
+    .main { flex:1; overflow-y:auto; padding:28px 32px; }
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+    .page-title { font-size:1.4rem; font-weight:800; }
+
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border-radius:8px; font-size:0.88rem; font-weight:700; cursor:pointer; border:none; text-decoration:none; transition:all 0.15s; font-family:inherit; }
+    .btn-primary { background:var(--color-accent); color:#071b1b; }
+    .btn-primary:hover { background:var(--color-accent-hover); box-shadow:var(--shadow-glow-cyan); }
+    .btn-ghost { background:transparent; color:var(--color-text-secondary); border:1px solid var(--color-border); }
+    .btn-ghost:hover { color:var(--color-text-primary); }
+    .btn-danger { background:transparent; color:var(--color-error); border:1px solid var(--color-error); }
+    .btn-danger:hover { background:rgba(255,85,119,0.1); }
+
+    /* Create form */
+    .create-form {
+      display:none; background:var(--color-surface); border:1px solid var(--color-accent);
+      border-radius:12px; padding:20px; margin-bottom:24px; box-shadow:var(--shadow-glow-cyan);
+    }
+    .create-form.visible { display:block; }
+    .create-form h3 { font-size:1rem; font-weight:700; margin-bottom:16px; color:var(--color-accent); }
+    .form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+    .form-label { font-size:0.82rem; font-weight:600; color:var(--color-text-secondary); }
+    .form-input { background:var(--color-surface-raised); border:1px solid var(--color-border); border-radius:8px; color:var(--color-text-primary); padding:10px 12px; font-size:0.9rem; width:100%; font-family:inherit; transition:border-color 0.15s,box-shadow 0.15s; }
+    .form-input:focus { border-color:var(--color-border-focus); box-shadow:var(--shadow-focus); outline:none; }
+    .form-input.invalid { border-color:var(--color-error); }
+    .form-error { font-size:0.78rem; color:var(--color-error); display:none; }
+    .form-error.visible { display:block; }
+    .form-actions { display:flex; gap:10px; }
+
+    /* Playlist grid */
+    .playlist-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+    .playlist-card {
+      background:var(--color-surface); border:1px solid var(--color-border);
+      border-radius:12px; padding:20px; cursor:pointer; transition:all 0.1s;
+      text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:12px;
+      position:relative;
+    }
+    .playlist-card:hover { background:var(--color-surface-raised); border-color:var(--color-accent); box-shadow:var(--shadow-glow-cyan); }
+    .playlist-card__icon { font-size:2.5rem; }
+    .playlist-card__name { font-size:1rem; font-weight:700; color:var(--color-text-primary); }
+    .playlist-card__meta { font-size:0.8rem; color:var(--color-text-secondary); }
+    .playlist-card__actions { display:flex; gap:6px; margin-top:auto; }
+    .btn-sm { padding:6px 12px; font-size:0.78rem; }
+    .card-menu { position:absolute; top:12px; right:12px; }
+    .btn-icon { background:none; border:none; color:var(--color-text-muted); cursor:pointer; padding:4px; border-radius:6px; font-size:1rem; min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center; }
+    .btn-icon:hover { color:var(--color-text-primary); background:var(--color-surface-raised); }
+
+    /* Context menu */
+    .context-menu { position:fixed; background:var(--color-surface-raised); border:1px solid var(--color-border); border-radius:10px; padding:6px; box-shadow:0 8px 32px rgba(0,0,0,0.6); z-index:100; min-width:160px; display:none; }
+    .context-menu.visible { display:block; }
+    .context-menu button { display:flex; align-items:center; gap:10px; width:100%; padding:9px 12px; background:none; border:none; color:var(--color-text-secondary); cursor:pointer; font-size:0.88rem; border-radius:6px; font-family:inherit; text-align:left; }
+    .context-menu button:hover { background:var(--color-surface); color:var(--color-text-primary); }
+    .context-menu button.danger { color:var(--color-error); }
+
+    .empty-state { display:flex; flex-direction:column; align-items:center; gap:16px; padding:60px 32px; text-align:center; background:var(--color-surface); border:1px solid var(--color-border); border-radius:12px; }
+    .empty-icon { font-size:3rem; }
+    .empty-title { font-size:1.1rem; font-weight:700; }
+    .empty-body { color:var(--color-text-secondary); max-width:300px; font-size:0.9rem; }
+
+    .toast { position:fixed; bottom:24px; right:24px; z-index:200; display:flex; align-items:center; gap:10px; padding:12px 16px; background:#031a0d; border:1px solid #00a855; color:#6effa0; border-radius:10px; box-shadow:0 8px 32px rgba(0,0,0,0.6); font-size:0.88rem; opacity:0; transform:translateY(8px); transition:opacity 0.2s,transform 0.2s; pointer-events:none; }
+    .toast.show { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a class="topnav__brand" href="04-library.html">🎵 Jamtrack Radio</a>
+    <a class="avatar" href="09-account-settings.html" title="Account settings" aria-label="Account settings">KN</a>
+  </nav>
+
+  <div class="layout">
+    <nav class="sidebar">
+      <a class="sidebar__item" href="04-library.html">🎸 Library</a>
+      <a class="sidebar__item active" href="#">📋 Playlists</a>
+      <a class="sidebar__item" href="05-upload-track.html">⬆️ Upload</a>
+      <div class="sidebar__divider"></div>
+      <div class="sidebar__label">Settings</div>
+      <a class="sidebar__item" href="09-account-settings.html">⚙️ Account</a>
+      <div class="sidebar__divider"></div>
+      <a class="sidebar__item" href="01-welcome.html">🚪 Sign out</a>
+    </nav>
+
+    <main class="main">
+      <div class="page-header">
+        <h1 class="page-title">📋 Playlists</h1>
+        <button class="btn btn-primary" id="new-playlist-btn">+ New Playlist</button>
+      </div>
+
+      <!-- Create form -->
+      <div class="create-form" id="create-form">
+        <h3>✨ New Playlist</h3>
+        <div class="form-group">
+          <label class="form-label" for="pl-name">Playlist name <span style="color:var(--color-accent-2)">*</span></label>
+          <input class="form-input" type="text" id="pl-name" placeholder="e.g. Morning Practice" maxlength="50">
+          <span class="form-error" id="err-pl-name">Playlist name is required.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pl-desc">Description (optional)</label>
+          <input class="form-input" type="text" id="pl-desc" placeholder="e.g. Warm-up tracks before practice">
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-sm" id="create-btn">Create</button>
+          <button class="btn btn-ghost btn-sm" id="cancel-create-btn">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Playlist grid -->
+      <div class="playlist-grid" id="playlist-grid"></div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="empty-state" style="display:none">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">No playlists yet</div>
+        <p class="empty-body">Create your first playlist to organise your jam tracks.</p>
+        <button class="btn btn-primary" onclick="document.getElementById('new-playlist-btn').click()">+ New Playlist</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Context menu -->
+  <div class="context-menu" id="context-menu">
+    <button onclick="renamePlaylist()">✏️ Rename</button>
+    <button onclick="deletePlaylist()">🗑️ Delete</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let playlists = [
+      { id:1, name:'Morning Practice',  desc:'Warm-up tracks to start the day', tracks:4, emoji:'🌅' },
+      { id:2, name:'Blues Collection',  desc:'All my favourite blues backing tracks', tracks:7, emoji:'🎸' },
+      { id:3, name:'Slow Jams',         desc:'Ballads and slow grooves', tracks:3, emoji:'🌙' },
+    ];
+    let nextId = 4;
+    let contextTarget = null;
+    let toastTimer;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent=msg; t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
+    }
+
+    function renderPlaylists() {
+      const grid  = document.getElementById('playlist-grid');
+      const empty = document.getElementById('empty-state');
+      if (!playlists.length) { grid.innerHTML=''; empty.style.display='flex'; return; }
+      empty.style.display='none';
+      grid.innerHTML = playlists.map(pl => `
+        <a class="playlist-card" href="08-playlist-detail.html" aria-label="Open ${pl.name}">
+          <div class="card-menu" onclick="event.preventDefault();openMenu(event,${pl.id})">
+            <button class="btn-icon" aria-label="Playlist options">⋯</button>
+          </div>
+          <div class="playlist-card__icon" aria-hidden="true">${pl.emoji}</div>
+          <div class="playlist-card__name">${pl.name}</div>
+          <div class="playlist-card__meta">${pl.tracks} track${pl.tracks!==1?'s':''} · ${pl.desc}</div>
+        </a>
+      `).join('');
+    }
+
+    // New playlist form
+    document.getElementById('new-playlist-btn').addEventListener('click', () => {
+      document.getElementById('create-form').classList.add('visible');
+      document.getElementById('pl-name').focus();
+    });
+    document.getElementById('cancel-create-btn').addEventListener('click', () => {
+      document.getElementById('create-form').classList.remove('visible');
+      document.getElementById('pl-name').value = '';
+      document.getElementById('pl-desc').value = '';
+      document.getElementById('pl-name').classList.remove('invalid');
+      document.getElementById('err-pl-name').classList.remove('visible');
+    });
+    document.getElementById('create-btn').addEventListener('click', () => {
+      const name = document.getElementById('pl-name').value.trim();
+      if (!name) {
+        document.getElementById('pl-name').classList.add('invalid');
+        document.getElementById('err-pl-name').classList.add('visible');
+        document.getElementById('pl-name').focus();
+        return;
+      }
+      playlists.push({ id:nextId++, name, desc:document.getElementById('pl-desc').value.trim()||'No description', tracks:0, emoji:'📋' });
+      document.getElementById('cancel-create-btn').click();
+      renderPlaylists();
+      showToast('✓ Playlist "'+name+'" created');
+    });
+    document.getElementById('pl-name').addEventListener('input', function() {
+      this.classList.remove('invalid');
+      document.getElementById('err-pl-name').classList.remove('visible');
+    });
+
+    // Context menu
+    function openMenu(e, id) {
+      e.stopPropagation();
+      contextTarget = id;
+      const menu = document.getElementById('context-menu');
+      menu.style.left = e.clientX+'px';
+      menu.style.top  = e.clientY+'px';
+      menu.classList.add('visible');
+    }
+    function renamePlaylist() {
+      const pl = playlists.find(p=>p.id===contextTarget);
+      if (!pl) return;
+      const newName = prompt('Rename playlist:', pl.name);
+      if (newName && newName.trim()) {
+        pl.name = newName.trim();
+        renderPlaylists();
+        showToast('✓ Renamed to "'+pl.name+'"');
+      }
+      closeMenu();
+    }
+    function deletePlaylist() {
+      const pl = playlists.find(p=>p.id===contextTarget);
+      if (!pl) return;
+      if (confirm('Delete "'+pl.name+'"? This cannot be undone.')) {
+        playlists = playlists.filter(p=>p.id!==contextTarget);
+        renderPlaylists();
+        showToast('🗑️ Playlist deleted');
+      }
+      closeMenu();
+    }
+    function closeMenu() { document.getElementById('context-menu').classList.remove('visible'); contextTarget=null; }
+    document.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeMenu(); });
+
+    renderPlaylists();
+  </script>
+</body>
+</html>

@@ -103,12 +103,22 @@ For each screen, produce a standalone HTML prototype:
 ```
 
 Visual design conventions for Jamtrack Radio:
-- Dark background (`#0f0f0f`)
-- Accent colour: Jamtrack green (`#1db954`)
-- Cards on dark surface (`#1a1a1a`)
-- Max width 480px (mobile-first, music apps are primarily mobile)
-- Round buttons (24px border-radius)
-- Clear, sans-serif typography
+- **Always load `docs/design-system/jamtrack-radio-design-system.md`** — use its `:root` CSS token block verbatim. Never hard-code hex values.
+- Dark teal background (`--color-bg: #071b1b`)
+- Primary accent: neon cyan (`--color-accent: #00e5c8`)
+- Secondary accent: electric rose (`--color-accent-2: #ff2d9b`)
+- Auth screens (login, register, welcome): centered, max-width 440px
+- App screens (library, upload, player, playlists): sidebar left (220px) + main content area
+- Sticky bottom player bar on all authenticated app screens
+- Psychedelic motifs: staff-line texture on header/player, ghost treble clef `𝄞`, neon glow on active states
+
+**Prototype Functionality (mandatory)**:
+Prototypes must be functional — all navigation between screens must work. Use `<a href="...">` or `window.location.href` in JavaScript:
+- Every button/CTA that navigates to another screen must use a working link
+- Forms must include client-side JS validation (show inline errors, block empty submit)
+- State transitions on a single screen (e.g. login → 2FA step, upload → progress → success) must be implemented with JS `show/hide` — no dead UI
+- Interactive controls (play/pause toggle, tag chips, drag-over on dropzone) must respond to user interaction
+- The sticky player bar must be present on all authenticated screens and respond to track selection
 
 ### 3. User Flow Diagram
 

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jamtrack Radio — Upload Track</title>
+  <style>
+    :root {
+      --color-bg:#071b1b; --color-surface:#0f2626; --color-surface-raised:#163333;
+      --color-border:#1e4040; --color-border-focus:#00e5c8;
+      --color-accent:#00e5c8; --color-accent-hover:#33eedb; --color-accent-subtle:#0a2d2a;
+      --color-accent-2:#ff2d9b;
+      --color-text-primary:#e8f8f8; --color-text-secondary:#7ec8c8; --color-text-muted:#3d7070;
+      --color-error:#ff5577; --color-success:#00e577;
+      --shadow-focus:0 0 0 3px rgba(0,229,200,0.4);
+      --shadow-glow-cyan:0 0 16px rgba(0,229,200,0.25);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--color-bg); color: var(--color-text-primary); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    .topnav {
+      display: flex; align-items: center; gap: 16px; padding: 0 24px; height: 58px; flex-shrink: 0;
+      background: var(--color-surface); border-bottom: 1px solid var(--color-border);
+      background-image: repeating-linear-gradient(180deg, transparent 0px, transparent 17px, rgba(0,229,200,0.05) 17px, rgba(0,229,200,0.05) 18px);
+    }
+    .topnav__brand { font-size: 1.1rem; font-weight: 800; color: var(--color-accent); text-shadow: 0 0 12px rgba(0,229,200,0.35); text-decoration: none; }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--color-text-muted); }
+    .breadcrumb a { color: var(--color-text-secondary); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--color-accent); }
+    .avatar { width:32px; height:32px; border-radius:50%; background:var(--color-accent-subtle); border:1px solid var(--color-accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:var(--color-accent); margin-left:auto; text-decoration:none; cursor:pointer; }
+    .avatar:hover { box-shadow:var(--shadow-glow-cyan); }
+
+    .layout { display: flex; flex: 1; overflow: hidden; }
+    .sidebar { width:210px; flex-shrink:0; background:var(--color-surface); border-right:1px solid var(--color-border); padding:16px 8px; display:flex; flex-direction:column; }
+    .sidebar__item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:var(--color-text-secondary); text-decoration:none; font-size:0.88rem; font-weight:500; border-left:2px solid transparent; transition:all 0.1s; }
+    .sidebar__item:hover { background:var(--color-surface-raised); color:var(--color-text-primary); }
+    .sidebar__item.active { background:var(--color-accent-subtle); color:var(--color-accent); font-weight:600; border-left-color:var(--color-accent); }
+    .sidebar__divider { height:1px; background:var(--color-border); margin:12px 8px; }
+    .sidebar__label { font-size:0.7rem; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.08em; padding:4px 12px; margin-bottom:4px; }
+
+    .main { flex:1; overflow-y:auto; padding:28px 32px; }
+    .page-title { font-size:1.4rem; font-weight:800; margin-bottom:24px; }
+
+    /* Screens */
+    .screen { display:none; }
+    .screen.active { display:block; }
+
+    /* Drop zone */
+    .dropzone {
+      border: 2px dashed var(--color-border); border-radius: 14px;
+      padding: 52px 32px; text-align: center; cursor: pointer; position: relative;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; max-width: 600px;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--color-accent); background: var(--color-accent-subtle);
+      box-shadow: var(--shadow-glow-cyan);
+    }
+    .dropzone__icon { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+    .dropzone__title { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+    .dropzone__hint { font-size: 0.82rem; color: var(--color-text-muted); }
+    .dropzone__input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .btn-link { background:none; border:none; color:var(--color-accent); cursor:pointer; font-size:inherit; font-family:inherit; text-decoration:underline; padding:0; }
+
+    /* File selected state */
+    .file-selected {
+      display: none; align-items: center; gap: 14px; padding: 16px 20px;
+      background: var(--color-accent-subtle); border: 1px solid var(--color-accent);
+      border-radius: 10px; max-width: 600px; margin-top: 12px;
+    }
+    .file-selected.visible { display: flex; }
+    .file-icon { font-size: 1.8rem; }
+    .file-info { flex: 1; }
+    .file-name { font-size: 0.9rem; font-weight: 600; color: var(--color-accent); }
+    .file-size { font-size: 0.78rem; color: var(--color-text-secondary); }
+    .file-remove { background:none; border:none; color:var(--color-text-muted); cursor:pointer; font-size:1.2rem; padding:4px; }
+    .file-remove:hover { color: var(--color-error); }
+
+    /* Form */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; max-width: 600px; margin-top: 24px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 0.82rem; font-weight: 600; color: var(--color-text-secondary); }
+    .form-label .req { color: var(--color-accent-2); margin-left: 2px; }
+    .form-input {
+      background: var(--color-surface-raised); border: 1px solid var(--color-border);
+      border-radius: 8px; color: var(--color-text-primary); padding: 10px 12px;
+      font-size: 0.9rem; width: 100%; font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input::placeholder { color: var(--color-text-muted); }
+    .form-input:focus { border-color: var(--color-border-focus); box-shadow: var(--shadow-focus); outline: none; }
+    .form-input.invalid { border-color: var(--color-error); }
+    .form-error { font-size: 0.78rem; color: var(--color-error); display: none; }
+    .form-error.visible { display: block; }
+
+    /* Tag chips */
+    .tag-input { display:flex; flex-wrap:wrap; gap:6px; align-items:center; background:var(--color-surface-raised); border:1px solid var(--color-border); border-radius:8px; padding:6px 10px; min-height:42px; transition:border-color 0.15s, box-shadow 0.15s; }
+    .tag-input:focus-within { border-color:var(--color-border-focus); box-shadow:var(--shadow-focus); }
+    .tag-chip { display:inline-flex; align-items:center; gap:4px; background:var(--color-accent-subtle); border:1px solid var(--color-accent); color:var(--color-accent); border-radius:999px; padding:2px 10px; font-size:0.78rem; }
+    .tag-chip button { background:none; border:none; color:inherit; cursor:pointer; padding:0 2px; font-size:1rem; }
+    .tag-field { background:none; border:none; color:var(--color-text-primary); font-size:0.88rem; min-width:80px; outline:none; font-family:inherit; }
+
+    .form-actions { display:flex; gap:12px; margin-top:24px; max-width:600px; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:11px 24px; border-radius:8px; font-size:0.9rem; font-weight:700; cursor:pointer; border:none; text-decoration:none; transition:all 0.15s; font-family:inherit; }
+    .btn-primary { background:var(--color-accent); color:#071b1b; }
+    .btn-primary:hover { background:var(--color-accent-hover); box-shadow:var(--shadow-glow-cyan); }
+    .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
+    .btn-ghost { background:transparent; color:var(--color-text-secondary); border:1px solid var(--color-border); text-decoration:none; }
+    .btn-ghost:hover { color:var(--color-text-primary); }
+
+    /* Progress screen */
+    .progress-screen { max-width: 480px; }
+    .progress-file { font-size: 0.9rem; font-weight: 600; color: var(--color-accent); margin-bottom: 20px; }
+    .progress-wrap { background: var(--color-surface-raised); border-radius: 999px; height: 8px; overflow: hidden; margin-bottom: 8px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2)); border-radius: 999px; transition: width 0.4s ease; width: 0%; }
+    .progress-label { font-size: 0.82rem; color: var(--color-text-secondary); }
+    .progress-steps { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+    .progress-step { display: flex; align-items: center; gap: 12px; font-size: 0.88rem; color: var(--color-text-muted); }
+    .progress-step.done { color: var(--color-success); }
+    .progress-step.active { color: var(--color-text-primary); }
+    .step-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-border); flex-shrink: 0; transition: background 0.3s; }
+    .progress-step.done .step-dot { background: var(--color-success); box-shadow: 0 0 6px rgba(0,229,119,0.5); }
+    .progress-step.active .step-dot { background: var(--color-accent); box-shadow: 0 0 6px rgba(0,229,200,0.5); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+    /* Success screen */
+    .success-screen { max-width: 480px; text-align: center; padding: 40px 0; }
+    .success-icon-big { font-size: 4rem; margin-bottom: 16px; filter: drop-shadow(0 0 16px rgba(0,229,200,0.6)); }
+    .success-title { font-size: 1.4rem; font-weight: 800; color: var(--color-accent); margin-bottom: 8px; }
+    .success-body { color: var(--color-text-secondary); margin-bottom: 28px; }
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main navigation">
+    <a class="topnav__brand" href="04-library.html">🎵 Jamtrack Radio</a>
+    <div class="breadcrumb">
+      <a href="04-library.html">Library</a>
+      <span aria-hidden="true">/</span>
+      <span>Upload Track</span>
+    </div>
+    <a class="avatar" href="09-account-settings.html" title="Account settings" aria-label="Account settings">KN</a>
+  </nav>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Sidebar">
+      <a class="sidebar__item" href="04-library.html">🎸 Library</a>
+      <a class="sidebar__item" href="07-playlists.html">📋 Playlists</a>
+      <a class="sidebar__item active" href="#">⬆️ Upload</a>
+      <div class="sidebar__divider"></div>
+      <div class="sidebar__label">Settings</div>
+      <a class="sidebar__item" href="09-account-settings.html">⚙️ Account</a>
+      <div class="sidebar__divider"></div>
+      <a class="sidebar__item" href="01-welcome.html">🚪 Sign out</a>
+    </nav>
+
+    <main class="main">
+      <!-- Screen: Form -->
+      <div id="screen-form" class="screen active">
+        <h1 class="page-title">⬆️ Upload Track</h1>
+
+        <!-- Drop zone -->
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload audio file">
+          <span class="dropzone__icon" aria-hidden="true">🎵</span>
+          <p class="dropzone__title">Drop your audio file here</p>
+          <p class="dropzone__hint">MP3, FLAC, WAV, AAC · max 200 MB · or <button class="btn-link" type="button">browse files</button></p>
+          <input type="file" accept="audio/*" class="dropzone__input" id="file-input" aria-label="Choose audio file">
+        </div>
+
+        <div class="file-selected" id="file-selected">
+          <span class="file-icon" aria-hidden="true">🎵</span>
+          <div class="file-info">
+            <div class="file-name" id="file-name">filename.mp3</div>
+            <div class="file-size" id="file-size">0 MB</div>
+          </div>
+          <button class="file-remove" id="file-remove" aria-label="Remove file">✕</button>
+        </div>
+
+        <!-- Metadata form -->
+        <form id="upload-form" novalidate>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label" for="track-title">Track title <span class="req">*</span></label>
+              <input class="form-input" type="text" id="track-title" placeholder="e.g. Minor Blues in E">
+              <span class="form-error" id="err-title">Track title is required.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="artist">Artist</label>
+              <input class="form-input" type="text" id="artist" placeholder="e.g. Kumaran Naidoo">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="genre">Genre</label>
+              <select class="form-input" id="genre">
+                <option value="">Select genre…</option>
+                <option>Blues</option><option>Jazz</option><option>Funk</option>
+                <option>Rock</option><option>Soul</option><option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="bpm">BPM</label>
+              <input class="form-input" type="number" id="bpm" placeholder="e.g. 120" min="40" max="300">
+              <span class="form-error" id="err-bpm">BPM must be between 40 and 300.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="key">Key</label>
+              <select class="form-input" id="key">
+                <option value="">Select key…</option>
+                <option>A major</option><option>A minor</option>
+                <option>B♭ major</option><option>B♭ minor</option>
+                <option>C major</option><option>C minor</option>
+                <option>D major</option><option>D minor</option>
+                <option>E major</option><option>E minor</option>
+                <option>F major</option><option>F minor</option>
+                <option>G major</option><option>G minor</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label" for="tags-input">Tags</label>
+              <div class="tag-input" id="tag-input-wrap">
+                <input class="tag-field" id="tags-input" type="text" placeholder="Add tag, press Enter…" aria-label="Add tags">
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="upload-btn">⬆️ Upload Track</button>
+            <a class="btn btn-ghost" href="04-library.html">Cancel</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Screen: Progress -->
+      <div id="screen-progress" class="screen">
+        <h1 class="page-title">⬆️ Uploading…</h1>
+        <div class="progress-screen">
+          <p class="progress-file" id="progress-filename">uploading...</p>
+          <div class="progress-wrap">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <p class="progress-label" id="progress-label">0%</p>
+          <div class="progress-steps">
+            <div class="progress-step" id="step-upload"><div class="step-dot"></div>Uploading audio file…</div>
+            <div class="progress-step" id="step-transcode"><div class="step-dot"></div>Transcoding to streaming format…</div>
+            <div class="progress-step" id="step-meta"><div class="step-dot"></div>Saving metadata…</div>
+            <div class="progress-step" id="step-index"><div class="step-dot"></div>Indexing for search…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen: Success -->
+      <div id="screen-success" class="screen">
+        <div class="success-screen">
+          <div class="success-icon-big" aria-hidden="true">🎵</div>
+          <h2 class="success-title">Track uploaded!</h2>
+          <p class="success-body" id="success-track-name">Your track is ready to play.</p>
+          <div style="display:flex;gap:12px;justify-content:center;">
+            <a class="btn btn-primary" href="04-library.html">Go to Library</a>
+            <button class="btn btn-ghost" onclick="resetForm()">Upload Another</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ── Tag chips ──
+    const tags = [];
+    document.getElementById('tags-input').addEventListener('keydown', function(e) {
+      if ((e.key === 'Enter' || e.key === ',') && this.value.trim()) {
+        e.preventDefault();
+        addTag(this.value.trim());
+        this.value = '';
+      }
+      if (e.key === 'Backspace' && !this.value && tags.length) {
+        removeTag(tags[tags.length-1]);
+      }
+    });
+    function addTag(val) {
+      if (tags.includes(val) || tags.length >= 10) return;
+      tags.push(val);
+      renderTags();
+    }
+    function removeTag(val) {
+      const i = tags.indexOf(val);
+      if (i > -1) { tags.splice(i,1); renderTags(); }
+    }
+    function renderTags() {
+      const wrap = document.getElementById('tag-input-wrap');
+      // Remove existing chips
+      wrap.querySelectorAll('.tag-chip').forEach(c => c.remove());
+      // Add chips before input
+      const input = document.getElementById('tags-input');
+      tags.forEach(t => {
+        const chip = document.createElement('span');
+        chip.className = 'tag-chip';
+        chip.innerHTML = `${t} <button type="button" aria-label="Remove ${t}">×</button>`;
+        chip.querySelector('button').onclick = () => removeTag(t);
+        wrap.insertBefore(chip, input);
+      });
+    }
+
+    // ── Drop zone ──
+    const dz = document.getElementById('dropzone');
+    const fi = document.getElementById('file-input');
+    let selectedFile = null;
+
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault(); dz.classList.remove('dragover');
+      const f = e.dataTransfer.files[0];
+      if (f) setFile(f);
+    });
+    fi.addEventListener('change', () => { if (fi.files[0]) setFile(fi.files[0]); });
+
+    function setFile(f) {
+      selectedFile = f;
+      document.getElementById('file-name').textContent = f.name;
+      document.getElementById('file-size').textContent = (f.size / 1024 / 1024).toFixed(1) + ' MB';
+      document.getElementById('file-selected').classList.add('visible');
+      // Prefill title from filename
+      const titleInput = document.getElementById('track-title');
+      if (!titleInput.value) {
+        titleInput.value = f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+      }
+    }
+
+    document.getElementById('file-remove').addEventListener('click', () => {
+      selectedFile = null;
+      fi.value = '';
+      document.getElementById('file-selected').classList.remove('visible');
+    });
+
+    // ── Form submit ──
+    document.getElementById('upload-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let valid = true;
+      const title = document.getElementById('track-title').value.trim();
+      const bpm   = document.getElementById('bpm').value;
+
+      const showE = (id,v) => { const el=document.getElementById(id); el.classList.toggle('visible',v); };
+      const markI = (id,v) => { document.getElementById(id).classList.toggle('invalid',v); };
+
+      if (!title) { showE('err-title',true); markI('track-title',true); valid=false; }
+      else         { showE('err-title',false); markI('track-title',false); }
+      if (bpm && (parseInt(bpm)<40||parseInt(bpm)>300)) { showE('err-bpm',true); markI('bpm',true); valid=false; }
+      else { showE('err-bpm',false); markI('bpm',false); }
+      if (!valid) return;
+
+      const btn = document.getElementById('upload-btn');
+      btn.disabled=true; btn.textContent='Uploading…';
+      document.getElementById('progress-filename').textContent = selectedFile ? selectedFile.name : title+'.mp3';
+      document.getElementById('success-track-name').textContent = '"'+title+'" is ready to play.';
+      showScreen('screen-progress');
+      runProgress();
+    });
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    const STEPS = ['step-upload','step-transcode','step-meta','step-index'];
+    const STEP_END = [35, 70, 88, 100];
+
+    function runProgress() {
+      let pct = 0;
+      let stepIdx = 0;
+      document.querySelectorAll('.progress-step').forEach(s => s.className='progress-step');
+      document.getElementById(STEPS[0]).classList.add('active');
+
+      const iv = setInterval(() => {
+        pct = Math.min(pct + (Math.random()*4+1), 100);
+        document.getElementById('progress-fill').style.width = pct+'%';
+        document.getElementById('progress-label').textContent = Math.round(pct)+'%';
+
+        while (stepIdx < STEP_END.length && pct >= STEP_END[stepIdx]) {
+          document.getElementById(STEPS[stepIdx]).classList.remove('active');
+          document.getElementById(STEPS[stepIdx]).classList.add('done');
+          stepIdx++;
+          if (stepIdx < STEPS.length) document.getElementById(STEPS[stepIdx]).classList.add('active');
+        }
+
+        if (pct >= 100) {
+          clearInterval(iv);
+          setTimeout(() => showScreen('screen-success'), 400);
+        }
+      }, 150);
+    }
+
+    function resetForm() {
+      selectedFile = null;
+      document.getElementById('upload-form').reset();
+      tags.length = 0; renderTags();
+      document.getElementById('file-selected').classList.remove('visible');
+      document.getElementById('upload-btn').disabled = false;
+      document.getElementById('upload-btn').textContent = '⬆️ Upload Track';
+      showScreen('screen-form');
+    }
+
+    // Clear errors on input
+    document.getElementById('track-title').addEventListener('input', function() {
+      this.classList.remove('invalid');
+      document.getElementById('err-title').classList.remove('visible');
+    });
+    document.getElementById('bpm').addEventListener('input', function() {
+      this.classList.remove('invalid');
+      document.getElementById('err-bpm').classList.remove('visible');
+    });
+  </script>
+</body>
+</html>
