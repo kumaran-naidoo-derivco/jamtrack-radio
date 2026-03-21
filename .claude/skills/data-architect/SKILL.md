@@ -149,25 +149,63 @@ List all domain events that should be emitted for observability (structured logs
 
 ---
 
-## Strategic Lens
+## Financial Lens (mandatory)
+
+Data is cheap to store but expensive to query unoptimised. Every data design decision has a cost implication.
+
+- A missing index on a 10M-row table is a latency spike and a CPU cost spike simultaneously. Index strategy is not optional.
+- ELK log ingestion is often the largest unexpected cost in production. A service emitting verbose debug logs to ELK at 5 GB/day costs ~£115/month in Log Analytics alone. Set ILM retention policies from the first deployment.
+- ClickHouse is dramatically cheaper than Elasticsearch for time-series analytics (10–100× compression ratio). Plan the migration path from ELK to ClickHouse before ELK costs spiral in Phase 6.
+- Blob storage is cheap (Azure LRS ~£0.02/GB/month) but egress is not. Design streaming to minimise unnecessary full-file downloads.
+
+---
+
+## Best Practice Patterns
 
 **Data modelling principles**
-- *Single source of truth*: each piece of data is owned by exactly one service. Duplicates are for read performance (projections), not for authority.
-- *Event sourcing*: consider storing events as the source of truth (append-only log) for audit-heavy domains. Not needed at Phase 2, but worth flagging for user activity.
-- *CQRS*: separate read and write models when read patterns differ significantly from write patterns. Relevant when Track Service needs different views for listing vs. detail.
+- *Single source of truth*: each piece of data is owned by exactly one service. Read projections (cached summaries, denormalised views) are acceptable for performance, but authoritative data lives in exactly one place.
+- *UUID primary keys*: use UUIDs (not serial/auto-increment) for all primary keys. UUIDs are portable across databases, safe to generate client-side, and avoid enumeration attacks.
+- *UTC everywhere*: store all timestamps as `timestamptz` (UTC-aware). Never store local time in the database. Convert to local time only at display.
+- *Soft-delete before hard-delete*: mark records as deleted (`deleted_at timestamp`) rather than physically deleting them. After a configurable retention period, a background job hard-deletes. This protects against accidental data loss and supports audit trails.
+- *Enums over booleans for state*: model state as an enum (`account_status: active | suspended | deleted`) rather than proliferating boolean columns. Easier to query, extend, and document.
+- *Normalise to 3NF by default; denormalise with evidence*: start normalised. Only denormalise specific hot read paths when you have measured query performance evidence that normalisation is the bottleneck.
 
-**PostgreSQL at scale**
-- Table partitioning: essential for event/log tables that will grow indefinitely. Partition by month.
-- `pg_trgm` extension: enables full-text search on track names without Elasticsearch. Useful for search in Phase 3.
-- Connection pooling: PostgreSQL has a fixed connection limit. Use PgBouncer or Npgsql's built-in pooling. Never skip this at Phase 4+.
+**PostgreSQL-specific patterns**
+- *Table partitioning*: partition event and log tables by month (range partitioning on `created_at`). Essential for tables that grow indefinitely — queries scan only the relevant partition.
+- *`pg_trgm` for full-text search*: enables trigram-based search on track titles and artist names without introducing Elasticsearch. Use `CREATE INDEX ... USING GIN (column gin_trgm_ops)` for `ILIKE` and similarity queries.
+- *Connection pooling*: PostgreSQL has a hard connection limit (~100 by default). At Phase 4, use PgBouncer (transaction pooling mode) or Npgsql's built-in connection pool. Never let each service replica open unbounded connections.
+- *EXPLAIN ANALYSE before indexing*: use `EXPLAIN (ANALYSE, BUFFERS)` on all hot-path queries before adding indexes. Index blindly and you'll slow down writes without helping the reads you intended.
+- *Partial indexes for filtered queries*: if a query always filters on `deleted_at IS NULL`, a partial index `WHERE deleted_at IS NULL` is smaller and faster than a full index.
 
-**Common data architecture mistakes**
-- **No migration rollback**: every FluentMigrator `Up()` must have a corresponding `Down()`. Without it, you cannot roll back a bad deployment.
-- **Storing secrets in plain text**: passwords must be hashed (BCrypt, Argon2id). Email addresses may need pseudonymisation under GDPR.
-- **No index on foreign keys**: PostgreSQL does not auto-index foreign keys. Every FK column needs an explicit index.
-- **Boolean fields for state machines**: using `is_active`, `is_deleted`, `is_verified` booleans proliferates. Consider an `account_status` enum instead.
+**Schema evolution patterns**
+- *Backward-compatible migrations*: migrations must be backward-compatible with the previous version of the service. Add columns as nullable first; backfill data; then add the `NOT NULL` constraint in a subsequent migration.
+- *Versioned migrations with rollback*: every FluentMigrator `Up()` migration must have a working `Down()`. This is non-negotiable — it is what enables safe rollbacks.
+- *Zero-downtime column renames*: never rename a column in a single migration if the service is live. Add the new column, backfill it, update application code, then drop the old column in a subsequent deployment.
 
-**Financial lens**
-- Data is cheap to store but expensive to query unoptimised. A missing index on a 10M-row table is a latency and cost spike waiting to happen.
-- ELK log ingestion is often the largest unexpected cost in production. Set ILM retention policies from day one.
-- ClickHouse is dramatically cheaper than ElasticSearch for time-series analytics (10–100× compression). Plan the migration before ELK costs spiral.
+**Event and observability patterns**
+- *Domain events for observability*: emit a structured domain event (via Serilog) for every meaningful state transition: `user.registered`, `track.uploaded`, `stream.started`, `user.login_failed`. These become the raw material for dashboards, alerts, and audit trails.
+- *Event sourcing for audit trails*: consider storing state changes as an append-only event log for domains where auditability matters (user account changes, billing). Not required at Phase 2 but design the schema to allow it later.
+- *CQRS when read and write patterns diverge*: if the Track Service query (list all tracks with metadata) is structurally different from the write model (upload track + tag assignment), introduce a read model. Start without CQRS; introduce when query complexity becomes a problem.
+
+---
+
+## Anti-Patterns / Don'ts
+
+**Schema design anti-patterns**
+- **EAV (Entity-Attribute-Value) tables**: `properties(entity_id, attribute_name, attribute_value)` as a catch-all flexible schema. EAV tables cannot be indexed efficiently, cannot be typed, and produce nightmarish queries. Use JSONB columns or dedicated tables instead.
+- **JSONB for structured queryable data**: storing `{"bpm": 120, "key": "Am"}` as a JSONB column when BPM and key are always queried. These should be typed columns. JSONB is appropriate for truly dynamic, schema-less data only.
+- **Boolean proliferation**: `is_active`, `is_deleted`, `is_verified`, `is_premium` as separate boolean columns. Use a status enum. Adding the fifth boolean state requires an ALTER TABLE.
+- **Natural keys as primary keys**: using email address or username as the primary key. Natural keys change (people change email addresses). Use a surrogate UUID PK and put a unique index on the natural key separately.
+- **Storing passwords or signing keys in plain text**: passwords must be hashed with BCrypt (cost factor 12) or Argon2id. Signing keys must be in Key Vault / K8s Secrets. Plain text secrets in a DB column is a critical vulnerability.
+- **Timestamps without time zone**: `timestamp` (without timezone) stores local time. When the server changes timezone or the data moves to another region, all timestamps become ambiguous. Always use `timestamptz`.
+
+**Query and performance anti-patterns**
+- **N+1 query problem**: fetching a list of 100 tracks and then making 100 individual queries to fetch tags for each track. Use a JOIN or a batch query (`WHERE id IN (...)`).
+- **`SELECT *` in application queries**: selecting all columns when only 3 are needed. This transfers unnecessary data, prevents index-only scans, and breaks when columns are added or removed.
+- **Missing index on foreign keys**: PostgreSQL does NOT automatically index foreign key columns. Every FK column needs an explicit index, or cascade deletes and joins will be sequential scans.
+- **Unbounded queries**: a `SELECT * FROM tracks WHERE user_id = ?` with no `LIMIT` will return the entire library. All list queries must have pagination (LIMIT + OFFSET or keyset pagination).
+
+**Migration anti-patterns**
+- **No `Down()` migration**: a migration without rollback support means every bad deployment must be manually recovered. Non-negotiable: always implement `Down()`.
+- **Destructive migration on a live database**: dropping a column or table that is still referenced by the running service version. Always make schema changes backward-compatible with the previous service version first.
+- **Cross-service database reads**: Service B directly querying Service A's database tables, bypassing the service API. This creates an invisible coupling that breaks independently when either service changes its schema.

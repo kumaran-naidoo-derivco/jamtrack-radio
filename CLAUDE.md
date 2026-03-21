@@ -37,7 +37,7 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 |-------|-------------|--------|
 | Phase 0 | Environment Setup | ✅ Complete (19/19) |
 | Phase 1 | Repo Documentation & Templates | ✅ Complete (10/10) |
-| Phase 2 | Local Dev Environment (C# + Postgres) | 🔄 Up next |
+| Phase 2 | Local Dev Environment (C# + Postgres) | 🔄 In Progress |
 | Phase 3 | Docker & Local K8s | ⏳ Not started |
 | Phase 4 | Azure Deployment | ⏳ Not started |
 | Phase 5 | AWS Deployment | ⏳ Not started |
@@ -46,7 +46,7 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 
 ## Up Next
 
-- **Phase 2**: Local Dev Environment — C# + PostgreSQL + Dapper
+- **Phase 2, Task 2.4**: Product Discovery — Architecture (Steps 5a–5d), Architect Sign-off (Step 6), and Project Plan (Step 7)
 
 ## Key Decisions
 
@@ -144,6 +144,12 @@ Every change, no matter how small, must go through a branch and PR. Never commit
 | `project-tasks/project-plan.md` | Full detailed plan across all phases |
 | `project-tasks/Phase-0.md` | Phase 0 task details |
 | `project-tasks/Phase-1.md` | Phase 1 task details |
+| `project-tasks/Phase-2.md` | Phase 2 task details (current phase) |
 | `README.md` | Public-facing project overview |
 | `CONTRIBUTING.md` | Contribution guidelines |
-| `ARCHITECTURE.md` | Architecture docs (to be created — Task 1.6) |
+| `ARCHITECTURE.md` | Legacy root architecture reference — canonical location: `docs/architecture/jamtrack-radio/` (Task 2.4) |
+| `docs/requirements/jamtrack-radio-requirements.md` | Product-level requirements, personas, constraints, Value Prediction |
+| `docs/market-research/jamtrack-radio-market-research.md` | Competitor analysis and differentiation strategy |
+| `docs/prds/jamtrack-radio.md` | Master PRD — canonical product specification |
+| `docs/prototypes/jamtrack-radio/` | HTML prototype screens (01–09) + flow.md |
+| `docs/design-system/` | Design tokens and component library |

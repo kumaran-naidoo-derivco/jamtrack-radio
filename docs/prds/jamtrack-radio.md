@@ -1,5 +1,12 @@
 # PRD: Jamtrack Radio
 
+**Date**: 2026-03-21
+**Author**: Kumaran Naidoo
+**Status**: Approved
+**Source**: Migrated from `PRD-jamtrack-radio.md` (root). Root file is now deprecated — this is the canonical location.
+
+---
+
 ## 1. Overview
 
 Jamtrack Radio is a self-hosted music streaming platform for solo musicians and hobbyists to upload, organise, and stream their personal jam tracks. It is built as a cloud-native application using ASP.NET Core microservices, deployed via Docker and Kubernetes, and hosted on Azure with AWS as a secondary target. The platform serves both as a functional product and as a hands-on vehicle for learning modern DevOps and cloud-native development practices.
@@ -9,6 +16,8 @@ Jamtrack Radio is a self-hosted music streaming platform for solo musicians and 
 ## 2. Problem Statement
 
 Musicians who record jam sessions, practice tracks, or personal compositions have no good self-hosted option to store, organise, and stream their own music. Consumer platforms (Spotify, SoundCloud) are not designed for private personal libraries with structured metadata like BPM, musical key, and genre tagging. A solo musician needs a private, self-controlled platform where they can upload tracks, apply rich metadata, organise into playlists, and stream from any device — without relying on third-party hosting.
+
+See: [`docs/requirements/jamtrack-radio-requirements.md`](../requirements/jamtrack-radio-requirements.md) for full problem statement, personas, and constraints.
 
 ---
 
@@ -63,9 +72,11 @@ so that I can quickly find the track I'm looking for.
 ### Authentication & Identity
 - **MUST** support account registration via email and password
 - **MUST** support OAuth 2.0 login via Google, Apple, and Facebook
-- **MUST** issue JWT access tokens and refresh tokens on login
+- **MUST** issue JWT access tokens (RS256, 15-minute expiry) and refresh tokens on login
 - **MUST** enforce token expiry and refresh flows
+- **MUST** support TOTP-based two-factor authentication (2FA) as an optional account-level setting
 - **SHOULD** support password reset via email
+- **SHOULD** provide an account settings page where the user can enable/disable 2FA, update their display name, and change their password
 
 ### Track Management
 - **MUST** allow authenticated users to upload audio files (MP3, WAV, FLAC)
@@ -116,6 +127,7 @@ so that I can quickly find the track I'm looking for.
 - OAuth tokens must never be stored — exchange for internal JWT immediately
 - Audio files and artwork accessible only via pre-signed URLs or authenticated endpoints
 - User data isolated — a user can only access their own tracks and playlists
+- TOTP seeds encrypted at rest using AES-256 before storage
 
 ### Observability
 - Structured JSON logging on all services (correlated by `traceId`)
@@ -131,7 +143,7 @@ so that I can quickly find the track I'm looking for.
 
 | Service | Responsibility | Internal API |
 |---------|---------------|-------------|
-| Identity Service | Registration, login, OAuth, JWT issuance | gRPC |
+| Identity Service | Registration, login, OAuth, JWT issuance, 2FA | gRPC |
 | Track Service | Track metadata CRUD, tag management | gRPC |
 | Playlist Service | Playlist CRUD, track ordering | gRPC |
 | Streaming Service | Audio file delivery via HTTP range requests | REST (HTTP) |
@@ -139,7 +151,9 @@ so that I can quickly find the track I'm looking for.
 | API Gateway | External-facing entry point, routing, auth enforcement | REST (HTTPS) |
 
 ### Data Model (PostgreSQL)
-- `users` — id, email, provider, created_at
+
+- `users` — id, email, provider, created_at, totp_secret (nullable, encrypted)
+- `refresh_tokens` — id, user_id, token_hash, expires_at, created_at
 - `tracks` — id, user_id, title, artist, genre, bpm, musical_key, duration, storage_ref, artwork_ref, created_at
 - `tags` — id, name, user_id
 - `track_tags` — track_id, tag_id
@@ -147,6 +161,7 @@ so that I can quickly find the track I'm looking for.
 - `playlist_tracks` — playlist_id, track_id, position
 
 ### Infrastructure
+
 - **Dapper** used for all database access (SQL-first micro-ORM)
 - **FluentMigrator** used for schema migrations (versioned, code-defined migration scripts)
 - **Dapr** used for service invocation and pub/sub (e.g. "track uploaded" event triggers storage processing)
@@ -163,7 +178,7 @@ so that I can quickly find the track I'm looking for.
 |-----------|-------|---------|
 | v0.1 — Local MVP | Identity service (email auth only), Track service (upload + metadata), basic streaming, PostgreSQL | Phase 2 |
 | v0.2 — Containerised | All services in Docker Compose, Playlist service, tag filtering | Phase 3 |
-| v0.3 — Cloud (Azure) | K8s on AKS, Terraform infra, Azure Blob Storage, OAuth login | Phase 4 |
+| v0.3 — Cloud (Azure) | K8s on AKS, Terraform infra, Azure Blob Storage, OAuth login, 2FA | Phase 4 |
 | v0.4 — Multi-cloud | AWS deployment (EKS + S3), Terraform modules for both clouds | Phase 5 |
 | v0.5 — Observable | ELK Stack + ClickStack integrated, structured logging, dashboards | Phase 6 |
 | v1.0 — Complete | Full documentation, architecture diagrams, packaging | Phase 7 |
@@ -186,3 +201,36 @@ so that I can quickly find the track I'm looking for.
 - Streaming latency (time to first byte) is under **2 seconds** for 95% of requests in production
 - All services pass health checks and emit structured logs visible in the ELK dashboard
 - Zero data leakage between users — verified by integration tests asserting cross-user access returns `403`
+
+---
+
+## 12. Business Case
+
+> **Framing**: Jamtrack Radio is a personal learning project. The business case is measured in career and skill ROI, not commercial revenue. Full financial model in [`docs/requirements/jamtrack-radio-requirements.md §5`](../requirements/jamtrack-radio-requirements.md#5-value-prediction).
+
+### Investment Summary
+
+| Item | Value |
+|------|-------|
+| Build effort | ~190 developer-days |
+| Opportunity cost | ~£95,000 (at £500/day market rate) |
+| Annual infra cost (from Phase 4) | ~£1,200–2,400/year |
+| Equivalent training value | £6,000–10,000 in courses foregone |
+
+### Expected Return
+
+| Horizon | Expected career rate uplift | Estimated annual benefit |
+|---------|-----------------------------|--------------------------|
+| On Phase 4 completion | £50–100/day increase | £12,500–25,000/year |
+| 12 months post-completion | Compounding portfolio value | ROI ~270–430% |
+| 24 months post-completion | Portfolio + referrals | ROI ~490–700% |
+
+### Viability Threshold
+
+The project is commercially viable as a learning investment if we reach **Phase 4 (Azure AKS deployment)** with Identity, Track, and Streaming services running. All subsequent phases increase the ROI but are not required for the core portfolio outcome.
+
+### Handoff
+
+Product Discovery complete → proceed to service-level Feature Discovery for **Identity Service** (first Phase 2 deliverable).
+
+See: [`docs/requirements/jamtrack-radio-requirements.md`](../requirements/jamtrack-radio-requirements.md) · [`docs/market-research/jamtrack-radio-market-research.md`](../market-research/jamtrack-radio-market-research.md)
