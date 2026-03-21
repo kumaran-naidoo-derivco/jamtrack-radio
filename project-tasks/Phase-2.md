@@ -3,7 +3,9 @@
 ## Phase 2: Local Dev Environment — C# + PostgreSQL
 
 **Phase Description**:
-Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, Streaming) using Clean Architecture, backed by a locally Dockerised PostgreSQL database, with Dapper for data access and FluentMigrator for schema management. CI is extended to build and test dotnet projects. This phase produces a fully running local stack before any containerisation or cloud deployment.
+Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, Streaming) using Clean Architecture, backed by a locally Dockerised PostgreSQL database, with Dapper for data access and FluentMigrator for schema management. CI is extended to build and test dotnet projects. This phase delivers a fully running local stack before any containerisation or cloud deployment.
+
+The phase follows the full delivery lifecycle: Product Discovery → Feature Discovery (per service) → Development. Tasks 2.3–2.4 produce the foundational docs that inform every subsequent dev task.
 
 **Priority**: High
 **Labels**: phase-2, backend, csharp, postgresql, grpc
@@ -95,132 +97,73 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
 ### Task 2.2: Set up Claude Code workflows and skills ecosystem
 
 - **Description**:
-  Build a comprehensive Claude Code skills and workflows ecosystem that supports the **full development lifecycle** — from initial discovery through post-deployment value measurement. This three-layer system replaces ad-hoc coding assistance with a structured, role-based coaching framework.
+  Build a comprehensive Claude Code skills and workflows ecosystem that supports the **full development lifecycle** — from initial discovery through post-deployment value measurement. This four-layer system replaces ad-hoc coding assistance with a structured, role-based coaching framework.
 
-  **Architecture — three layers**:
+  **Architecture — four layers**:
 
   ```
-  Layer 1: Workflows      — DISCOVERY → DEVELOPMENT → MONITORING
+  Layer 1: Workflows      — PRODUCT-DISCOVERY → FEATURE-DISCOVERY → DEVELOPMENT → MONITORING
   Layer 2: Specialist     — domain-specific skills per workflow step
   Layer 3: Agent Personas — orchestrator skills that activate role + sequence
+  Layer 4: Ad-hoc         — standalone skills usable outside formal workflows
   ```
 
   ---
 
-  **Three workflows** (under `.claude/workflows/`):
+  **Four workflows** (under `.claude/workflows/`):
 
   | Workflow | File | Purpose |
   |----------|------|---------|
-  | Discovery | `DISCOVERY.md` | Requirements → Market Research → PRD → UI Prototypes → 4 Architecture Views → Sign-off → Project Plan |
+  | Product Discovery | `PRODUCT-DISCOVERY.md` | Whole-product discovery: requirements → market research → PRD → design system → prototypes → 4 architecture views → sign-off → project plan |
+  | Feature Discovery | `DISCOVERY.md` | Per-service discovery: same steps, feature-scoped, loads product baseline |
   | Development | `DEVELOPMENT.md` | Design → Implement → Quality Pass → Review → Test → Deploy Staging → Integration Test → Deploy Prod |
   | Monitoring | `MONITORING.md` | Health → Errors → Performance → Report → Retrospective → Value Report |
 
-  Each workflow has a pre-flight checklist gate and chains to the next.
+  ---
+
+  **Agent Persona skills (6)**:
+
+  | Skill | Agent | Workflow Ownership |
+  |-------|-------|--------------------|
+  | `/product-manager` | Product Manager | Discovery Steps 1–3 (requirements, market research, PRD) + MONITORING value report |
+  | `/product-designer` | Product Designer | Discovery Step 4 (design system, UX research, prototypes) + ad-hoc design-review |
+  | `/architect` | Architect | Discovery Steps 5–6 (four architecture views + sign-off) |
+  | `/project-manager` | Project Manager | Discovery Step 7 + DEVELOPMENT checkpoint |
+  | `/senior-developer` | Senior Developer | DEVELOPMENT Steps 1–5 |
+  | `/devops-engineer` | DevOps Engineer | DEVELOPMENT Steps 6–8 + all MONITORING |
 
   ---
 
-  **Layer 2 — Specialist skills** (under `.claude/skills/`):
+  **Product Designer skills (4)**:
 
-  *Discovery skills (8)*:
+  | Skill | Purpose |
+  |-------|---------|
+  | `/design-system` | Establishes Jamtrack Radio design language — colours, typography, components, dark theme. Run once at Product Discovery. |
+  | `/ux-research` | User journey maps, accessibility checklist, screen inventory. Optional Feature Discovery step 4a. |
+  | `/ui-prototype` | Multi-screen HTML prototypes + Mermaid user flow. Uses design system for consistency. |
+  | `/design-review` | Ad-hoc post-implementation screen audit against prototypes. UI features only. |
+
+  ---
+
+  **Discovery skills (9)**:
 
   | Skill | Purpose |
   |-------|---------|
   | `/requirements` | Problem, personas, constraints, success metrics, Value Prediction (financial viability) |
   | `/market-research` | Competitor analysis, positioning map, differentiation opportunities, strategic narrative |
-  | `/ui-prototype` | Multi-screen HTML prototypes + Mermaid user flow; saves to `docs/prototypes/<feature>/` |
+  | `/prd` | Full Product Requirements Document with Business Case |
   | `/software-architect` | Service context diagram, domain model, ADRs, build-vs-buy analysis |
   | `/cloud-architect` | Cloud topology, TCO table (Dev/Staging/Prod + 2×/10× scale), cost optimisation |
   | `/data-architect` | ER diagram, schema ownership, DDL, index strategy, retention/compliance, storage costs |
   | `/arch-security` | Trust boundaries, STRIDE, security controls, OWASP Top 10, cost/risk tradeoffs |
   | `/project-plan` | Creates GitHub milestone + all issues (dev + DevOps + testing) after architect sign-off |
 
-  *Development skills (existing + new)*:
-
-  | Skill | Purpose |
-  |-------|---------|
-  | `/design` | Technical design — domain model, API contract, DB schema, sequence diagram (updated to load Discovery outputs) |
-  | `/implement` | Production-quality C# across all Clean Architecture layers |
-  | `/robust` `/security` `/scalable` `/performant` | Quality pass after implement, before review |
-  | `/review` | Architecture correctness, SOLID, observability, no secrets |
-  | `/test` | Integration tests with WebApplicationFactory + Testcontainers |
-  | `/deploy-staging` `/integration-test` `/deploy-prod` | Phase-aware deployment pipeline |
-  | `/new-service` `/new-migration` `/new-grpc-endpoint` | Scaffolding skills |
-
-  *Monitoring skills (6)*:
-
-  | Skill | Purpose |
-  |-------|---------|
-  | `/monitor-health` | Health endpoint checks, pod status, migration verification (phase-aware) |
-  | `/monitor-errors` | Error rate analysis vs. pre-deploy baseline (ELK KQL + ClickHouse) |
-  | `/monitor-performance` | p50/p95/p99 latency analysis vs. baseline (ClickHouse percentile queries) |
-  | `/monitor-report` | Standalone HTML report saved to `docs/monitoring-reports/YYYY-MM-DD-PR<N>-<service>.html` |
-  | `/retrospective` | Structured retrospective — lessons, trends, action items as GitHub issues |
-  | `/value-report` | Predicted vs. actual value (run by PM 1–4 weeks post-deployment) |
-
-  ---
-
-  **Layer 3 — Agent Persona skills (5)**:
-
-  | Skill | Agent | Workflow Ownership |
-  |-------|-------|--------------------|
-  | `/product-manager` | Product Manager | DISCOVERY Steps 1–4 + MONITORING Step 6. Owns the value prediction → value validation loop. |
-  | `/architect` | Architect (orchestrator) | DISCOVERY Steps 5–6. Sequences 4 specialist architect skills + cross-view consistency review. |
-  | `/project-manager` | Project Manager | DISCOVERY Step 7 + DEVELOPMENT checkpoint. Creates/manages all GitHub milestones and issues. |
-  | `/senior-developer` | Senior Developer | DEVELOPMENT Steps 1–5. Loads Discovery outputs before designing. |
-  | `/devops-engineer` | DevOps Engineer | DEVELOPMENT Steps 6–8 + all of MONITORING. Phase-aware: Docker Compose → K8s → Azure. |
-
-  Each agent persona skill includes a Strategic Lens section with industry patterns, anti-patterns, trade-offs, and teaching notes. Financial lens is mandatory in `product-manager`, `architect`, and all four specialist architect skills.
-
-  ---
-
-  **Existing skills modified**:
-
-  | File | Change |
-  |------|--------|
-  | `.claude/skills/arch-diagram/SKILL.md` | Added "ad-hoc only" note redirecting structured Discovery to the four specialist skills |
-  | `.claude/skills/prd/SKILL.md` | Added preamble to load `/requirements` context; added Business Case (Section 12); updated handoff to `/ui-prototype` then `/architect` |
-  | `.claude/skills/design/SKILL.md` | Added pre-conditions to load Discovery architecture docs; replaced inline UI mockup section with redirect to `/ui-prototype` |
-
-  ---
-
-  **Workflow index**: `.claude/workflows/README.md` — explains all three workflows, when to use each, how they chain together, and which agent persona runs each.
-
-  **Retired**: `.claude/workflows/WORKFLOW.md` replaced with a redirect note pointing to `DEVELOPMENT.md`.
-
-  ---
-
-  **Value calculation loop** (Product Manager owns end-to-end):
-  1. `/requirements` (Discovery) — Value Prediction: estimated build cost, expected value, KPIs, payback period
-  2. `/prd` (Discovery) — Business Case section references Value Prediction
-  3. `/value-report` (Monitoring, weeks post-deployment) — Actual vs. predicted: ROI validated, verdict documented
-
-  ---
-
-  **docs/ directory convention** (created on first run by each skill):
-
-  ```
-  docs/requirements/           ← /requirements
-  docs/market-research/        ← /market-research
-  docs/prds/                   ← /prd
-  docs/prototypes/<feature>/   ← /ui-prototype
-  docs/architecture/<feature>/ ← all four specialist architect skills
-  docs/decisions/              ← ADRs from /software-architect
-  docs/project-plan/           ← /project-plan
-  docs/designs/                ← /design
-  docs/monitoring-reports/     ← /monitor-report
-  docs/retrospectives/         ← /retrospective
-  docs/value-reports/          ← /value-report
-  ```
-
   **Expected outcome**:
-  - `ls .claude/skills/` shows 36 skill directories (17 existing + 19 new)
-  - `ls .claude/workflows/` shows 5 files: README.md, DISCOVERY.md, DEVELOPMENT.md, MONITORING.md, WORKFLOW.md (retired redirect)
-  - Running `/product-manager` activates the PM persona and begins the Discovery workflow
-  - Running `/architect` shows the 4-step orchestration sequence with cross-view consistency review
-  - Running `/senior-developer` references the Development workflow and loads architecture docs as context
-  - Running `/devops-engineer` shows phase-aware deployment + monitoring handoff
-  - Each workflow file has a pre-flight checklist gate at the top
-  - Every agent persona skill has a Strategic Lens section with real-world patterns and coaching notes
+  - `ls .claude/skills/` shows all skill directories including the four new Product Designer skills
+  - `ls .claude/workflows/` shows 6 files: README.md, PRODUCT-DISCOVERY.md, DISCOVERY.md, DEVELOPMENT.md, MONITORING.md, WORKFLOW.md (retired redirect)
+  - Running `/product-designer` activates the Product Designer persona and guides through Steps 4a–4b
+  - Running `/design-system` produces `docs/design-system/` with tokens, components, and showcase HTML
+  - Product Discovery and Feature Discovery are clearly separated workflows
 
 - **Labels**: phase-2, setup
 - **Estimated Effort**: Large
@@ -229,10 +172,99 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
 
 ---
 
-### Task 2.3: Run PostgreSQL locally via Docker Compose
+### Task 2.3: Run Product Discovery for Jamtrack Radio
+
+- **Description**:
+  Execute the full Product Discovery workflow (`PRODUCT-DISCOVERY.md`) to produce the foundational documents that all Feature Discovery cycles will inherit from. This is a one-time run at product inception.
+
+  **Workflow to follow**: `.claude/workflows/PRODUCT-DISCOVERY.md`
+
+  **Steps** (run in order, each step gates the next):
+
+  | Step | Skill | Output |
+  |------|-------|--------|
+  | 1 | `/requirements` | `docs/requirements/jamtrack-radio-requirements.md` |
+  | 2 | `/market-research` | `docs/market-research/jamtrack-radio-market-research.md` |
+  | 3 | `/prd` | `docs/prds/jamtrack-radio.md` |
+  | 4a | `/design-system` | `docs/design-system/jamtrack-radio-design-system.md` + `components.html` |
+  | 4b | `/ui-prototype` | `docs/prototypes/jamtrack-radio/` (7 screens + flow.md) |
+  | 5a | `/software-architect` | `docs/architecture/jamtrack-radio/software-arch.md` + ADRs |
+  | 5b | `/cloud-architect` | `docs/architecture/jamtrack-radio/cloud-arch.md` |
+  | 5c | `/data-architect` | `docs/architecture/jamtrack-radio/data-arch.md` |
+  | 5d | `/arch-security` | `docs/architecture/jamtrack-radio/security-arch.md` |
+  | 6 | `/architect` | `docs/architecture/jamtrack-radio/architect-signoff.md` |
+  | 7 | `/project-plan` | `docs/project-plan/jamtrack-radio-plan.md` + GitHub milestones |
+
+  **Key learning moments**:
+  - How a Product Manager frames a learning project using commercial PM frameworks (Value Prediction, Business Case)
+  - How a Product Designer creates a design system before writing any screen-level UI
+  - How four architecture views (software, cloud, data, security) produce a consistent, cost-aware system design
+  - How a Project Manager maps a delivery plan to GitHub milestones and issues
+
+  **Expected outcome**:
+  - `docs/` directory populated with all 11+ output files
+  - Design system tokens documented and component showcase renders in browser
+  - All 5 architecture files present under `docs/architecture/jamtrack-radio/`
+  - At least 3 ADRs in `docs/decisions/`
+  - GitHub milestones for Phases 2–7 created (or confirmed already exist)
+
+- **Labels**: phase-2, discovery, setup
+- **Estimated Effort**: Large
+- **Status**: Todo
+- **Dependencies**: Task 2.2
+
+---
+
+### Task 2.4: Run Feature Discovery for Identity Service
+
+- **Description**:
+  Execute the Feature Discovery workflow (`DISCOVERY.md`) scoped to the Identity Service — the first service to be built. Feature Discovery produces the service-specific requirements, PRD, UX research, prototypes, and architecture that the Senior Developer will load when implementing Task 2.7.
+
+  **Pre-condition**: Task 2.3 (Product Discovery) must be complete — the design system and system-level architecture baseline must exist.
+
+  **Workflow to follow**: `.claude/workflows/DISCOVERY.md`
+
+  **Steps** (run in order):
+
+  | Step | Skill | Output |
+  |------|-------|--------|
+  | 1 | `/requirements` | `docs/requirements/identity-service-requirements.md` |
+  | 2 | `/market-research` | `docs/market-research/identity-service-market-research.md` |
+  | 3 | `/prd` | `docs/prds/identity-service.md` |
+  | 4a | `/ux-research` *(optional)* | `docs/ux-research/identity-service-ux-research.md` |
+  | 4b | `/ui-prototype` | `docs/prototypes/identity-service/` (login, register, error states) |
+  | 5a | `/software-architect` | `docs/architecture/identity-service/software-arch.md` |
+  | 5b | `/cloud-architect` | `docs/architecture/identity-service/cloud-arch.md` |
+  | 5c | `/data-architect` | `docs/architecture/identity-service/data-arch.md` |
+  | 5d | `/arch-security` | `docs/architecture/identity-service/security-arch.md` |
+  | 6 | `/architect` | `docs/architecture/identity-service/architect-signoff.md` |
+  | 7 | `/project-plan` | `docs/project-plan/identity-service-plan.md` + GitHub issues |
+
+  **Key learning moments**:
+  - Feature-scoped requirements vs. product-level requirements — what changes, what stays the same
+  - How UX research produces a screen inventory that directly drives prototype decisions
+  - How feature-level architecture documents stay consistent with the system-level baseline
+  - How the Project Manager converts an architect-signed-off design into concrete GitHub issues
+
+  **Expected outcome**:
+  - All identity-service docs present under `docs/*/identity-service*`
+  - Architecture docs consistent with the system-level baseline from Task 2.3
+  - GitHub issues created for Identity Service implementation tasks
+  - Task 2.7 (Build Identity Service) can reference `docs/architecture/identity-service/` as design input
+
+- **Labels**: phase-2, discovery, identity-service
+- **Estimated Effort**: Large
+- **Status**: Todo
+- **Dependencies**: Task 2.3
+
+---
+
+### Task 2.5: Run PostgreSQL locally via Docker Compose
 
 - **Description**:
   Create a `docker-compose.yml` at the repo root that runs a PostgreSQL 16 container with a persistent named volume. Add a `.env.local` (gitignored) for credentials. Verify connectivity using `psql` from WSL.
+
+  **Context**: The database schema is informed by the data architecture produced in Task 2.3 (`docs/architecture/jamtrack-radio/data-arch.md`). Load that document before creating the Docker Compose configuration to ensure the database name and user align with what's documented.
 
   **Files to create**:
   - `docker-compose.yml` — Postgres 16 service, named volume, health check
@@ -259,19 +291,24 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
 - **Labels**: phase-2, docker, postgresql, setup
 - **Estimated Effort**: Small
 - **Status**: Todo
-- **Dependencies**: Task 2.2
+- **Dependencies**: Task 2.4
 
 ---
 
-### Task 2.4: Set up FluentMigrator — initial database schema
+### Task 2.6: Set up FluentMigrator — initial database schema
 
 - **Description**:
-  Create a standalone `src/Migrations/` C# console project that uses FluentMigrator to manage schema migrations. Write the initial migration(s) to create tables for `users`, `tracks`, and `playlists`. The migration runner is executed manually (or via `dotnet run`) before starting services locally.
+  Create a standalone `src/Migrations/` C# console project that uses FluentMigrator to manage schema migrations. Write the initial migration(s) to create all tables as defined in `docs/architecture/jamtrack-radio/data-arch.md`.
+
+  **Context**: Load `docs/architecture/jamtrack-radio/data-arch.md` and `docs/architecture/identity-service/data-arch.md` before writing migrations. The migration must create all tables documented in the data architecture, not just the ones needed for the first service.
 
   **Tables to create in the initial migration**:
-  - `users` — id (uuid PK), email (unique), password_hash, created_at, updated_at
-  - `tracks` — id (uuid PK), user_id (FK → users), title, artist, genre, duration_seconds, file_path, created_at, updated_at
-  - `playlists` — id (uuid PK), user_id (FK → users), name, description, created_at, updated_at
+  - `users` — id (uuid PK), email (unique), password_hash, provider, provider_id, display_name, created_at, updated_at
+  - `refresh_tokens` — id (uuid PK), user_id (FK → users), token_hash, expires_at, created_at
+  - `tracks` — id (uuid PK), user_id (FK → users), title, artist, genre, bpm, musical_key, duration_seconds, storage_ref, artwork_ref, created_at, updated_at
+  - `tags` — id (uuid PK), user_id (FK), name
+  - `track_tags` — track_id (FK), tag_id (FK), PK(track_id, tag_id)
+  - `playlists` — id (uuid PK), user_id (FK), name, created_at, updated_at
   - `playlist_tracks` — playlist_id (FK), track_id (FK), position, PK(playlist_id, track_id)
 
   **Commands (WSL Ubuntu)**:
@@ -288,33 +325,41 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
   dotnet run --project src/Migrations -- --connection "Host=localhost;Database=jamtrack_dev;Username=jamtrack;Password=<pwd>"
   ```
 
-  **Expected outcome**: `\dt` in psql shows all four tables. Re-running migrations is idempotent (no-op if already applied).
+  **Expected outcome**: `\dt` in psql shows all tables. Re-running migrations is idempotent (no-op if already applied).
 
 - **Labels**: phase-2, postgresql, migrations
 - **Estimated Effort**: Medium
 - **Status**: Todo
-- **Dependencies**: Task 2.3
+- **Dependencies**: Task 2.5
 
 ---
 
-### Task 2.5: Build Identity Service (register, login, JWT)
+### Task 2.7: Build Identity Service (register, login, JWT)
 
 - **Description**:
-  Implement the Identity Service end-to-end using Clean Architecture. Supports email/password registration and login, issuing a signed JWT on success. The internal API is exposed as a gRPC endpoint; the service does NOT expose REST publicly (the API Gateway will handle that in a later phase — for now, gRPC is tested directly).
+  Implement the Identity Service end-to-end using Clean Architecture. Supports email/password registration and login, issuing a signed JWT on success. The internal API is exposed as a gRPC endpoint.
+
+  **Context**: Load the following before implementing:
+  - `docs/architecture/identity-service/software-arch.md` — domain model, service boundaries, API contract
+  - `docs/architecture/identity-service/data-arch.md` — schema and DDL
+  - `docs/architecture/identity-service/security-arch.md` — security controls (BCrypt, RS256 JWT, refresh token hashing)
+  - `docs/prds/identity-service.md` — acceptance criteria
 
   **Domain layer** (`IdentityService.Domain`):
-  - `User` entity: Id (Guid), Email, PasswordHash, CreatedAt, UpdatedAt
-  - Domain exception: `DuplicateEmailException`, `InvalidCredentialsException`
+  - `User` entity: Id (Guid), Email, PasswordHash, Provider, ProviderId, DisplayName, CreatedAt, UpdatedAt
+  - Domain exceptions: `DuplicateEmailException`, `InvalidCredentialsException`
 
   **Application layer** (`IdentityService.Application`):
   - `IUserRepository` interface
+  - `IRefreshTokenRepository` interface
   - `RegisterUserCommand` + handler
   - `LoginCommand` + handler
   - `ITokenService` interface
 
   **Infrastructure layer** (`IdentityService.Infrastructure`):
   - `UserRepository` — Dapper implementation of `IUserRepository`
-  - `JwtTokenService` — `ITokenService` implementation (System.IdentityModel.Tokens.Jwt)
+  - `RefreshTokenRepository` — Dapper implementation
+  - `JwtTokenService` — `ITokenService` implementation (RS256, System.IdentityModel.Tokens.Jwt)
   - Passwords hashed with BCrypt (`BCrypt.Net-Next`)
 
   **Api layer** (`IdentityService.Api`):
@@ -333,24 +378,26 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
 
   **Expected outcome**: Service starts, registers a user, stores bcrypt-hashed password in `users` table, returns a valid JWT on login.
 
-- **Labels**: phase-2, grpc
+- **Labels**: phase-2, grpc, identity-service
 - **Estimated Effort**: Large
 - **Status**: Todo
-- **Dependencies**: Task 2.4
+- **Dependencies**: Task 2.6
 
 ---
 
-### Task 2.6: Build Track Service (track metadata CRUD)
+### Task 2.8: Build Track Service (track metadata CRUD)
 
 - **Description**:
-  Implement the Track Service end-to-end using Clean Architecture. Manages track metadata (title, artist, genre, duration, file path). Audio file upload (to local disk in this phase) is handled here — the file path is stored in the `tracks` table. Exposed via gRPC.
+  Implement the Track Service end-to-end using Clean Architecture. Manages track metadata (title, artist, genre, BPM, musical key, duration, file path). Audio file upload (to local disk in this phase) is handled here. Exposed via gRPC.
+
+  **Context**: Load `docs/architecture/jamtrack-radio/software-arch.md` and `docs/architecture/jamtrack-radio/data-arch.md` before implementing.
 
   **Domain layer** (`TrackService.Domain`):
-  - `Track` entity: Id, UserId, Title, Artist, Genre, DurationSeconds, FilePath, CreatedAt, UpdatedAt
-  - Domain exception: `TrackNotFoundException`
+  - `Track` entity: Id, UserId, Title, Artist, Genre, Bpm, MusicalKey, DurationSeconds, StorageRef, ArtworkRef, CreatedAt, UpdatedAt
+  - Domain exceptions: `TrackNotFoundException`
 
   **Application layer** (`TrackService.Application`):
-  - `ITrackRepository` interface
+  - `ITrackRepository` interface, `ITagRepository` interface
   - Use cases: `UploadTrackCommand`, `GetTrackQuery`, `ListTracksQuery`, `DeleteTrackCommand`
   - `IFileStorageService` interface (local disk in this phase, swapped for Azure Blob in Phase 4)
 
@@ -359,23 +406,24 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
   - `LocalFileStorageService` — saves uploaded files to a configurable local path
 
   **Api layer** (`TrackService.Api`):
-  - gRPC service definition (`track.proto`) with `UploadTrack`, `GetTrack`, `ListTracks`, `DeleteTrack` RPCs
-  - `TrackGrpcService`
-  - DI wiring, Serilog, health endpoints (same as Identity Service)
+  - gRPC service definition (`track.proto`) with `UploadTrack`, `GetTrack`, `GetTracksBatch`, `ListTracks`, `DeleteTrack` RPCs
+  - `TrackGrpcService`, DI wiring, Serilog, health endpoints
 
-  **Expected outcome**: Can upload a track (metadata + file path), retrieve it, list all tracks for a user, and delete a track.
+  **Expected outcome**: Can upload a track (metadata + file path), retrieve it by ID, list all tracks for a user, delete a track.
 
 - **Labels**: phase-2, grpc
 - **Estimated Effort**: Large
 - **Status**: Todo
-- **Dependencies**: Task 2.5
+- **Dependencies**: Task 2.7
 
 ---
 
-### Task 2.7: Build Streaming Service (audio file delivery)
+### Task 2.9: Build Streaming Service (audio file delivery)
 
 - **Description**:
-  Implement the Streaming Service, which serves audio files over HTTP using range requests (enables seek/scrub in a browser audio player). This service is the only one that exposes a REST endpoint externally (not gRPC) because browsers cannot use gRPC directly for media streaming. It calls Track Service (gRPC) to resolve the file path for a given track ID, then streams the file from local disk.
+  Implement the Streaming Service, which serves audio files over HTTP using range requests (enables seek/scrub in a browser audio player). This service exposes a REST endpoint — browsers cannot use gRPC directly for media streaming. It calls Track Service (gRPC) to resolve the file path for a given track ID, then streams the file from local disk.
+
+  **Context**: Load `docs/architecture/jamtrack-radio/software-arch.md` and `docs/architecture/jamtrack-radio/data-arch.md` before implementing.
 
   **Domain layer** (`StreamingService.Domain`):
   - `StreamRequest` value object: TrackId, RequestedRange (start/end bytes)
@@ -399,11 +447,11 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
 - **Labels**: phase-2, grpc
 - **Estimated Effort**: Large
 - **Status**: Todo
-- **Dependencies**: Task 2.6
+- **Dependencies**: Task 2.8
 
 ---
 
-### Task 2.8: Update CI pipeline — dotnet build and test
+### Task 2.10: Update CI pipeline — dotnet build and test
 
 - **Description**:
   Uncomment and complete the `dotnet` steps in `.github/workflows/ci.yml`. The CI pipeline should restore, build, and run tests on every PR targeting `main`. A failing test blocks the merge.
@@ -419,14 +467,16 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
 - **Labels**: phase-2, github
 - **Estimated Effort**: Small
 - **Status**: Todo
-- **Dependencies**: Task 2.7
+- **Dependencies**: Task 2.9
 
 ---
 
-### Task 2.9: Write integration tests — Identity Service
+### Task 2.11: Write integration tests — Identity Service
 
 - **Description**:
   Write integration tests for the Identity Service gRPC endpoints (`Register` and `Login`) using `Microsoft.AspNetCore.Mvc.Testing` (WebApplicationFactory) with a real test PostgreSQL database (running in Docker via `Testcontainers`). Follow the AAA pattern. Cover all significant input/output combinations.
+
+  **Context**: Load `docs/architecture/identity-service/software-arch.md` and `docs/prds/identity-service.md` — every acceptance criterion in the PRD must have a corresponding test case.
 
   **Test cases to cover**:
   - Register with valid email + password → 201, user stored in DB with hashed password
@@ -446,17 +496,17 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
 
   **Expected outcome**: `dotnet test tests/IdentityService.Tests` passes all cases. Tests run against a real Postgres container spun up by Testcontainers — no mocking of the DB layer.
 
-- **Labels**: phase-2, postgres
+- **Labels**: phase-2, postgres, identity-service
 - **Estimated Effort**: Medium
 - **Status**: Todo
-- **Dependencies**: Task 2.8
+- **Dependencies**: Task 2.10
 
 ---
 
-### Task 2.10: Write integration tests — Track Service
+### Task 2.12: Write integration tests — Track Service
 
 - **Description**:
-  Write integration tests for the Track Service gRPC endpoints using the same pattern as Task 2.9 (WebApplicationFactory + Testcontainers). Cover all CRUD operations and file storage interactions.
+  Write integration tests for the Track Service gRPC endpoints using the same pattern as Task 2.11 (WebApplicationFactory + Testcontainers). Cover all CRUD operations and file storage interactions.
 
   **Test cases to cover**:
   - Upload track with valid metadata + file → stored in DB, file written to disk, track ID returned
@@ -473,13 +523,20 @@ Build the local v0.1 MVP — three ASP.NET Core microservices (Identity, Track, 
 - **Labels**: phase-2, postgres
 - **Estimated Effort**: Medium
 - **Status**: Todo
-- **Dependencies**: Task 2.9
+- **Dependencies**: Task 2.11
 
 ---
 
 ## ✅ Phase 2 Summary
 
-Phase 2 delivers the **local v0.1 MVP** — three fully functional microservices running on your machine:
+Phase 2 delivers the **local v0.1 MVP** — three fully functional microservices running on your machine, built on a foundation of proper product and feature discovery.
+
+**Delivery sequence**:
+1. **Product Discovery** (Task 2.3) → master PRD, design system, system-level architecture, all GitHub milestones
+2. **Feature Discovery** (Task 2.4) → identity-service PRD, prototypes, service-level architecture, sprint issues
+3. **Infrastructure** (Tasks 2.5–2.6) → Postgres + FluentMigrator schema
+4. **Services** (Tasks 2.7–2.9) → three microservices implementing the Discovery-defined designs
+5. **CI + Tests** (Tasks 2.10–2.12) → green build, integration-tested against real Postgres
 
 | Service | Transport | What it does |
 |---|---|---|
@@ -488,7 +545,9 @@ Phase 2 delivers the **local v0.1 MVP** — three fully functional microservices
 | Streaming Service | REST (HTTP range) | Audio file delivery with seek support |
 
 **Supporting infrastructure**:
-- Claude Code skills for repeatable scaffolding
+- Product and Feature Discovery docs in `docs/`
+- Design system in `docs/design-system/`
+- System-level and service-level architecture in `docs/architecture/`
 - PostgreSQL 16 in Docker Compose
 - FluentMigrator for schema management
 - Dapper for all DB access
