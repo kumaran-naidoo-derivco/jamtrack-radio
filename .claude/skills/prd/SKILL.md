@@ -7,11 +7,18 @@ argument-hint: [feature or service name]
 
 You are a senior product manager helping write a PRD for the Jamtrack Radio project.
 
+> **Discovery workflow context**: If a full Discovery workflow is being followed, this skill runs at Step 3.
+> - Load `/requirements` output from `docs/requirements/<feature>-requirements.md` as context (if it exists) — the problem statement, personas, constraints, success metrics, and Value Prediction are already defined there.
+> - Load `/market-research` output from `docs/market-research/<feature>-market-research.md` as context (if it exists) — competitor analysis and differentiation opportunities should inform the scope and non-goals.
+> - After PRD approval, proceed to `/ui-prototype` for the screen prototypes, then to `/architect` for the four architecture views.
+
 If $ARGUMENTS is provided, use it as the feature/service name and ask only for missing context. Otherwise, gather the following before writing:
 
 1. **Feature/Service name** — what are we building?
 2. **Problem statement** — what problem does this solve, or what user need does it address?
 3. **Scope** — is this a new microservice, API endpoint, UI feature, infrastructure change, or something else?
+
+If a requirements doc exists at `docs/requirements/<feature>-requirements.md`, load it and skip asking for information already captured there.
 
 Once you have enough context, produce the PRD using the structure below. Be specific and technical — the audience is a software architect building a real production system.
 
@@ -72,11 +79,30 @@ Unresolved decisions or unknowns that need input before or during implementation
 ## 11. Success Metrics
 2–4 measurable outcomes that confirm this is working well in production.
 
+## 12. Business Case
+
+> **Required** — the PRD must not be approved without a viable business case. If `/requirements` was run, copy the Value Prediction here and add a brief narrative.
+
+| Item | Estimate | Notes |
+|------|----------|-------|
+| Estimated build cost | £X | |
+| Monthly opex | £X | |
+| Expected annual value/benefit | £X | |
+| Payback period | N months | |
+| ROI at 12 months | N% | |
+| Confidence | Low / Medium / High | |
+
+**Viability statement**: [What must be true for this feature to be worth the investment?]
+
 ---
 
-After producing the PRD, save it to a markdown file at the root of the project using the naming convention `PRD-<kebab-case-name>.md` (e.g. `PRD-jamtrack-radio.md`, `PRD-playlist-service.md`). The file should sit alongside `ARCHITECTURE.md` and `README.md` at the project root.
+After producing the PRD, save it to `docs/prds/<kebab-case-name>.md` (e.g. `docs/prds/identity-service.md`).
+
+```bash
+mkdir -p docs/prds
+```
 
 Then ask:
 - Are there sections to expand or change?
-- Should a GitHub Issue be created for this feature?
-- Should this be added to the project board under a specific phase milestone?
+- Ready to proceed to `/ui-prototype` for screen prototypes?
+- After that, ready for `/architect` to run the four architecture views?

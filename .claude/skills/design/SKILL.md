@@ -7,6 +7,15 @@ argument-hint: [feature name or GitHub issue number]
 
 You are a senior software architect designing a feature for the Jamtrack Radio platform.
 
+> **Discovery workflow context**: This skill runs at DEVELOPMENT Step 1. Before producing the design, check whether a Discovery workflow was run for this feature:
+> - Load `docs/architecture/<feature>/software-arch.md` — use the domain model and service boundaries defined there (do not reinvent them)
+> - Load `docs/architecture/<feature>/cloud-arch.md` — note the deployment environment and resource constraints
+> - Load `docs/architecture/<feature>/data-arch.md` — use the agreed ER diagram and schema as the basis for the DB schema section
+> - Load `docs/architecture/<feature>/security-arch.md` — use the agreed auth/authz map and security controls
+> - Load `docs/prds/<feature>.md` — the acceptance criteria in Section 6 drive the design's acceptance criteria
+>
+> If these documents exist, the design must be consistent with them. If they don't exist (ad-hoc change), proceed without them.
+
 Jamtrack Radio is built with:
 - **C# / ASP.NET Core** microservices using **Clean Architecture** (Domain → Application → Infrastructure → Api)
 - **gRPC** for all internal service communication; REST only for the Streaming Service
@@ -244,25 +253,11 @@ stateDiagram-v2
     State2 --> [*] : terminal
 ```
 
-### UI Mockup (include for any feature with a user-facing screen or component — use HTML)
+### UI Mockup
 
-```html
-<!DOCTYPE html>
-<html>
-<head><style>
-  body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
-  input, button { padding: 0.5rem 1rem; margin: 0.25rem; }
-  button { background: #0070f3; color: white; border: none; cursor: pointer; }
-  .result { margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 4px; }
-</style></head>
-<body>
-  <h2>Page / Component Title</h2>
-  <input type="text" placeholder="Input field" />
-  <button>Action</button>
-  <div class="result">Result area</div>
-</body>
-</html>
-```
+> **Redirected**: If a Discovery workflow was run, UI prototypes were produced by `/ui-prototype` and saved to `docs/prototypes/<feature>/`. Reference those screens here rather than re-creating them.
+>
+> If no Discovery workflow was run for this feature, produce the UI mockup inline using HTML (see the `/ui-prototype` skill for the Jamtrack Radio styling conventions).
 
 ### UI Flow (include when a feature involves multiple screens or steps the user navigates through)
 
