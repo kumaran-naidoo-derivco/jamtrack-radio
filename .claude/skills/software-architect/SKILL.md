@@ -18,16 +18,24 @@ If `$ARGUMENTS` is provided, use it as the feature/service name. Load context fr
 ## Output
 
 Save to `docs/architecture/<feature>/software-arch.md`.
-Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
-
-```bash
-mkdir -p docs/architecture/<feature>/diagrams
-```
 
 > **Draw.io is the required diagramming tool for all architecture documents.**
-> Open diagrams in [draw.io](https://app.diagrams.net/) or the VS Code draw.io extension (`hediet.vscode-drawio`).
-> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> Embed every diagram as a `drawio` fenced code block directly in the markdown file — this makes the document self-contained and renders inline in VS Code via the `hediet.vscode-drawio` extension.
+> **Do not** save diagrams as separate `.drawio` files or reference external PNG exports.
 > **Mermaid diagrams are reserved for the implementation phase only** — use them in development workflow steps and inline code documentation, never in architecture documents.
+
+Embed format:
+~~~
+```drawio
+<mxGraphModel ...>
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <!-- diagram elements -->
+  </root>
+</mxGraphModel>
+```
+~~~
 
 ### Draw.io Interaction Diagram — Symbol Conventions
 
@@ -63,11 +71,7 @@ Diagram elements:
 - **External system** boxes (`<<external>>`): Azure Blob Storage (audio files), Identity Provider (future)
 - **Solid arrows**: synchronous HTTPS calls, labelled with protocol and direction
 
-Embed in this document:
-```
-> **Diagram**: [context.drawio](diagrams/context.drawio)
-> ![System Context Diagram](diagrams/context.png)
-```
+Embed directly in this document as a `drawio` fenced code block containing the mxGraphModel XML.
 
 ### 2. Container Interaction Diagram (C4 Level 2)
 

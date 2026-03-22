@@ -16,16 +16,24 @@ If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
 ## Output
 
 Save to `docs/architecture/<feature>/data-arch.md`.
-Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
-
-```bash
-mkdir -p docs/architecture/<feature>/diagrams
-```
 
 > **Draw.io is the required diagramming tool for all architecture documents.**
 > Use draw.io's **Entity Relationship** shape library for ER diagrams and **Software + UML** for data flow diagrams.
-> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> Embed every diagram as a `drawio` fenced code block directly in the markdown file — do **not** save diagrams as separate `.drawio` files or reference external PNG exports.
 > **Mermaid diagrams are reserved for the implementation phase only.**
+
+Embed format:
+~~~
+```drawio
+<mxGraphModel ...>
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <!-- diagram elements -->
+  </root>
+</mxGraphModel>
+```
+~~~
 
 ---
 

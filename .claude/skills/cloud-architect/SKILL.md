@@ -16,16 +16,24 @@ If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
 ## Output
 
 Save to `docs/architecture/<feature>/cloud-arch.md`.
-Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
-
-```bash
-mkdir -p docs/architecture/<feature>/diagrams
-```
 
 > **Draw.io is the required diagramming tool for all architecture documents.**
-> Use the **Microsoft Azure 2023** shape library for all Azure resources (`Extras → Edit Diagram` → search "Azure" in shape library panel).
-> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> Use the **Microsoft Azure 2023** shape library for all Azure resources.
+> Embed every diagram as a `drawio` fenced code block directly in the markdown file — do **not** save diagrams as separate `.drawio` files or reference external PNG exports.
 > **Mermaid diagrams are reserved for the implementation phase only.**
+
+Embed format:
+~~~
+```drawio
+<mxGraphModel ...>
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <!-- diagram elements -->
+  </root>
+</mxGraphModel>
+```
+~~~
 
 ---
 
