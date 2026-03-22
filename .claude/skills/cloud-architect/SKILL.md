@@ -136,6 +136,82 @@ helm/
 
 ---
 
+### 8. Physical Deployment Diagram (Azure)
+
+Produce a physical deployment diagram that follows [Azure Architecture Center diagram guidelines](https://learn.microsoft.com/en-us/azure/architecture/browse/). Every Azure resource must be represented using its **official product name** and styled with Azure brand colours. Generic labels ("DB", "cluster", "gateway") are not acceptable in physical deployment diagrams.
+
+**Naming conventions — use these exact labels**:
+
+| Service | Official Azure Label |
+|---------|----------------------|
+| Kubernetes cluster | `Azure Kubernetes Service (AKS)` |
+| Container registry | `Azure Container Registry (ACR)` |
+| PostgreSQL | `Azure Database for PostgreSQL Flexible Server` |
+| Secrets | `Azure Key Vault` |
+| Ingress / WAF | `Azure Application Gateway + WAF v2` |
+| Virtual network | `Azure Virtual Network (VNet)` |
+| DNS | `Azure DNS` |
+| Logging | `Azure Monitor + Log Analytics Workspace` |
+| Identity | `Microsoft Entra ID (Managed Identity)` |
+| CI/CD | `GitHub Actions → ACR` |
+
+**Layout conventions** (Azure Architecture Center):
+- Group all resources inside their **Azure Resource Group** boundary
+- Use a **hub-spoke VNet topology**: ingress subnet → AKS subnet → data subnet, each in its own named CIDR block
+- Show **Private Endpoints** explicitly for every PaaS service (PostgreSQL, Key Vault, ACR)
+- Show **Managed Identity** arrows for all workload-to-service authentication — never draw a connection string as a credential flow
+- Internet entry point is always drawn at the top; data stores at the bottom
+
+**Colour conventions** — apply via Mermaid `classDef` or draw.io fill colours:
+
+| Layer | Fill colour | Border colour |
+|-------|-------------|---------------|
+| Azure services | `#0078D4` (Azure Blue) | `#005A9E` |
+| Network boundaries | `#E3F2FD` (light blue) | `#0078D4` |
+| Data stores | `#F3E5F5` (light purple) | `#7B1FA2` |
+| Security / identity | `#FFF3E0` (light orange) | `#E65100` |
+
+**Mermaid physical deployment template (Phase 4+)**:
+
+```mermaid
+flowchart TD
+    classDef azure fill:#0078D4,stroke:#005A9E,color:#fff
+    classDef data  fill:#F3E5F5,stroke:#7B1FA2,color:#000
+    classDef sec   fill:#FFF3E0,stroke:#E65100,color:#000
+
+    Internet(("Internet"))
+
+    subgraph RG["Resource Group: rg-jamtrack-prod (UK South)"]
+        subgraph VNET["Azure Virtual Network — 10.0.0.0/16"]
+            subgraph INGRESS["Ingress Subnet — 10.0.3.0/24"]
+                APPGW["Azure Application Gateway\n+ WAF v2"]:::azure
+            end
+            subgraph AKSNET["AKS Subnet — 10.0.1.0/24"]
+                AKS["Azure Kubernetes Service\njamtrack-prod / jamtrack-staging"]:::azure
+            end
+            subgraph DATANET["Data Subnet — 10.0.2.0/24"]
+                PG["Azure Database for PostgreSQL\nFlexible Server"]:::data
+            end
+        end
+        ACR["Azure Container Registry\nacr-jamtrack"]:::azure
+        KV["Azure Key Vault\nkv-jamtrack-prod"]:::sec
+        LAW["Azure Monitor\n+ Log Analytics Workspace"]:::azure
+        ENTRA["Microsoft Entra ID\n(Workload Managed Identity)"]:::sec
+    end
+
+    Internet        -->|"HTTPS :443"| APPGW
+    APPGW           -->|"HTTP :80 (internal)"| AKS
+    AKS             -->|"Private Endpoint"| PG
+    AKS             -->|"Private Endpoint — image pull"| ACR
+    AKS             -->|"Private Endpoint — secret fetch"| KV
+    AKS             -->|"Diagnostic logs + metrics"| LAW
+    AKS             -->|"Workload identity token"| ENTRA
+```
+
+> **Draw.io / Visio**: for formal presentations, recreate this diagram in draw.io using the **Microsoft Azure 2023** icon set (`Extras → Edit Diagram` → import Azure shape library). The Mermaid diagram above is the embedded markdown version; both must stay in sync.
+
+---
+
 ## Financial Lens (mandatory)
 
 Cloud costs compound silently. Treat every infrastructure decision as a financial decision.
