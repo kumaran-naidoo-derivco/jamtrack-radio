@@ -16,10 +16,16 @@ If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
 ## Output
 
 Save to `docs/architecture/<feature>/data-arch.md`.
+Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
 
 ```bash
-mkdir -p docs/architecture/<feature>
+mkdir -p docs/architecture/<feature>/diagrams
 ```
+
+> **Draw.io is the required diagramming tool for all architecture documents.**
+> Use draw.io's **Entity Relationship** shape library for ER diagrams and **Software + UML** for data flow diagrams.
+> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> **Mermaid diagrams are reserved for the implementation phase only.**
 
 ---
 
@@ -27,28 +33,20 @@ mkdir -p docs/architecture/<feature>
 
 Full entity-relationship diagram for all tables in scope.
 
-```mermaid
-erDiagram
-    users {
-        uuid id PK
-        varchar(254) email UK "NOT NULL"
-        varchar(100) display_name "NOT NULL"
-        varchar(255) password_hash "NOT NULL"
-        timestamptz created_at "NOT NULL DEFAULT now()"
-        timestamptz updated_at "NOT NULL DEFAULT now()"
-        bool is_active "NOT NULL DEFAULT true"
-    }
+**File**: `docs/architecture/<feature>/diagrams/er-diagram.drawio`
+**Shape library**: Entity Relationship (`View → Shapes → Entity Relation`)
 
-    refresh_tokens {
-        uuid id PK
-        uuid user_id FK "NOT NULL"
-        varchar(512) token_hash UK "NOT NULL"
-        timestamptz expires_at "NOT NULL"
-        timestamptz created_at "NOT NULL DEFAULT now()"
-        bool is_revoked "NOT NULL DEFAULT false"
-    }
+Diagram elements:
+- **Entity** shapes (standard ER rectangle) for each table — header shows table name
+- **Columns** listed inside with `PK`, `FK`, `UK` badges and data type
+- **Relationship lines** with crow's foot notation: one-to-many (`||--o{`), one-to-one (`||--||`)
+- **Service ownership boundary**: draw a dashed container around each service's tables — no cross-boundary lines permitted
+- Use blue fill for PK columns, yellow for FK columns
 
-    users ||--o{ refresh_tokens : "has many"
+Embed in this document:
+```
+> **Diagram**: [er-diagram.drawio](diagrams/er-diagram.drawio)
+> ![ER Diagram](diagrams/er-diagram.png)
 ```
 
 Rules:
@@ -108,14 +106,23 @@ Rule: every foreign key column must have an index. Every column used in a `WHERE
 
 ### 5. Data Flow Diagram
 
-Show how data moves through the system for the key scenario:
+Show how data moves through the system for the key scenario, using interaction diagram notation to make synchronous vs. asynchronous flows explicit.
 
-```mermaid
-flowchart LR
-    Client -->|"RegisterRequest (gRPC)"| IS["Identity Service"]
-    IS -->|"INSERT users"| PG[("PostgreSQL")]
-    IS -->|"UserRegisteredEvent\n(future: event bus)"| EB["Event Bus (future)"]
-    IS -->|"RegisterResponse (gRPC)"| Client
+**File**: `docs/architecture/<feature>/diagrams/data-flow.drawio`
+**Shape library**: Software + UML
+
+Diagram elements — follow the interaction diagram symbol conventions:
+- **`<<component>>`** shapes for services
+- **Cylinder** shapes for databases and event stores
+- **Queue/envelope** shape for any async event bus — label `<<async>>` and annotate with `eventually consistent` where the consumer's state lags the producer
+- **Solid arrows** for synchronous calls (gRPC, REST, SQL) — label with operation name
+- **Dashed arrows** for domain events — label with event name (e.g. `UserRegistered`)
+- Show the full write path (client → service → DB) and async publication path separately
+
+Embed in this document:
+```
+> **Diagram**: [data-flow.drawio](diagrams/data-flow.drawio)
+> ![Data Flow Diagram](diagrams/data-flow.png)
 ```
 
 ### 6. Observability Events

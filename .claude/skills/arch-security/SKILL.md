@@ -17,44 +17,43 @@ If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
 ## Output
 
 Save to `docs/architecture/<feature>/security-arch.md`.
+Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
 
 ```bash
-mkdir -p docs/architecture/<feature>
+mkdir -p docs/architecture/<feature>/diagrams
 ```
+
+> **Draw.io is the required diagramming tool for all architecture documents.**
+> Use draw.io's **Software + UML** shape libraries for trust boundary and threat model diagrams.
+> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> **Mermaid diagrams are reserved for the implementation phase only.**
 
 ---
 
 ## 1. Trust Boundary Diagram
 
-Show every trust boundary and data classification zone:
+Show every trust boundary, data classification zone, and authentication mechanism.
 
-```mermaid
-flowchart TD
-    subgraph Internet["Internet (Untrusted)"]
-        Client["Web/Mobile Client"]
-    end
+**File**: `docs/architecture/<feature>/diagrams/trust-boundaries.drawio`
+**Shape library**: Software + UML
 
-    subgraph DMZ["DMZ (TLS-terminated)"]
-        GW["API Gateway\n(HTTPS, WAF)"]
-    end
+Diagram elements:
+- **Zone containers** (dashed rectangle boundaries, colour-coded by trust level):
+  - Internet / Untrusted — red border (`#b71c1c`)
+  - DMZ / TLS-terminated — orange border (`#e65100`)
+  - Internal Network / Service mesh — blue border (`#0078D4`)
+  - Data Zone / Most trusted — purple border (`#7b1fa2`)
+- **`<<component>>`** shapes for services inside each zone
+- **Cylinder** shapes for databases and secret stores in the data zone
+- **Solid arrows** for synchronous authenticated calls — label with protocol and auth mechanism (e.g. `gRPC + JWT validation`, `HTTPS TLS 1.3`)
+- **Dashed arrows** for Managed Identity / token flows — label `Managed Identity`
+- **Lock icon** on Private Endpoint connections
+- Add a **threat annotation callout** on each zone boundary indicating the STRIDE threats applicable at that boundary (reference Section 3)
 
-    subgraph InternalNetwork["Internal Network (Trusted — mTLS future)"]
-        IS["Identity Service\n(gRPC)"]
-        TS["Track Service\n(gRPC)"]
-        SS["Streaming Service\n(REST)"]
-    end
-
-    subgraph DataZone["Data Zone (Most Trusted)"]
-        PG[("PostgreSQL\n(private endpoint)")]
-        KV["Key Vault\n(secrets)"]
-    end
-
-    Client -->|"HTTPS TLS 1.3"| GW
-    GW -->|"gRPC (TLS)"| IS
-    GW -->|"gRPC (TLS)"| TS
-    GW -->|"HTTPS"| SS
-    IS -->|"encrypted connection"| PG
-    IS -->|"Managed Identity"| KV
+Embed in this document:
+```
+> **Diagram**: [trust-boundaries.drawio](diagrams/trust-boundaries.drawio)
+> ![Trust Boundary Diagram](diagrams/trust-boundaries.png)
 ```
 
 ### 2. Data Classification

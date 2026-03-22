@@ -28,39 +28,41 @@ If $ARGUMENTS is provided, use it as the system/feature name and ask only for mi
 
 ## Output Format
 
+> **Draw.io is the required diagramming tool for all architecture documents.**
+> Save diagrams as `.drawio` files. Reference in markdown with a PNG export for inline preview.
+> **Mermaid diagrams are reserved for the implementation phase only** (development workflow, inline code docs).
+
 Produce the following in order:
 
-### 1. Block Diagram
+### 1. Interaction Diagram
 
-Use a Mermaid `flowchart` showing all components as labelled blocks with directional arrows indicating communication paths. Apply subgraphs to group related components (e.g. `subgraph "API Layer"`). Label each arrow with the protocol used (REST, gRPC, SQL, Dapr pub/sub, etc.).
+Produce a draw.io interaction diagram using the **Software + UML** shape libraries (`View → Shapes`). This is not a simple box-and-line flowchart — it uses typed symbols that convey the nature of each component and communication pattern.
 
-Example style:
-```mermaid
-flowchart TD
-    subgraph Client["Client Layer"]
-        UI["Web UI / Mobile"]
-    end
+**File**: `diagrams/<system-name>.drawio` (alongside `ARCHITECTURE.md`)
 
-    subgraph API["API Gateway"]
-        GW["API Gateway\n(Ocelot / YARP)"]
-    end
+**Symbol conventions**:
 
-    subgraph Services["Microservices"]
-        PS["Playlist Service\n(ASP.NET Core)"]
-        TS["Track Service\n(ASP.NET Core)"]
-    end
+| Element | Shape | Label convention |
+|---------|-------|-----------------|
+| Service / component | Rounded rectangle | `<<component>>` stereotype |
+| External system | Rounded rectangle | `<<external>>`, grey fill |
+| REST API surface | Rounded rectangle | `<<api>>` stereotype |
+| gRPC service | Rounded rectangle | `<<gRPC>>` stereotype |
+| Database (PostgreSQL) | Cylinder | Standard DB shape, purple fill |
+| Cache (Redis) | Cylinder | `<<cache>>`, orange fill |
+| Message queue / event bus | Queue/envelope shape | `<<async>>`, yellow fill |
+| Event store | Cylinder | `<<event store>>`, yellow fill |
+| Synchronous call | Solid arrow, filled arrowhead | Protocol label: `gRPC`, `REST`, `SQL` |
+| Asynchronous event | Dashed arrow, open arrowhead | Event name label |
+| Eventual consistency | Dashed arrow through queue shape | Annotate: `eventually consistent` |
+| Bounded context / zone | Dashed rectangle container | Context or zone name as header |
 
-    subgraph Data["Data Layer"]
-        DB[("PostgreSQL")]
-        CACHE[("Redis Cache")]
-    end
+**Cloud resources** (Phase 4+): use the **Microsoft Azure 2023** shape library and official Azure service names.
 
-    UI -->|"HTTPS / REST"| GW
-    GW -->|"gRPC"| PS
-    GW -->|"gRPC"| TS
-    PS -->|"SQL / Dapper"| DB
-    TS -->|"SQL / Dapper"| DB
-    TS -->|"Cache read/write"| CACHE
+Embed in the markdown:
+```
+> **Diagram**: [<system-name>.drawio](diagrams/<system-name>.drawio)
+> ![<System Name> Architecture](diagrams/<system-name>.png)
 ```
 
 ### 2. Component Inventory
