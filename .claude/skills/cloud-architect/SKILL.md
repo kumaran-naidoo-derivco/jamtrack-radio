@@ -16,10 +16,16 @@ If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
 ## Output
 
 Save to `docs/architecture/<feature>/cloud-arch.md`.
+Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
 
 ```bash
-mkdir -p docs/architecture/<feature>
+mkdir -p docs/architecture/<feature>/diagrams
 ```
+
+> **Draw.io is the required diagramming tool for all architecture documents.**
+> Use the **Microsoft Azure 2023** shape library for all Azure resources (`Extras → Edit Diagram` → search "Azure" in shape library panel).
+> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> **Mermaid diagrams are reserved for the implementation phase only.**
 
 ---
 
@@ -37,29 +43,25 @@ Show what infrastructure applies at each phase:
 | DNS | — | — | Azure DNS |
 | Monitoring | stdout logs | stdout logs | ELK on AKS + ClickHouse |
 
-### 2. Azure Network Topology (Phase 4+)
+### 2. Azure Network Topology Diagram (Phase 4+)
 
-```mermaid
-flowchart TD
-    subgraph VNet["VNet: vnet-jamtrack-prod (10.0.0.0/16)"]
-        subgraph AKSSubnet["AKS Subnet: 10.0.1.0/24"]
-            NS_PROD["Namespace: jamtrack-prod"]
-            NS_STAGING["Namespace: jamtrack-staging"]
-        end
-        subgraph DataSubnet["Data Subnet: 10.0.2.0/24"]
-            PG["PostgreSQL Flexible Server\n(private endpoint)"]
-        end
-        subgraph IngressSubnet["Ingress Subnet: 10.0.3.0/24"]
-            AGIC["App Gateway\n+ WAF Policy"]
-        end
-    end
-    ACR["Azure Container Registry\n(acr-jamtrack)"]
-    KV["Azure Key Vault\n(kv-jamtrack-prod)"]
-    Internet(("Internet")) -->|"HTTPS"| AGIC
-    AGIC --> NS_PROD
-    NS_PROD -->|"private"| PG
-    NS_PROD -->|"pull images"| ACR
-    NS_PROD -->|"managed identity"| KV
+**File**: `docs/architecture/<feature>/diagrams/cloud-network-topology.drawio`
+**Shape library**: Microsoft Azure 2023 (`View → Shapes → Azure`)
+
+Diagram elements:
+- **Azure Virtual Network** container shape (`10.0.0.0/16`) as the outermost boundary
+- **Subnet** sub-containers (ingress `10.0.3.0/24`, AKS `10.0.1.0/24`, data `10.0.2.0/24`) — each as a distinct named zone
+- **Azure Kubernetes Service** icon in AKS subnet, with namespace labels (`jamtrack-prod`, `jamtrack-staging`)
+- **Azure Application Gateway + WAF v2** icon in ingress subnet
+- **Azure Database for PostgreSQL Flexible Server** icon in data subnet — annotated `(private endpoint)`
+- **Azure Container Registry**, **Azure Key Vault**, **Azure Monitor** icons outside the VNet but inside the Resource Group boundary
+- **Internet** cloud shape at the top; data layer at the bottom
+- Arrows follow the physical data path: Internet → App Gateway → AKS → private endpoints
+
+Embed in this document:
+```
+> **Diagram**: [cloud-network-topology.drawio](diagrams/cloud-network-topology.drawio)
+> ![Azure Network Topology](diagrams/cloud-network-topology.png)
 ```
 
 ### 3. AKS Node Pool Sizing
@@ -171,44 +173,31 @@ Produce a physical deployment diagram that follows [Azure Architecture Center di
 | Data stores | `#F3E5F5` (light purple) | `#7B1FA2` |
 | Security / identity | `#FFF3E0` (light orange) | `#E65100` |
 
-**Mermaid physical deployment template (Phase 4+)**:
+**File**: `docs/architecture/<feature>/diagrams/physical-deployment.drawio`
+**Shape library**: Microsoft Azure 2023 (`View → Shapes → Azure`)
 
-```mermaid
-flowchart TD
-    classDef azure fill:#0078D4,stroke:#005A9E,color:#fff
-    classDef data  fill:#F3E5F5,stroke:#7B1FA2,color:#000
-    classDef sec   fill:#FFF3E0,stroke:#E65100,color:#000
+Diagram elements (follow the naming conventions table above exactly):
+- **Resource Group** container: `rg-jamtrack-prod (UK South)`
+- **Azure Virtual Network** container: `10.0.0.0/16` with three named subnets
+- **Azure Application Gateway + WAF v2** icon in ingress subnet
+- **Azure Kubernetes Service** icon in AKS subnet — show both `jamtrack-prod` and `jamtrack-staging` namespace labels
+- **Azure Database for PostgreSQL Flexible Server** icon in data subnet — annotated with private endpoint lock icon
+- **Azure Container Registry**, **Azure Key Vault**, **Azure Monitor + Log Analytics Workspace**, **Microsoft Entra ID** icons at Resource Group level (outside the VNet)
+- **Private Endpoint** connection lines (solid) from AKS to PostgreSQL, ACR, Key Vault
+- **Managed Identity** dashed arrow from AKS to Entra ID
+- **Internet** cloud icon at top; arrow into App Gateway labelled `HTTPS :443`
 
-    Internet(("Internet"))
+Colour conventions (apply via draw.io shape fill):
+- Azure service shapes: Azure Blue `#0078D4`
+- Network/VNet boundaries: Light Blue `#E3F2FD`
+- Data stores: Light Purple `#F3E5F5`
+- Security / identity: Light Orange `#FFF3E0`
 
-    subgraph RG["Resource Group: rg-jamtrack-prod (UK South)"]
-        subgraph VNET["Azure Virtual Network — 10.0.0.0/16"]
-            subgraph INGRESS["Ingress Subnet — 10.0.3.0/24"]
-                APPGW["Azure Application Gateway\n+ WAF v2"]:::azure
-            end
-            subgraph AKSNET["AKS Subnet — 10.0.1.0/24"]
-                AKS["Azure Kubernetes Service\njamtrack-prod / jamtrack-staging"]:::azure
-            end
-            subgraph DATANET["Data Subnet — 10.0.2.0/24"]
-                PG["Azure Database for PostgreSQL\nFlexible Server"]:::data
-            end
-        end
-        ACR["Azure Container Registry\nacr-jamtrack"]:::azure
-        KV["Azure Key Vault\nkv-jamtrack-prod"]:::sec
-        LAW["Azure Monitor\n+ Log Analytics Workspace"]:::azure
-        ENTRA["Microsoft Entra ID\n(Workload Managed Identity)"]:::sec
-    end
-
-    Internet        -->|"HTTPS :443"| APPGW
-    APPGW           -->|"HTTP :80 (internal)"| AKS
-    AKS             -->|"Private Endpoint"| PG
-    AKS             -->|"Private Endpoint — image pull"| ACR
-    AKS             -->|"Private Endpoint — secret fetch"| KV
-    AKS             -->|"Diagnostic logs + metrics"| LAW
-    AKS             -->|"Workload identity token"| ENTRA
+Embed in this document:
 ```
-
-> **Draw.io / Visio**: for formal presentations, recreate this diagram in draw.io using the **Microsoft Azure 2023** icon set (`Extras → Edit Diagram` → import Azure shape library). The Mermaid diagram above is the embedded markdown version; both must stay in sync.
+> **Diagram**: [physical-deployment.drawio](diagrams/physical-deployment.drawio)
+> ![Physical Deployment Diagram](diagrams/physical-deployment.png)
+```
 
 ---
 

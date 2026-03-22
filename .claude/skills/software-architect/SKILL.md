@@ -18,10 +18,35 @@ If `$ARGUMENTS` is provided, use it as the feature/service name. Load context fr
 ## Output
 
 Save to `docs/architecture/<feature>/software-arch.md`.
+Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
 
 ```bash
-mkdir -p docs/architecture/<feature>
+mkdir -p docs/architecture/<feature>/diagrams
 ```
+
+> **Draw.io is the required diagramming tool for all architecture documents.**
+> Open diagrams in [draw.io](https://app.diagrams.net/) or the VS Code draw.io extension (`hediet.vscode-drawio`).
+> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> **Mermaid diagrams are reserved for the implementation phase only** — use them in development workflow steps and inline code documentation, never in architecture documents.
+
+### Draw.io Interaction Diagram — Symbol Conventions
+
+All logical diagrams use draw.io's **Software** + **UML** shape libraries (`View → Shapes`). Apply these conventions consistently:
+
+| Element | Shape | Label convention |
+|---------|-------|-----------------|
+| Service / component | Rounded rectangle | `<<component>>` stereotype |
+| External system | Rounded rectangle | `<<external>>`, grey fill (`#f5f5f5`) |
+| REST API surface | Rounded rectangle | `<<api>>` stereotype |
+| gRPC service | Rounded rectangle | `<<gRPC>>` stereotype |
+| Database (PostgreSQL) | Cylinder | Standard DB shape, purple fill (`#f3e5f5`) |
+| Cache (Redis) | Cylinder | `<<cache>>`, orange fill (`#fff3e0`) |
+| Message queue / event bus | Queue/envelope shape | `<<async>>`, yellow fill |
+| Event store | Cylinder | `<<event store>>`, yellow fill |
+| Synchronous call | Solid arrow, filled arrowhead | Protocol label: `gRPC`, `REST`, `SQL` |
+| Asynchronous event | Dashed arrow, open arrowhead | Event name: e.g. `TrackUploaded` |
+| Eventual consistency | Dashed arrow through queue shape | Annotate: `eventually consistent` |
+| Trust / bounded context boundary | Dashed rectangle container | Zone or context name as header |
 
 ---
 
@@ -29,50 +54,41 @@ mkdir -p docs/architecture/<feature>
 
 Show the system boundary and its relationships with external actors and systems.
 
-```mermaid
-flowchart TD
-    subgraph Users
-        M["Musician\n(end user)"]
-        A["Admin\n(internal)"]
-    end
+**File**: `docs/architecture/<feature>/diagrams/context.drawio`
+**Shape library**: Software + UML
 
-    subgraph JamtrackSystem["Jamtrack Radio System"]
-        GW["API Gateway\n(YARP)"]
-    end
+Diagram elements:
+- **Person** shapes: Musician (end user), Admin (internal)
+- **System boundary** (blue border container): "Jamtrack Radio System" — contains API Gateway
+- **External system** boxes (`<<external>>`): Azure Blob Storage (audio files), Identity Provider (future)
+- **Solid arrows**: synchronous HTTPS calls, labelled with protocol and direction
 
-    subgraph ExternalSystems
-        S3["Azure Blob Storage\n(audio files)"]
-        IDP["Identity Provider\n(future)"]
-    end
-
-    M -->|"HTTPS"| GW
-    A -->|"HTTPS"| GW
-    GW -->|"reads audio"| S3
-    GW -->|"auth (future)"| IDP
+Embed in this document:
+```
+> **Diagram**: [context.drawio](diagrams/context.drawio)
+> ![System Context Diagram](diagrams/context.png)
 ```
 
-### 2. Container Diagram (C4 Level 2)
+### 2. Container Interaction Diagram (C4 Level 2)
 
-Show each microservice, its technology, and how they communicate.
+Show each microservice, its technology, and how they communicate — using interaction notation to make synchronous vs. asynchronous flows explicit.
 
-```mermaid
-flowchart TD
-    subgraph Services["Microservices (ASP.NET Core)"]
-        IS["Identity Service\nPort 5001"]
-        TS["Track Service\nPort 5002"]
-        SS["Streaming Service\nPort 5003"]
-    end
+**File**: `docs/architecture/<feature>/diagrams/containers.drawio`
+**Shape library**: Software + UML
 
-    subgraph Data["Data Stores"]
-        PG[("PostgreSQL 16\nPort 5432")]
-    end
+Diagram elements:
+- **`<<component>>`** shapes for each microservice (Identity, Track, Streaming, API Gateway)
+- **Cylinder** shapes for each data store (PostgreSQL per service — never shared)
+- **Queue/envelope** shape for any async event bus (even if deferred — show it as `<<future>>`)
+- **Solid arrows** for synchronous gRPC calls — label with `gRPC: MethodName`
+- **Solid arrows** for REST calls — label with `REST: GET /path`
+- **Dashed arrows** for domain events — label with event name, annotate `eventually consistent` where applicable
+- Each service's bounded context boundary drawn as a dashed container box
 
-    GW["API Gateway\n(YARP)"] -->|"gRPC"| IS
-    GW -->|"gRPC"| TS
-    GW -->|"REST (streaming)"| SS
-    IS -->|"Dapper / SQL"| PG
-    TS -->|"Dapper / SQL"| PG
-    SS -->|"Dapper / SQL"| PG
+Embed in this document:
+```
+> **Diagram**: [containers.drawio](diagrams/containers.drawio)
+> ![Container Interaction Diagram](diagrams/containers.png)
 ```
 
 ### 3. Domain Model
@@ -85,25 +101,19 @@ For each **bounded context** in scope:
 - **Domain Events** (things that happened): name, when raised, who handles it
 - **Aggregates** (consistency boundary): which entity is the aggregate root
 
-Format as a class diagram:
+**File**: `docs/architecture/<feature>/diagrams/domain-model.drawio`
+**Shape library**: UML (class diagram shapes)
 
-```mermaid
-classDiagram
-    class User {
-        +Guid Id
-        +Email Email
-        +string DisplayName
-        +PasswordHash PasswordHash
-        +DateTime CreatedAt
-        +Create(email, password, name) User
-        +ChangePassword(newHash) void
-    }
-    class Email {
-        <<value object>>
-        +string Value
-        +Create(raw) Email
-    }
-    User --> Email
+Diagram elements:
+- UML class boxes with `+field: Type` notation and `+Method(): ReturnType`
+- `<<value object>>` and `<<aggregate root>>` stereotypes on relevant classes
+- `<<domain event>>` stereotype on event classes (dashed border)
+- Solid association arrows between entities; dashed dependency arrows to value objects
+
+Embed in this document:
+```
+> **Diagram**: [domain-model.drawio](diagrams/domain-model.drawio)
+> ![Domain Model](diagrams/domain-model.png)
 ```
 
 ### 4. Component Responsibility Matrix
