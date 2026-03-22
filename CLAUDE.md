@@ -65,34 +65,70 @@ Every change, no matter how small, must go through a branch and PR. Never commit
    wsl bash -c "cd /mnt/c/training/jamtrack-radio && git checkout main && git pull origin main"
    ```
 
-2. **Create a branch** using the naming convention:
+2. **Create a sub-task issue** in GitHub for the specific piece of work. Every branch must trace back to an issue.
+   ```bash
+   gh issue create --repo kumaran-naidoo-derivco/jamtrack-radio \
+     --title "Task X.Y: <brief description>" \
+     --body $'Part of #<parent-issue-number>\n\n## What\n<one paragraph describing the work>\n\n## Acceptance criteria\n- [ ] <criterion 1>\n- [ ] <criterion 2>'
+   ```
+   Note the issue number returned (e.g., `#68`). Use it in every subsequent step.
+
+3. **Create a branch** using the naming convention:
    ```bash
    wsl bash -c "cd /mnt/c/training/jamtrack-radio && git checkout -b kumarann/<type>/<description>"
    ```
 
-3. **Make changes** and commit using Conventional Commits:
+4. **Make changes** and commit using Conventional Commits, referencing the issue number:
    ```bash
-   wsl bash -c "cd /mnt/c/training/jamtrack-radio && git add <files> && git commit -m '<type>: <subject>'"
+   wsl bash -c "cd /mnt/c/training/jamtrack-radio && git add <files> && git commit -m '<type>: <subject> (#<issue>)'"
    ```
 
-4. **Push the branch** via WSL git:
+5. **Push the branch** via WSL git:
    ```bash
    wsl bash -c "cd /mnt/c/training/jamtrack-radio && git push origin kumarann/<type>/<description>"
    ```
 
-5. **Create a PR** via WSL `gh` (use `--body-file` to load the template):
+6. **Create a PR** via WSL `gh`, with `Closes #<issue>` in the body to auto-close the sub-task on merge:
    ```bash
-   gh pr create --repo kumaran-naidoo-derivco/jamtrack-radio --base main --head kumarann/<type>/<description> --title "..." --body-file .github/pull_request_template.md
+   gh pr create --repo kumaran-naidoo-derivco/jamtrack-radio \
+     --base main \
+     --head kumarann/<type>/<description> \
+     --title "..." \
+     --body "$(cat <<'EOF'
+   ## Description
+
+   <!-- What does this PR do and why? -->
+
+   ## Closes #<issue>
+
+   ## Type of change
+
+   - [ ] `feat` — new feature
+   - [ ] `fix` — bug fix
+   - [ ] `docs` — documentation only
+   - [ ] `chore` — maintenance / tooling / config
+   - [ ] `ci` — CI/CD pipeline changes
+   - [ ] `refactor` — code restructure, no behaviour change
+   - [ ] `test` — adding or updating tests
+
+   ## Checklist
+
+   - [ ] Branch is up to date with `main`
+   - [ ] Commit message follows Conventional Commits (`feat:`, `fix:`, `docs:`, etc.)
+   - [ ] Issue is linked above (`Closes #`)
+   - [ ] Self-reviewed — code does what it says, no debug artifacts left in
+   EOF
+   )"
    ```
 
-6. **Wait for CI** to pass (`build` check must be green).
+7. **Wait for CI** to pass (`build` check must be green).
 
-7. **Merge the PR** via WSL `gh` (squash merge, delete branch):
+8. **Merge the PR** via WSL `gh` (squash merge, delete branch):
    ```bash
    gh pr merge <number> --repo kumaran-naidoo-derivco/jamtrack-radio --squash --delete-branch
    ```
 
-8. **Sync local main**:
+9. **Sync local main**:
    ```bash
    wsl bash -c "cd /mnt/c/training/jamtrack-radio && git checkout main && git pull origin main"
    ```
@@ -100,9 +136,11 @@ Every change, no matter how small, must go through a branch and PR. Never commit
 ### Conventions
 - Use **Conventional Commits**: `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`, `ci:`
 - Branch naming: `kumarann/<type>/<description>` — e.g. `kumarann/feature/playlist-service`, `kumarann/docs/update-readme`
+- Every branch must have a corresponding GitHub issue (sub-task) created in step 2
+- Commit messages must include the issue number: `<type>: <subject> (#<issue>)`
+- PR body must include `Closes #<issue>` to auto-close the sub-task on merge
 - Stage specific files by name — never `git add .` or `git add -A`
 - Squash merge preferred for feature/docs/chore branches
-- PR body must follow the template in `.github/pull_request_template.md`. Use `--body-file .github/pull_request_template.md` or match the template structure when passing `--body` inline.
 
 ### Code Style (C#)
 - Follow Microsoft C# conventions
