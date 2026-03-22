@@ -17,16 +17,17 @@ If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
 ## Output
 
 Save to `docs/architecture/<feature>/security-arch.md`.
-Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
-
-```bash
-mkdir -p docs/architecture/<feature>/diagrams
-```
 
 > **Draw.io is the required diagramming tool for all architecture documents.**
 > Use draw.io's **Software + UML** shape libraries for trust boundary and threat model diagrams.
-> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> Save each diagram as a separate `.drawio` file in the `diagrams/` subfolder next to the markdown output file, then reference it from the markdown using the format below.
 > **Mermaid diagrams are reserved for the implementation phase only.**
+
+Reference format:
+```
+> **Diagram**: [filename.drawio](diagrams/filename.drawio)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+```
 
 ---
 
@@ -50,10 +51,10 @@ Diagram elements:
 - **Lock icon** on Private Endpoint connections
 - Add a **threat annotation callout** on each zone boundary indicating the STRIDE threats applicable at that boundary (reference Section 3)
 
-Embed in this document:
+Reference in this document:
 ```
 > **Diagram**: [trust-boundaries.drawio](diagrams/trust-boundaries.drawio)
-> ![Trust Boundary Diagram](diagrams/trust-boundaries.png)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
 ### 2. Data Classification

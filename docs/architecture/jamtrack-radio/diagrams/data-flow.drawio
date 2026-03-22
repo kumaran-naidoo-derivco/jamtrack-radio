@@ -1,0 +1,60 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="2" value="&lt;b&gt;Client&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="40" y="200" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="3" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;&lt;br&gt;YARP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;" vertex="1" parent="1">
+      <mxGeometry x="240" y="190" width="130" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="4" value="&lt;b&gt;Track Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="460" y="100" width="130" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="5" value="&lt;b&gt;tracks DB&lt;/b&gt;&lt;br&gt;PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
+      <mxGeometry x="680" y="90" width="130" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="6" value="&lt;b&gt;Storage Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="460" y="330" width="130" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="7" value="&lt;b&gt;storage_objects DB&lt;/b&gt;&lt;br&gt;PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
+      <mxGeometry x="680" y="325" width="140" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="8" value="&lt;b&gt;Azure Blob Storage&lt;/b&gt;&lt;br&gt;&lt;&lt;external&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="900" y="320" width="130" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="9" value="&lt;b&gt;Dapr Pub/Sub&lt;/b&gt;&lt;br&gt;&lt;&lt;async&gt;&gt;&lt;br&gt;Topic: track.uploaded" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="660" y="200" width="160" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="10" value="1. REST: POST /tracks" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="2" target="3" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="11" value="2. gRPC: UploadTrack" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="4" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="12" value="3. INSERT track (storage_ref=NULL)" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="4" target="5" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="13" value="4. gRPC: Store (blob bytes)" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="6" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="14" value="5. SDK: UploadBlob" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="6" target="8" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="15" value="6. INSERT storage_objects" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="6" target="7" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="16" value="7. publish: TrackUploaded" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="4" target="9" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="17" value="8. subscribe: StorageObjectCreated&lt;br&gt;&lt;i&gt;eventually consistent&lt;/i&gt;" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="9" target="6" parent="1">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="740" y="440" /></Array></mxGeometry>
+    </mxCell>
+    <mxCell id="18" value="9. gRPC: SetStorageRef (async)" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="6" target="4" parent="1">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="525" y="260" /></Array></mxGeometry>
+    </mxCell>
+    <mxCell id="19" value="10. UPDATE tracks SET storage_ref" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="4" target="5" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+  </root>
+</mxGraphModel>

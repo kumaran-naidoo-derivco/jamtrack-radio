@@ -18,16 +18,16 @@ If `$ARGUMENTS` is provided, use it as the feature/service name. Load context fr
 ## Output
 
 Save to `docs/architecture/<feature>/software-arch.md`.
-Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
-
-```bash
-mkdir -p docs/architecture/<feature>/diagrams
-```
 
 > **Draw.io is the required diagramming tool for all architecture documents.**
-> Open diagrams in [draw.io](https://app.diagrams.net/) or the VS Code draw.io extension (`hediet.vscode-drawio`).
-> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> Save each diagram as a separate `.drawio` file in the `diagrams/` subfolder next to the markdown output file, then reference it from the markdown using the format below.
 > **Mermaid diagrams are reserved for the implementation phase only** — use them in development workflow steps and inline code documentation, never in architecture documents.
+
+Reference format:
+```
+> **Diagram**: [filename.drawio](diagrams/filename.drawio)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+```
 
 ### Draw.io Interaction Diagram — Symbol Conventions
 
@@ -63,10 +63,10 @@ Diagram elements:
 - **External system** boxes (`<<external>>`): Azure Blob Storage (audio files), Identity Provider (future)
 - **Solid arrows**: synchronous HTTPS calls, labelled with protocol and direction
 
-Embed in this document:
+Reference in this document:
 ```
 > **Diagram**: [context.drawio](diagrams/context.drawio)
-> ![System Context Diagram](diagrams/context.png)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
 ### 2. Container Interaction Diagram (C4 Level 2)
@@ -85,10 +85,10 @@ Diagram elements:
 - **Dashed arrows** for domain events — label with event name, annotate `eventually consistent` where applicable
 - Each service's bounded context boundary drawn as a dashed container box
 
-Embed in this document:
+Reference in this document:
 ```
 > **Diagram**: [containers.drawio](diagrams/containers.drawio)
-> ![Container Interaction Diagram](diagrams/containers.png)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
 ### 3. Domain Model
@@ -110,10 +110,10 @@ Diagram elements:
 - `<<domain event>>` stereotype on event classes (dashed border)
 - Solid association arrows between entities; dashed dependency arrows to value objects
 
-Embed in this document:
+Reference in this document:
 ```
 > **Diagram**: [domain-model.drawio](diagrams/domain-model.drawio)
-> ![Domain Model](diagrams/domain-model.png)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
 ### 4. Component Responsibility Matrix

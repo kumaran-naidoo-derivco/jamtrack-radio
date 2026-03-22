@@ -16,16 +16,17 @@ If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
 ## Output
 
 Save to `docs/architecture/<feature>/cloud-arch.md`.
-Save all diagrams to `docs/architecture/<feature>/diagrams/` as `.drawio` files.
-
-```bash
-mkdir -p docs/architecture/<feature>/diagrams
-```
 
 > **Draw.io is the required diagramming tool for all architecture documents.**
-> Use the **Microsoft Azure 2023** shape library for all Azure resources (`Extras → Edit Diagram` → search "Azure" in shape library panel).
-> Reference in markdown as: `> **Diagram**: [filename.drawio](diagrams/filename.drawio)` with a PNG export for inline preview.
+> Use the **Microsoft Azure 2023** shape library for all Azure resources.
+> Save each diagram as a separate `.drawio` file in the `diagrams/` subfolder next to the markdown output file, then reference it from the markdown using the format below.
 > **Mermaid diagrams are reserved for the implementation phase only.**
+
+Reference format:
+```
+> **Diagram**: [filename.drawio](diagrams/filename.drawio)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+```
 
 ---
 
@@ -58,10 +59,10 @@ Diagram elements:
 - **Internet** cloud shape at the top; data layer at the bottom
 - Arrows follow the physical data path: Internet → App Gateway → AKS → private endpoints
 
-Embed in this document:
+Reference in this document:
 ```
 > **Diagram**: [cloud-network-topology.drawio](diagrams/cloud-network-topology.drawio)
-> ![Azure Network Topology](diagrams/cloud-network-topology.png)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
 ### 3. AKS Node Pool Sizing
@@ -193,10 +194,10 @@ Colour conventions (apply via draw.io shape fill):
 - Data stores: Light Purple `#F3E5F5`
 - Security / identity: Light Orange `#FFF3E0`
 
-Embed in this document:
+Reference in this document:
 ```
 > **Diagram**: [physical-deployment.drawio](diagrams/physical-deployment.drawio)
-> ![Physical Deployment Diagram](diagrams/physical-deployment.png)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
 ---
