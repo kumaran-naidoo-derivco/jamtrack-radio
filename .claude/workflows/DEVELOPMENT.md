@@ -100,7 +100,9 @@ Run `/project-manager` or invoke the Project Manager agent to perform this check
 - `.proto` file updated if a gRPC endpoint was added
 - FluentMigrator migration if schema changed
 
-**Gate**: `dotnet build` passes with zero warnings. PR raised against `main`.
+**Gate**: `dotnet build` passes with zero warnings. PR raised against `main` following `GIT-WORKFLOW.md`.
+
+> **Raising the PR**: Use `/raise-pr` to execute the full git workflow — sub-task issue creation, branch, commit with issue reference, push, and PR with `Closes #<issue>`. See `GIT-WORKFLOW.md` for the full workflow and conventions.
 
 ---
 

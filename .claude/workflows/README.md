@@ -16,6 +16,7 @@ PRODUCT-DISCOVERY → FEATURE-DISCOVERY → DEVELOPMENT → MONITORING
 | **Feature Discovery** | `DISCOVERY.md` | Before any code is written — for every new service or feature | Product Manager, Product Designer, Architect, Project Manager |
 | **Development** | `DEVELOPMENT.md` | After Feature Discovery sign-off — to build and deploy the feature | Senior Developer, DevOps Engineer |
 | **Monitoring** | `MONITORING.md` | After every deployment — to verify health and measure value | DevOps Engineer, Product Manager |
+| **Git Workflow** | `GIT-WORKFLOW.md` | Every change — cross-cutting, applies at any workflow step that produces a PR | All agents |
 
 > **Product vs Feature Discovery**: Product Discovery runs once and answers "Should we build this product?" — it produces the master PRD, design system, system-level architecture, and all GitHub milestones. Feature Discovery runs before each service build and answers "Should we add this feature now?" — it scopes to a single bounded context and creates sprint-level issues. See `PRODUCT-DISCOVERY.md` for a full comparison table.
 
@@ -130,6 +131,12 @@ Each workflow is owned by specific agent personas. Invoke them with a skill:
 | `/data-architect` | Architect | ER diagram, schema ownership, retention, storage costs |
 | `/arch-security` | Architect | Trust boundaries, STRIDE, OWASP Top 10, cost/risk tradeoffs |
 | `/project-plan` | Project Manager | GitHub milestone + all issues (dev + DevOps + testing) |
+
+### Git Workflow Skill
+
+| Skill | Purpose |
+|-------|---------|
+| `/raise-pr` | Full git workflow — sub-task issue → branch → commit with issue ref → push → PR with `Closes #` → CI → merge |
 
 ### Development Skills
 
