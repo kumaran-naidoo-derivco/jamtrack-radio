@@ -12,68 +12,8 @@
 
 Full entity-relationship diagram across all services. Each service's tables are shown within a dashed ownership boundary — no cross-boundary foreign keys.
 
-```drawio
-<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1554" pageHeight="1100" math="0" shadow="0">
-  <root>
-    <mxCell id="0" />
-    <mxCell id="1" parent="0" />
-    <mxCell id="2" value="&lt;b&gt;Identity Service&lt;/b&gt;" style="swimlane;startSize=25;fillColor=#E3F2FD;strokeColor=#0078D4;dashed=1;rounded=1;fontStyle=1;" vertex="1" parent="1">
-      <mxGeometry x="20" y="20" width="380" height="420" as="geometry" />
-    </mxCell>
-    <mxCell id="3" value="&lt;b&gt;users&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;email: varchar(254) UNIQUE&lt;br&gt;display_name: varchar(100)&lt;br&gt;password_hash: varchar(255)&lt;br&gt;oauth_provider: varchar(50)?&lt;br&gt;oauth_subject: varchar(255)?&lt;br&gt;totp_seed_enc: varchar(512)?&lt;br&gt;created_at: timestamptz&lt;br&gt;updated_at: timestamptz&lt;br&gt;is_active: boolean" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="20" y="35" width="340" height="180" as="geometry" />
-    </mxCell>
-    <mxCell id="4" value="&lt;b&gt;refresh_tokens&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;&lt;b&gt;FK&lt;/b&gt; user_id: uuid → users(id)&lt;br&gt;token_hash: varchar(512) UNIQUE&lt;br&gt;expires_at: timestamptz&lt;br&gt;created_at: timestamptz&lt;br&gt;is_revoked: boolean" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="20" y="250" width="340" height="140" as="geometry" />
-    </mxCell>
-    <mxCell id="5" value="1" style="resizable=0;html=1;align=left;verticalAlign=bottom;" connectable="0" vertex="1" parent="3">
-      <mxGeometry x="1" y="1" relative="1" as="geometry"><Array as="sourcePoint" /></mxGeometry>
-    </mxCell>
-    <mxCell id="6" value="FK CASCADE" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endArrow=ERmanyToOne;startArrow=ERmandOne;" edge="1" source="3" target="4" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="7" value="&lt;b&gt;Track Service&lt;/b&gt;" style="swimlane;startSize=25;fillColor=#E8F5E9;strokeColor=#2E7D32;dashed=1;rounded=1;fontStyle=1;" vertex="1" parent="1">
-      <mxGeometry x="440" y="20" width="380" height="580" as="geometry" />
-    </mxCell>
-    <mxCell id="8" value="&lt;b&gt;tracks&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;user_id: uuid &lt;i&gt;(value ref — no FK)&lt;/i&gt;&lt;br&gt;title: varchar(200)&lt;br&gt;artist: varchar(200)?&lt;br&gt;genre: varchar(100)?&lt;br&gt;bpm: smallint?&lt;br&gt;musical_key: varchar(10)?&lt;br&gt;duration_sec: integer?&lt;br&gt;storage_ref: varchar(500)?&lt;br&gt;artwork_ref: varchar(500)?&lt;br&gt;created_at: timestamptz&lt;br&gt;updated_at: timestamptz&lt;br&gt;deleted_at: timestamptz? &lt;i&gt;(soft-delete)&lt;/i&gt;" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="7">
-      <mxGeometry x="20" y="35" width="340" height="230" as="geometry" />
-    </mxCell>
-    <mxCell id="9" value="&lt;b&gt;tags&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;name: varchar(100)&lt;br&gt;user_id: uuid&lt;br&gt;created_at: timestamptz&lt;br&gt;&lt;i&gt;UNIQUE(name, user_id)&lt;/i&gt;" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="7">
-      <mxGeometry x="20" y="295" width="340" height="120" as="geometry" />
-    </mxCell>
-    <mxCell id="10" value="&lt;b&gt;track_tags&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;FK&lt;/b&gt; track_id: uuid → tracks(id)&lt;br&gt;&lt;b&gt;FK&lt;/b&gt; tag_id: uuid → tags(id)&lt;br&gt;&lt;b&gt;PK&lt;/b&gt;(track_id, tag_id)" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="7">
-      <mxGeometry x="20" y="445" width="340" height="100" as="geometry" />
-    </mxCell>
-    <mxCell id="11" value="CASCADE" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmanyToOne;startArrow=ERmandOne;" edge="1" source="8" target="10" parent="7">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="12" value="CASCADE" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmanyToOne;startArrow=ERmandOne;" edge="1" source="9" target="10" parent="7">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="13" value="&lt;b&gt;Playlist Service&lt;/b&gt;" style="swimlane;startSize=25;fillColor=#FFF3E0;strokeColor=#E65100;dashed=1;rounded=1;fontStyle=1;" vertex="1" parent="1">
-      <mxGeometry x="860" y="20" width="380" height="380" as="geometry" />
-    </mxCell>
-    <mxCell id="14" value="&lt;b&gt;playlists&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;user_id: uuid &lt;i&gt;(value ref — no FK)&lt;/i&gt;&lt;br&gt;name: varchar(200)&lt;br&gt;created_at: timestamptz&lt;br&gt;updated_at: timestamptz&lt;br&gt;&lt;i&gt;UNIQUE(user_id, name)&lt;/i&gt;" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="13">
-      <mxGeometry x="20" y="35" width="340" height="150" as="geometry" />
-    </mxCell>
-    <mxCell id="15" value="&lt;b&gt;playlist_tracks&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;FK&lt;/b&gt; playlist_id: uuid → playlists(id)&lt;br&gt;track_id: uuid &lt;i&gt;(value ref — no FK)&lt;/i&gt;&lt;br&gt;position: smallint &lt;i&gt;(1-based)&lt;/i&gt;&lt;br&gt;&lt;b&gt;PK&lt;/b&gt;(playlist_id, track_id)" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="13">
-      <mxGeometry x="20" y="220" width="340" height="120" as="geometry" />
-    </mxCell>
-    <mxCell id="16" value="CASCADE" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmanyToOne;startArrow=ERmandOne;" edge="1" source="14" target="15" parent="13">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="17" value="&lt;b&gt;Storage Service&lt;/b&gt;" style="swimlane;startSize=25;fillColor=#F3E5F5;strokeColor=#7B1FA2;dashed=1;rounded=1;fontStyle=1;" vertex="1" parent="1">
-      <mxGeometry x="860" y="440" width="380" height="200" as="geometry" />
-    </mxCell>
-    <mxCell id="18" value="&lt;b&gt;storage_objects&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;owner_id: uuid &lt;i&gt;(value ref — no FK)&lt;/i&gt;&lt;br&gt;blob_path: varchar(500) UNIQUE&lt;br&gt;content_type: varchar(100)&lt;br&gt;size_bytes: bigint&lt;br&gt;created_at: timestamptz&lt;br&gt;deleted_at: timestamptz?" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="17">
-      <mxGeometry x="20" y="35" width="340" height="145" as="geometry" />
-    </mxCell>
-    <mxCell id="19" value="&lt;i&gt;UUID value ref&lt;br&gt;(no relational FK)&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;fontSize=10;" vertex="1" parent="1">
-      <mxGeometry x="430" y="480" width="120" height="50" as="geometry" />
-    </mxCell>
-  </root>
-</mxGraphModel>
-```
+> **Diagram**: [er-diagram.drawio](diagrams/er-diagram.drawio)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 
 ### Schema — Identity Service
 
@@ -206,68 +146,8 @@ deleted_at   timestamptz   NULL
 
 Shows the complete track upload flow — synchronous write path (solid arrows) and asynchronous `TrackUploaded` event path (dashed arrows, `eventually consistent`).
 
-```drawio
-<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
-  <root>
-    <mxCell id="0" />
-    <mxCell id="1" parent="0" />
-    <mxCell id="2" value="&lt;b&gt;Client&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-      <mxGeometry x="40" y="200" width="120" height="60" as="geometry" />
-    </mxCell>
-    <mxCell id="3" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;&lt;br&gt;YARP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;" vertex="1" parent="1">
-      <mxGeometry x="240" y="190" width="130" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="4" value="&lt;b&gt;Track Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="460" y="100" width="130" height="70" as="geometry" />
-    </mxCell>
-    <mxCell id="5" value="&lt;b&gt;tracks DB&lt;/b&gt;&lt;br&gt;PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
-      <mxGeometry x="680" y="90" width="130" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="6" value="&lt;b&gt;Storage Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="460" y="330" width="130" height="70" as="geometry" />
-    </mxCell>
-    <mxCell id="7" value="&lt;b&gt;storage_objects DB&lt;/b&gt;&lt;br&gt;PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
-      <mxGeometry x="680" y="325" width="140" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="8" value="&lt;b&gt;Azure Blob Storage&lt;/b&gt;&lt;br&gt;&lt;&lt;external&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-      <mxGeometry x="900" y="320" width="130" height="70" as="geometry" />
-    </mxCell>
-    <mxCell id="9" value="&lt;b&gt;Dapr Pub/Sub&lt;/b&gt;&lt;br&gt;&lt;&lt;async&gt;&gt;&lt;br&gt;Topic: track.uploaded" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-      <mxGeometry x="660" y="200" width="160" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="10" value="1. REST: POST /tracks" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="2" target="3" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="11" value="2. gRPC: UploadTrack" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="4" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="12" value="3. SQL: INSERT track (storage_ref=NULL)" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="4" target="5" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="13" value="4. gRPC: Store (blob bytes)" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="6" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="14" value="5. SDK: UploadBlob" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="6" target="8" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="15" value="6. SQL: INSERT storage_objects" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="6" target="7" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="16" value="7. publish: TrackUploaded" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="4" target="9" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="17" value="8. subscribe: StorageObjectCreated&lt;br&gt;&lt;i&gt;eventually consistent&lt;/i&gt;" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="9" target="6" parent="1">
-      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="740" y="440" /></Array></mxGeometry>
-    </mxCell>
-    <mxCell id="18" value="9. gRPC: SetStorageRef&lt;br&gt;&lt;i&gt;(async callback)&lt;/i&gt;" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="6" target="4" parent="1">
-      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="525" y="260" /></Array></mxGeometry>
-    </mxCell>
-    <mxCell id="19" value="10. SQL: UPDATE tracks SET storage_ref" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="4" target="5" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-  </root>
-</mxGraphModel>
-```
+> **Diagram**: [data-flow.drawio](diagrams/data-flow.drawio)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 
 ---
 

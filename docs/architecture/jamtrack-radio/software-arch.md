@@ -11,50 +11,8 @@
 
 Shows the system boundary and its relationships with external actors and systems.
 
-```drawio
-<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
-  <root>
-    <mxCell id="0" />
-    <mxCell id="1" parent="0" />
-    <mxCell id="2" value="&lt;b&gt;Musician&lt;/b&gt;&lt;br&gt;[Person]&lt;br&gt;Uploads and streams tracks" style="shape=mxgraph.general.user2;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="30" y="270" width="130" height="100" as="geometry" />
-    </mxCell>
-    <mxCell id="3" value="&lt;b&gt;Admin&lt;/b&gt;&lt;br&gt;[Person]&lt;br&gt;Monitors and manages platform" style="shape=mxgraph.general.user2;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="30" y="440" width="130" height="100" as="geometry" />
-    </mxCell>
-    <mxCell id="4" value="&lt;b&gt;Jamtrack Radio System&lt;/b&gt;" style="swimlane;startSize=30;fillColor=none;strokeColor=#0078D4;fontStyle=1;fontSize=13;rounded=1;" vertex="1" parent="1">
-      <mxGeometry x="240" y="220" width="360" height="200" as="geometry" />
-    </mxCell>
-    <mxCell id="5" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;&lt;br&gt;YARP Reverse Proxy&lt;br&gt;ASP.NET Core 8" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;" vertex="1" parent="4">
-      <mxGeometry x="100" y="70" width="160" height="90" as="geometry" />
-    </mxCell>
-    <mxCell id="6" value="&lt;b&gt;Azure Blob Storage&lt;/b&gt;&lt;br&gt;&lt;&lt;external&gt;&gt;&lt;br&gt;Audio files + artwork" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-      <mxGeometry x="750" y="190" width="160" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="7" value="&lt;b&gt;OAuth Providers&lt;/b&gt;&lt;br&gt;&lt;&lt;external&gt;&gt;&lt;br&gt;Google / Apple / Facebook&lt;br&gt;(Phase 4+)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-      <mxGeometry x="750" y="310" width="160" height="90" as="geometry" />
-    </mxCell>
-    <mxCell id="8" value="&lt;b&gt;Azure Key Vault&lt;/b&gt;&lt;br&gt;&lt;&lt;external&gt;&gt;&lt;br&gt;RS256 private key, secrets&lt;br&gt;(Phase 4+)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-      <mxGeometry x="750" y="450" width="160" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="9" value="HTTPS / REST" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="2" target="4" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="10" value="HTTPS / REST" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="4" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="11" value="Azure Blob SDK&lt;br&gt;Upload / Stream bytes" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="4" target="6" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="12" value="OAuth 2.0 / OIDC" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="4" target="7" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="13" value="Managed Identity" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="4" target="8" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-  </root>
-</mxGraphModel>
-```
+> **Diagram**: [context.drawio](diagrams/context.drawio)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 
 ---
 
@@ -62,95 +20,8 @@ Shows the system boundary and its relationships with external actors and systems
 
 Shows each microservice, its technology, communication protocol, and data ownership. Synchronous gRPC calls are solid arrows; the async Dapr event bus uses dashed arrows through a queue shape annotated `eventually consistent`.
 
-```drawio
-<mxGraphModel dx="1554" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1100" math="0" shadow="0">
-  <root>
-    <mxCell id="0" />
-    <mxCell id="1" parent="0" />
-    <mxCell id="2" value="&lt;b&gt;Browser Client&lt;/b&gt;&lt;br&gt;[Browser]&lt;br&gt;JavaScript SPA (Phase 5+)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-      <mxGeometry x="660" y="20" width="180" height="70" as="geometry" />
-    </mxCell>
-    <mxCell id="3" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;&lt;br&gt;YARP Reverse Proxy&lt;br&gt;JWT validation middleware&lt;br&gt;Port: 5000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;" vertex="1" parent="1">
-      <mxGeometry x="620" y="140" width="180" height="100" as="geometry" />
-    </mxCell>
-    <mxCell id="4" value="&lt;b&gt;Identity Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;&lt;br&gt;Register, Login, TOTP&lt;br&gt;RS256 JWT issuance&lt;br&gt;Port: 5001" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="60" y="320" width="160" height="110" as="geometry" />
-    </mxCell>
-    <mxCell id="5" value="&lt;b&gt;Track Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;&lt;br&gt;Track metadata CRUD&lt;br&gt;Tag management&lt;br&gt;Port: 5002" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="290" y="320" width="160" height="110" as="geometry" />
-    </mxCell>
-    <mxCell id="6" value="&lt;b&gt;Playlist Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;&lt;br&gt;Playlist CRUD&lt;br&gt;Track ordering&lt;br&gt;Port: 5003" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="620" y="320" width="160" height="110" as="geometry" />
-    </mxCell>
-    <mxCell id="7" value="&lt;b&gt;Streaming Service&lt;/b&gt;&lt;br&gt;&lt;&lt;api&gt;&gt; REST&lt;br&gt;HTTP range requests&lt;br&gt;Stateless — no DB&lt;br&gt;Port: 5004" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="860" y="320" width="160" height="110" as="geometry" />
-    </mxCell>
-    <mxCell id="8" value="&lt;b&gt;Storage Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;&lt;br&gt;Azure Blob abstraction&lt;br&gt;Blob CRUD&lt;br&gt;Port: 5005" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="1100" y="320" width="160" height="110" as="geometry" />
-    </mxCell>
-    <mxCell id="9" value="&lt;b&gt;Identity DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;users, refresh_tokens" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
-      <mxGeometry x="70" y="510" width="140" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="10" value="&lt;b&gt;Track DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;tracks, tags, track_tags" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
-      <mxGeometry x="300" y="510" width="140" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="11" value="&lt;b&gt;Playlist DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;playlists, playlist_tracks" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
-      <mxGeometry x="630" y="510" width="140" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="12" value="&lt;b&gt;Storage DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;storage_objects" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
-      <mxGeometry x="1110" y="510" width="140" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="13" value="&lt;b&gt;Azure Blob Storage&lt;/b&gt;&lt;br&gt;&lt;&lt;external&gt;&gt;&lt;br&gt;Audio + artwork files" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-      <mxGeometry x="1100" y="140" width="160" height="80" as="geometry" />
-    </mxCell>
-    <mxCell id="14" value="&lt;b&gt;Dapr Pub/Sub&lt;/b&gt;&lt;br&gt;&lt;&lt;async&gt;&gt;&lt;br&gt;Redis (Phase 2-3)&lt;br&gt;Azure Service Bus (Phase 4)&lt;br&gt;Topic: track.uploaded&lt;br&gt;&lt;i&gt;eventually consistent&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-      <mxGeometry x="610" y="670" width="210" height="100" as="geometry" />
-    </mxCell>
-    <mxCell id="15" value="HTTPS" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="2" target="3" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="16" value="gRPC" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="4" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="17" value="gRPC" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="5" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="18" value="gRPC" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="6" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="19" value="REST / HTTP range" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="7" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="20" value="gRPC" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="3" target="8" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="21" value="SQL / Dapper" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="4" target="9" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="22" value="SQL / Dapper" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="5" target="10" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="23" value="SQL / Dapper" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="6" target="11" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="24" value="SQL / Dapper" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="8" target="12" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="25" value="Azure Blob SDK" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="8" target="13" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="26" value="gRPC: ValidateOwnership" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" source="7" target="5" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="27" value="publish: TrackUploaded" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="5" target="14" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="28" value="subscribe" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;" edge="1" source="14" target="8" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-  </root>
-</mxGraphModel>
-```
+> **Diagram**: [containers.drawio](diagrams/containers.drawio)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 
 ### Service Port Map
 
@@ -169,50 +40,8 @@ Shows each microservice, its technology, communication protocol, and data owners
 
 ### Bounded Context: Identity
 
-```drawio
-<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
-  <root>
-    <mxCell id="0" />
-    <mxCell id="1" parent="0" />
-    <mxCell id="2" value="&lt;b&gt;Identity Bounded Context&lt;/b&gt;" style="swimlane;startSize=30;fillColor=none;strokeColor=#0078D4;dashed=1;rounded=1;fontStyle=1;fontSize=13;" vertex="1" parent="1">
-      <mxGeometry x="20" y="20" width="940" height="500" as="geometry" />
-    </mxCell>
-    <mxCell id="3" value="&lt;&lt;Aggregate Root&gt;&gt;&lt;br&gt;&lt;b&gt;User&lt;/b&gt;&lt;hr/&gt;+ Id: Guid&lt;br&gt;+ Email: Email&lt;br&gt;+ PasswordHash: PasswordHash&lt;br&gt;+ DisplayName: string&lt;br&gt;+ TotpSeed: TotpSeed?&lt;br&gt;+ CreatedAt: DateTimeOffset&lt;br&gt;+ IsActive: bool&lt;hr/&gt;+ Create(email, pwd): User&lt;br&gt;+ ValidatePassword(plain): bool&lt;br&gt;+ EnableTotp(seed): void" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="330" y="50" width="250" height="230" as="geometry" />
-    </mxCell>
-    <mxCell id="4" value="&lt;&lt;Value Object&gt;&gt;&lt;br&gt;&lt;b&gt;Email&lt;/b&gt;&lt;hr/&gt;+ Value: string&lt;hr/&gt;Invariant: RFC 5321 format&lt;br&gt;Immutable after creation" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="40" y="40" width="210" height="120" as="geometry" />
-    </mxCell>
-    <mxCell id="5" value="&lt;&lt;Value Object&gt;&gt;&lt;br&gt;&lt;b&gt;PasswordHash&lt;/b&gt;&lt;hr/&gt;+ Hash: string&lt;hr/&gt;Invariant: BCrypt cost 12&lt;br&gt;Never stores plaintext" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="40" y="200" width="210" height="120" as="geometry" />
-    </mxCell>
-    <mxCell id="6" value="&lt;&lt;Value Object&gt;&gt;&lt;br&gt;&lt;b&gt;TotpSeed&lt;/b&gt;&lt;hr/&gt;+ EncryptedSeed: string&lt;hr/&gt;Invariant: AES-256-GCM encrypted&lt;br&gt;Nullable — 2FA optional" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="40" y="360" width="210" height="120" as="geometry" />
-    </mxCell>
-    <mxCell id="7" value="&lt;&lt;Entity&gt;&gt;&lt;br&gt;&lt;b&gt;RefreshToken&lt;/b&gt;&lt;hr/&gt;+ Id: Guid&lt;br&gt;+ UserId: Guid&lt;br&gt;+ TokenHash: string&lt;br&gt;&lt;i&gt;(SHA-256 — raw token not stored)&lt;/i&gt;&lt;br&gt;+ ExpiresAt: DateTimeOffset&lt;br&gt;+ IsRevoked: bool&lt;hr/&gt;+ Revoke(): void" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="690" y="40" width="220" height="200" as="geometry" />
-    </mxCell>
-    <mxCell id="8" value="&lt;&lt;Domain Event&gt;&gt;&lt;br&gt;&lt;b&gt;UserRegistered&lt;/b&gt;&lt;hr/&gt;+ UserId: Guid&lt;br&gt;+ Email: string (hashed in logs)&lt;br&gt;+ Timestamp: DateTimeOffset&lt;br&gt;+ Provider: string?" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="690" y="280" width="220" height="140" as="geometry" />
-    </mxCell>
-    <mxCell id="9" value="has" style="endArrow=block;endFill=0;html=1;" edge="1" source="3" target="4" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="10" value="has" style="endArrow=block;endFill=0;html=1;" edge="1" source="3" target="5" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="11" value="has (optional)" style="endArrow=block;endFill=0;html=1;" edge="1" source="3" target="6" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="12" value="1..*" style="endArrow=block;endFill=0;html=1;" edge="1" source="3" target="7" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="13" value="raises" style="endArrow=open;dashed=1;html=1;" edge="1" source="3" target="8" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-  </root>
-</mxGraphModel>
-```
+> **Diagram**: [domain-identity.drawio](diagrams/domain-identity.drawio)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 
 | Element | Type | Key properties / invariants |
 |---------|------|----------------------------|

@@ -19,21 +19,14 @@ Save to `docs/architecture/<feature>/data-arch.md`.
 
 > **Draw.io is the required diagramming tool for all architecture documents.**
 > Use draw.io's **Entity Relationship** shape library for ER diagrams and **Software + UML** for data flow diagrams.
-> Embed every diagram as a `drawio` fenced code block directly in the markdown file — do **not** save diagrams as separate `.drawio` files or reference external PNG exports.
+> Save each diagram as a separate `.drawio` file in the `diagrams/` subfolder next to the markdown output file, then reference it from the markdown using the format below.
 > **Mermaid diagrams are reserved for the implementation phase only.**
 
-Embed format:
-~~~
-```drawio
-<mxGraphModel ...>
-  <root>
-    <mxCell id="0" />
-    <mxCell id="1" parent="0" />
-    <!-- diagram elements -->
-  </root>
-</mxGraphModel>
+Reference format:
 ```
-~~~
+> **Diagram**: [filename.drawio](diagrams/filename.drawio)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+```
 
 ---
 
@@ -51,10 +44,10 @@ Diagram elements:
 - **Service ownership boundary**: draw a dashed container around each service's tables — no cross-boundary lines permitted
 - Use blue fill for PK columns, yellow for FK columns
 
-Embed in this document:
+Reference in this document:
 ```
 > **Diagram**: [er-diagram.drawio](diagrams/er-diagram.drawio)
-> ![ER Diagram](diagrams/er-diagram.png)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
 Rules:
@@ -127,10 +120,10 @@ Diagram elements — follow the interaction diagram symbol conventions:
 - **Dashed arrows** for domain events — label with event name (e.g. `UserRegistered`)
 - Show the full write path (client → service → DB) and async publication path separately
 
-Embed in this document:
+Reference in this document:
 ```
 > **Diagram**: [data-flow.drawio](diagrams/data-flow.drawio)
-> ![Data Flow Diagram](diagrams/data-flow.png)
+> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
 ### 6. Observability Events
