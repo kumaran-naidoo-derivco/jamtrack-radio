@@ -18,16 +18,62 @@ If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
 
 Save to `docs/architecture/<feature>/security-arch.md`.
 
-> **Draw.io is the required diagramming tool for all architecture documents.**
-> Use draw.io's **Software + UML** shape libraries for trust boundary and threat model diagrams.
-> Save each diagram as a separate `.drawio` file in the `diagrams/` subfolder next to the markdown output file, then reference it from the markdown using the format below.
-> **Mermaid diagrams are reserved for the implementation phase only.**
+> **The trust boundary diagram uses the `/infrastructure-diagrams` skill** (Python Diagrams — proper Azure icons, zones as Clusters).
+> Save as a Python script in the `diagrams/` subfolder; running it generates a `.png`.
+> **Draw.io is reserved for logical diagrams. Mermaid is reserved for implementation-phase inline documentation only.**
 
 Reference format:
 ```
-> **Diagram**: [filename.drawio](diagrams/filename.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+> **Diagram**: [filename.png](diagrams/filename.png)
+> _Generated from [filename.py](diagrams/filename.py) — run `python diagrams/filename.py` to regenerate_
 ```
+
+### Diagram Standards (Python Diagrams)
+
+Use the `/infrastructure-diagrams` skill. Trust boundary zones map directly to `Cluster` blocks:
+
+```python
+from diagrams import Diagram, Cluster, Edge
+from diagrams.azure.network import ApplicationGateway
+from diagrams.azure.compute import KubernetesServices
+from diagrams.azure.database import DatabaseForPostgresqlServers
+from diagrams.azure.security import KeyVaults
+from diagrams.azure.storage import BlobStorage
+from diagrams.azure.identity import ActiveDirectory
+from diagrams.onprem.client import Users
+
+with Diagram("Jamtrack Radio — Trust Boundaries", show=False,
+             filename="trust-boundaries", direction="TB",
+             graph_attr={"bgcolor": "white", "pad": "0.5"}):
+
+    with Cluster("Internet / Untrusted"):
+        browser = Users("Browser Client\n(JavaScript SPA)")
+
+    with Cluster("DMZ / TLS-Terminated\n[STRIDE: Spoofing, Info Disclosure]"):
+        appgw = ApplicationGateway("Azure App Gateway\n+ WAF v2")
+
+    with Cluster("Internal Service Network / Trusted\n[STRIDE: Spoofing, EoP]"):
+        aks = KubernetesServices("AKS Microservices\n(JWT Bearer validated)")
+
+    with Cluster("Data Zone / Most Trusted\n[STRIDE: Info Disclosure]"):
+        pg = DatabaseForPostgresqlServers("PostgreSQL\n(encrypted at rest)")
+        kv = KeyVaults("Azure Key Vault\nRS256 key · DB creds")
+        blob = BlobStorage("Azure Blob Storage\n(no public URLs)")
+        entra = ActiveDirectory("Microsoft Entra ID\nManaged Identity")
+
+    browser >> Edge(label="HTTPS TLS 1.3") >> appgw
+    appgw >> Edge(label="gRPC + JWT Bearer") >> aks
+    aks >> Edge(label="SSL + KV credentials") >> pg
+    aks >> Edge(label="Managed Identity", style="dashed") >> kv
+    aks >> Edge(label="Managed Identity", style="dashed") >> blob
+    aks >> Edge(label="Workload Identity", style="dashed") >> entra
+```
+
+**Zone colour conventions** (Python Diagrams uses Graphviz cluster fill — set via `graph_attr` on each Cluster):
+- Internet / Untrusted → `bgcolor="#ffeeee"`
+- DMZ / TLS-terminated → `bgcolor="#fff3e0"`
+- Internal Service Network → `bgcolor="#e3f2fd"`
+- Data Zone / Most trusted → `bgcolor="#f3e5f5"`
 
 ---
 
@@ -35,26 +81,19 @@ Reference format:
 
 Show every trust boundary, data classification zone, and authentication mechanism.
 
-**File**: `docs/architecture/<feature>/diagrams/trust-boundaries.drawio`
-**Shape library**: Software + UML
+**File**: `docs/architecture/<feature>/diagrams/trust-boundaries.py` → generates `trust-boundaries.png`
 
-Diagram elements:
-- **Zone containers** (dashed rectangle boundaries, colour-coded by trust level):
-  - Internet / Untrusted — red border (`#b71c1c`)
-  - DMZ / TLS-terminated — orange border (`#e65100`)
-  - Internal Network / Service mesh — blue border (`#0078D4`)
-  - Data Zone / Most trusted — purple border (`#7b1fa2`)
-- **`<<component>>`** shapes for services inside each zone
-- **Cylinder** shapes for databases and secret stores in the data zone
-- **Solid arrows** for synchronous authenticated calls — label with protocol and auth mechanism (e.g. `gRPC + JWT validation`, `HTTPS TLS 1.3`)
-- **Dashed arrows** for Managed Identity / token flows — label `Managed Identity`
-- **Lock icon** on Private Endpoint connections
-- Add a **threat annotation callout** on each zone boundary indicating the STRIDE threats applicable at that boundary (reference Section 3)
+Use the `/infrastructure-diagrams` skill. Follow the code template in the Diagram Standards section above. Each trust zone is a `Cluster`. Requirements:
+- **Four zones** (top-to-bottom, `direction="TB"`): Internet/Untrusted → DMZ/TLS-Terminated → Internal Service Network → Data Zone
+- **STRIDE annotations** in each Cluster label: e.g. `"DMZ / TLS-Terminated\n[STRIDE: Spoofing, Info Disclosure]"`
+- **Solid edges** for synchronous authenticated calls — label with protocol + auth mechanism
+- **Dashed edges** for Managed Identity / credential flows
+- Use official Azure icon classes for all Azure services (App Gateway, AKS, PostgreSQL, Key Vault, Blob, Entra ID)
 
 Reference in this document:
 ```
-> **Diagram**: [trust-boundaries.drawio](diagrams/trust-boundaries.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+> **Diagram**: [trust-boundaries.png](diagrams/trust-boundaries.png)
+> _Generated from [trust-boundaries.py](diagrams/trust-boundaries.py) — run `python diagrams/trust-boundaries.py` to regenerate_
 ```
 
 ### 2. Data Classification

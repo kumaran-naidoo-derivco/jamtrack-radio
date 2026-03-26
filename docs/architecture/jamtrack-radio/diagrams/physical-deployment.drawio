@@ -62,23 +62,93 @@
     <mxCell id="21" value="&lt;b&gt;Azure DNS&lt;/b&gt;&lt;br&gt;jamtrackradio.com" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="3">
       <mxGeometry x="30" y="500" width="150" height="70" as="geometry" />
     </mxCell>
-    <mxCell id="22" value="HTTPS TLS 1.3" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="2" target="5" parent="1">
+    <!-- Internet→Ingress subnet: vertical-primary, arc -->
+    <mxCell id="22" value="HTTPS TLS 1.3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="2" target="5" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="23" value="" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="5" target="7" parent="1">
+    <!-- Ingress subnet→AKS subnet: vertical-primary (both inside VNet, stacked vertically), arc -->
+    <mxCell id="23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="5" target="7" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="24" value="Private Endpoint SSL" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="7" target="12" parent="1">
+    <!-- AKS subnet→Data subnet: vertical-primary, arc -->
+    <mxCell id="24" value="Private Endpoint SSL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="7" target="12" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="25" value="Managed Identity" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" source="7" target="16" parent="1">
+    <!-- AKS→KeyVault: horizontal-primary (large x difference), none -->
+    <mxCell id="25" value="Managed Identity" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="7" target="16" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="26" value="Managed Identity" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" source="7" target="18" parent="1">
+    <!-- AKS→BlobStorage: horizontal-primary, none -->
+    <mxCell id="26" value="Managed Identity" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="7" target="18" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="27" value="AMQP" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" source="7" target="17" parent="1">
+    <!-- AKS→ServiceBus: horizontal-primary, none -->
+    <mxCell id="27" value="AMQP" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="7" target="17" parent="1">
       <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <!-- Legend: 10 colours → height = 10*26+32 = 292, y = 688 -->
+    <mxCell id="leg_container" value="Legend" style="swimlane;startSize=22;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="20" y="688" width="220" height="292" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_1" value="" style="rounded=1;fillColor=#E3F2FD;strokeColor=#0078D4;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="32" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_1" value="Azure VNet / service boundary" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="30" width="180" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_2" value="" style="rounded=1;fillColor=#FFF3E0;strokeColor=#E65100;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="58" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_2" value="Subnet (ingress) / Entra ID" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="56" width="180" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_3" value="" style="rounded=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="84" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_3" value="AKS subnet" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="82" width="180" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_4" value="" style="rounded=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="110" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_4" value="Data subnet" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="108" width="180" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_5" value="" style="rounded=1;fillColor=#0078D4;strokeColor=#005A9E;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="136" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_5" value="Azure resource" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="134" width="180" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_6" value="" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="162" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_6" value="Prod namespace" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="160" width="180" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_7" value="" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="188" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_7" value="Staging namespace" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="186" width="180" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_8" value="" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="214" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_8" value="System namespace" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="212" width="180" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_9" value="" style="rounded=1;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="240" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_9" value="Database (PostgreSQL)" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="238" width="180" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_swatch_10" value="" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="266" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_10" value="External system" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="264" width="180" height="20" as="geometry" />
     </mxCell>
   </root>
 </mxGraphModel>
