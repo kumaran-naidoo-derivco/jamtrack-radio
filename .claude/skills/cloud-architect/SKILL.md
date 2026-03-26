@@ -17,16 +17,63 @@ If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
 
 Save to `docs/architecture/<feature>/cloud-arch.md`.
 
-> **Draw.io is the required diagramming tool for all architecture documents.**
-> Use the **Microsoft Azure 2023** shape library for all Azure resources.
-> Save each diagram as a separate `.drawio` file in the `diagrams/` subfolder next to the markdown output file, then reference it from the markdown using the format below.
-> **Mermaid diagrams are reserved for the implementation phase only.**
+> **Cloud topology and physical deployment diagrams use the `/infrastructure-diagrams` skill** (Python Diagrams library — proper Azure icons, reproducible from source).
+> Save each diagram as a Python script in the `diagrams/` subfolder. Running the script generates a `.png` alongside it.
+> **Draw.io is reserved for logical diagrams. Mermaid is reserved for implementation-phase inline documentation only.**
 
 Reference format:
 ```
-> **Diagram**: [filename.drawio](diagrams/filename.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+> **Diagram**: [filename.png](diagrams/filename.png)
+> _Generated from [filename.py](diagrams/filename.py) — run `python diagrams/filename.py` to regenerate_
 ```
+
+### Diagram Standards (Python Diagrams)
+
+Use the `/infrastructure-diagrams` skill for all cloud and infrastructure diagrams. Key patterns for this skill:
+
+```python
+from diagrams import Diagram, Cluster, Edge
+from diagrams.azure.network import ApplicationGateway, VirtualNetworks
+from diagrams.azure.compute import KubernetesServices
+from diagrams.azure.database import DatabaseForPostgresqlServers, CacheForRedis
+from diagrams.azure.storage import BlobStorage
+from diagrams.azure.security import KeyVaults
+from diagrams.azure.identity import ActiveDirectory
+from diagrams.azure.monitor import LogAnalyticsWorkspaces
+from diagrams.onprem.client import Users
+
+with Diagram("Diagram Title", show=False, filename="output-name", direction="TB",
+             graph_attr={"bgcolor": "white", "pad": "0.5", "fontsize": "13"}):
+    # Zones as Clusters; Azure resources use official Azure icon classes
+    internet = Users("Internet")
+    with Cluster("rg-jamtrack-prod (UK South)"):
+        with Cluster("Azure VNet 10.0.0.0/16"):
+            with Cluster("Ingress Subnet 10.0.3.0/24"):
+                appgw = ApplicationGateway("App Gateway + WAF v2")
+            with Cluster("AKS Subnet 10.0.1.0/24"):
+                aks = KubernetesServices("AKS\njamtrack-prod | staging")
+            with Cluster("Data Subnet 10.0.2.0/24"):
+                pg = DatabaseForPostgresqlServers("PostgreSQL Flexible Server")
+        kv = KeyVaults("Key Vault")
+        blob = BlobStorage("Blob Storage")
+        entra = ActiveDirectory("Microsoft Entra ID")
+
+    internet >> Edge(label="HTTPS TLS 1.3") >> appgw >> aks
+    aks >> Edge(label="Private Endpoint") >> pg
+    aks >> Edge(label="Managed Identity", style="dashed") >> kv
+    aks >> Edge(label="Managed Identity", style="dashed") >> blob
+```
+
+**Edge conventions:**
+- Solid `>>` — synchronous / network call; add `Edge(label="protocol")`
+- Dashed `Edge(style="dashed")` — identity/credential flows (Managed Identity, Key Vault secret fetch)
+- Dotted `Edge(style="dotted")` — async / event-driven flows
+
+**Cluster conventions:**
+- Outermost cluster = Resource Group
+- Next level = VNet (with CIDR)
+- Inner clusters = named subnets with CIDR labels
+- Services outside VNet (ACR, Key Vault, Blob) sit at Resource Group level
 
 ---
 
@@ -46,23 +93,22 @@ Show what infrastructure applies at each phase:
 
 ### 2. Azure Network Topology Diagram (Phase 4+)
 
-**File**: `docs/architecture/<feature>/diagrams/cloud-network-topology.drawio`
-**Shape library**: Microsoft Azure 2023 (`View → Shapes → Azure`)
+**File**: `docs/architecture/<feature>/diagrams/cloud-network-topology.py` → generates `cloud-network-topology.png`
 
-Diagram elements:
-- **Azure Virtual Network** container shape (`10.0.0.0/16`) as the outermost boundary
-- **Subnet** sub-containers (ingress `10.0.3.0/24`, AKS `10.0.1.0/24`, data `10.0.2.0/24`) — each as a distinct named zone
-- **Azure Kubernetes Service** icon in AKS subnet, with namespace labels (`jamtrack-prod`, `jamtrack-staging`)
-- **Azure Application Gateway + WAF v2** icon in ingress subnet
-- **Azure Database for PostgreSQL Flexible Server** icon in data subnet — annotated `(private endpoint)`
-- **Azure Container Registry**, **Azure Key Vault**, **Azure Monitor** icons outside the VNet but inside the Resource Group boundary
-- **Internet** cloud shape at the top; data layer at the bottom
-- Arrows follow the physical data path: Internet → App Gateway → AKS → private endpoints
+Use the `/infrastructure-diagrams` skill. Diagram elements:
+- Outermost `Cluster`: Resource Group `rg-jamtrack-prod (UK South)`
+- Inner `Cluster`: Azure VNet `10.0.0.0/16` containing three subnet clusters
+- `Cluster("Ingress Subnet 10.0.3.0/24")` → `ApplicationGateway("App Gateway + WAF v2")`
+- `Cluster("AKS Subnet 10.0.1.0/24")` → `KubernetesServices("AKS\njamtrack-prod | staging")`
+- `Cluster("Data Subnet 10.0.2.0/24")` → `DatabaseForPostgresqlServers(...)`, `CacheForRedis(...)`
+- At Resource Group level (outside VNet): `KeyVaults`, `BlobStorage`, `ActiveDirectory`, `LogAnalyticsWorkspaces`, `ContainerRegistries`
+- Top-level: `Users("Internet")` node
+- Flow: Internet → App Gateway → AKS; AKS → data subnet (Private Endpoint solid); AKS → KV/Blob/Entra (Managed Identity dashed)
 
 Reference in this document:
 ```
-> **Diagram**: [cloud-network-topology.drawio](diagrams/cloud-network-topology.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+> **Diagram**: [cloud-network-topology.png](diagrams/cloud-network-topology.png)
+> _Generated from [cloud-network-topology.py](diagrams/cloud-network-topology.py) — run `python diagrams/cloud-network-topology.py` to regenerate_
 ```
 
 ### 3. AKS Node Pool Sizing
@@ -174,30 +220,22 @@ Produce a physical deployment diagram that follows [Azure Architecture Center di
 | Data stores | `#F3E5F5` (light purple) | `#7B1FA2` |
 | Security / identity | `#FFF3E0` (light orange) | `#E65100` |
 
-**File**: `docs/architecture/<feature>/diagrams/physical-deployment.drawio`
-**Shape library**: Microsoft Azure 2023 (`View → Shapes → Azure`)
+**File**: `docs/architecture/<feature>/diagrams/physical-deployment.py` → generates `physical-deployment.png`
 
-Diagram elements (follow the naming conventions table above exactly):
-- **Resource Group** container: `rg-jamtrack-prod (UK South)`
-- **Azure Virtual Network** container: `10.0.0.0/16` with three named subnets
-- **Azure Application Gateway + WAF v2** icon in ingress subnet
-- **Azure Kubernetes Service** icon in AKS subnet — show both `jamtrack-prod` and `jamtrack-staging` namespace labels
-- **Azure Database for PostgreSQL Flexible Server** icon in data subnet — annotated with private endpoint lock icon
-- **Azure Container Registry**, **Azure Key Vault**, **Azure Monitor + Log Analytics Workspace**, **Microsoft Entra ID** icons at Resource Group level (outside the VNet)
-- **Private Endpoint** connection lines (solid) from AKS to PostgreSQL, ACR, Key Vault
-- **Managed Identity** dashed arrow from AKS to Entra ID
-- **Internet** cloud icon at top; arrow into App Gateway labelled `HTTPS :443`
-
-Colour conventions (apply via draw.io shape fill):
-- Azure service shapes: Azure Blue `#0078D4`
-- Network/VNet boundaries: Light Blue `#E3F2FD`
-- Data stores: Light Purple `#F3E5F5`
-- Security / identity: Light Orange `#FFF3E0`
+Use the `/infrastructure-diagrams` skill. Follow the naming conventions table above exactly in node labels. Diagram elements:
+- `Cluster("rg-jamtrack-prod (UK South)")` — outermost boundary
+- `Cluster("Azure VNet 10.0.0.0/16")` containing three subnet clusters
+- `Cluster("Ingress Subnet 10.0.3.0/24")` → `ApplicationGateway("Azure Application Gateway + WAF v2")`
+- `Cluster("AKS Subnet 10.0.1.0/24")` → nested clusters for each namespace: `jamtrack-prod`, `jamtrack-staging`, `jamtrack-system` — each containing its service `Pod` nodes
+- `Cluster("Data Subnet 10.0.2.0/24")` → `DatabaseForPostgresqlServers("Azure Database for PostgreSQL Flexible Server\n(Private Endpoint)")`, `CacheForRedis("Azure Cache for Redis\n(Private Endpoint)")`
+- At Resource Group level: `ContainerRegistries("Azure Container Registry (ACR)")`, `KeyVaults("Azure Key Vault")`, `LogAnalyticsWorkspaces("Azure Monitor + Log Analytics")`, `ActiveDirectory("Microsoft Entra ID")`
+- `Users("Internet")` at top
+- Edges: Internet → App Gateway (`HTTPS :443`); App Gateway → AKS; AKS → PostgreSQL/Redis (`Private Endpoint` solid); AKS → ACR/KV/Monitor/Entra (`Managed Identity` dashed)
 
 Reference in this document:
 ```
-> **Diagram**: [physical-deployment.drawio](diagrams/physical-deployment.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+> **Diagram**: [physical-deployment.png](diagrams/physical-deployment.png)
+> _Generated from [physical-deployment.py](diagrams/physical-deployment.py) — run `python diagrams/physical-deployment.py` to regenerate_
 ```
 
 ---

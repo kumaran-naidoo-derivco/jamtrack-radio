@@ -29,6 +29,71 @@ Reference format:
 > _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
+### Diagram Visual Standards
+
+**Style templates** — use these as the visual reference for every diagram you produce:
+
+| Template | Use for |
+|----------|---------|
+| `.claude/redemptions.png` | All logical, flow, and interaction diagrams (containers, context, domain model, data flow) |
+| `.claude/network.png` | Cloud topology and physical deployment diagrams |
+
+**Edge routing rules** — apply to every edge in every diagram:
+
+| Rule | draw.io style property |
+|------|----------------------|
+| Route edges as L-shaped paths (no diagonals) | `edgeStyle=orthogonalEdgeStyle` |
+| White bubble behind every edge label | `labelBackgroundColor=#ffffff;labelBorderColor=none;` |
+| Fan-out from one source to many targets: spread exit points evenly | `exitX=0.1`, `0.3`, `0.5`, `0.7`, `0.9` (one per target) |
+| Async / event edges | `dashed=1;endArrow=open;` |
+
+**Jump arc rules** — when two edges must cross:
+
+- **Vertical-primary edges** (travel mostly top-to-bottom): add `jumpStyle=arc;jumpSize=10;` → shows a semicircle arc at the crossing
+- **Horizontal-primary edges** (travel mostly left-to-right): add `jumpStyle=none;` → never show arcs
+- **Consistency rule**: ALL jumps arc in the same direction (vertical lines always jump; horizontal lines never jump)
+
+Example styles:
+```xml
+<!-- Vertical edge crossing another — shows arc -->
+style="edgeStyle=orthogonalEdgeStyle;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;"
+
+<!-- Horizontal edge — no arc, never jumps -->
+style="edgeStyle=orthogonalEdgeStyle;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;"
+```
+
+**Legend** — every diagram must include a colour legend in the bottom-left corner. Use this XML template, adding one row per colour used in the diagram:
+
+```xml
+<mxCell id="legend" value="Legend" style="swimlane;startSize=22;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+  <mxGeometry x="20" y="[BOTTOM_Y]" width="220" height="[ROW_COUNT*26+32]" as="geometry" />
+</mxCell>
+<!-- One row per colour: -->
+<mxCell id="legend_r1" value="" style="rounded=1;fillColor=#1ba1e2;strokeColor=#006EAF;" vertex="1" parent="legend">
+  <mxGeometry x="10" y="32" width="20" height="16" as="geometry" />
+</mxCell>
+<mxCell id="legend_r1_lbl" value="API Gateway" style="text;html=1;align=left;" vertex="1" parent="legend">
+  <mxGeometry x="36" y="30" width="170" height="20" as="geometry" />
+</mxCell>
+```
+
+**Standard colour palette** — use consistently across all diagrams:
+
+| Meaning | Fill | Stroke |
+|---------|------|--------|
+| API Gateway | `#1ba1e2` | `#006EAF` |
+| Internal microservice | `#dae8fc` | `#6c8ebf` |
+| External system / browser | `#f5f5f5` | `#666666` |
+| PostgreSQL database | `#f3e5f5` | `#9e3799` |
+| Redis cache | `#fff3e0` | `#E65100` |
+| Async / event bus | `#fff2cc` | `#d6b656` |
+| Azure resource (icon shape) | `#0078D4` | `#005A9E` (white font) |
+| Trust zone — Internet | `#ffcccc` | `#b71c1c` |
+| Trust zone — DMZ | `#ffe6cc` | `#e65100` |
+| Trust zone — Internal | `#dae8fc` | `#0078D4` |
+| Trust zone — Data | `#f3e5f5` | `#7b1fa2` |
+| Sticky-note annotation | `#ffffcc` | `#999900` |
+
 ### Draw.io Interaction Diagram — Symbol Conventions
 
 All logical diagrams use draw.io's **Software** + **UML** shape libraries (`View → Shapes`). Apply these conventions consistently:

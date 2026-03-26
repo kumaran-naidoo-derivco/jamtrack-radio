@@ -1,54 +1,176 @@
-<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1554" pageHeight="1100" math="0" shadow="0">
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="680" math="0" shadow="0">
   <root>
     <mxCell id="0" />
     <mxCell id="1" parent="0" />
-    <mxCell id="2" value="&lt;b&gt;Identity Service&lt;/b&gt;" style="swimlane;startSize=25;fillColor=#E3F2FD;strokeColor=#0078D4;dashed=1;rounded=1;fontStyle=1;" vertex="1" parent="1">
-      <mxGeometry x="20" y="20" width="380" height="420" as="geometry" />
+
+    <!-- ═══════════════════════════════════════════════════════════
+         IDENTITY SERVICE  x=20 y=20 w=360 h=420
+         users (y=45 h=200)  refresh_tokens (y=265 h=130)
+    ═══════════════════════════════════════════════════════════ -->
+    <mxCell id="svc_id" value="Identity Service" style="swimlane;startSize=30;dashed=1;rounded=1;fontStyle=1;fontSize=12;fillColor=#E3F2FD;strokeColor=#0078D4;" vertex="1" parent="1">
+      <mxGeometry x="20" y="20" width="360" height="420" as="geometry" />
     </mxCell>
-    <mxCell id="3" value="&lt;b&gt;users&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;email: varchar(254) UNIQUE&lt;br&gt;display_name: varchar(100)&lt;br&gt;password_hash: varchar(255)&lt;br&gt;oauth_provider: varchar(50)?&lt;br&gt;oauth_subject: varchar(255)?&lt;br&gt;totp_seed_enc: varchar(512)?&lt;br&gt;created_at: timestamptz&lt;br&gt;updated_at: timestamptz&lt;br&gt;is_active: boolean" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="20" y="35" width="340" height="180" as="geometry" />
+
+    <mxCell id="t_users" value="users" style="swimlane;startSize=24;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontStyle=1;fontSize=11;" vertex="1" parent="svc_id">
+      <mxGeometry x="25" y="45" width="310" height="200" as="geometry" />
     </mxCell>
-    <mxCell id="4" value="&lt;b&gt;refresh_tokens&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;&lt;b&gt;FK&lt;/b&gt; user_id: uuid → users(id)&lt;br&gt;token_hash: varchar(512) UNIQUE&lt;br&gt;expires_at: timestamptz&lt;br&gt;created_at: timestamptz&lt;br&gt;is_revoked: boolean" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="20" y="250" width="340" height="140" as="geometry" />
+    <mxCell id="t_users_body" value="&lt;b&gt;PK&lt;/b&gt;  id: uuid&lt;br&gt;&lt;font color=&quot;#2e7d32&quot;&gt;&lt;b&gt;UK&lt;/b&gt;&lt;/font&gt;  email: varchar(254)&lt;br&gt;&amp;nbsp;&amp;nbsp;display_name: varchar(100)&lt;br&gt;&amp;nbsp;&amp;nbsp;password_hash: varchar(255)&lt;br&gt;&amp;nbsp;&amp;nbsp;oauth_provider: varchar(50)?&lt;br&gt;&amp;nbsp;&amp;nbsp;oauth_subject: varchar(255)?&lt;br&gt;&amp;nbsp;&amp;nbsp;totp_seed_enc: varchar(512)?&lt;br&gt;&amp;nbsp;&amp;nbsp;created_at: timestamptz&lt;br&gt;&amp;nbsp;&amp;nbsp;updated_at: timestamptz&lt;br&gt;&amp;nbsp;&amp;nbsp;is_active: boolean" style="text;html=1;align=left;whiteSpace=wrap;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;" vertex="1" parent="t_users">
+      <mxGeometry x="0" y="24" width="310" height="176" as="geometry" />
     </mxCell>
-    <mxCell id="6" value="FK CASCADE" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmanyToOne;startArrow=ERmandOne;" edge="1" source="3" target="4" parent="2">
+
+    <mxCell id="t_rt" value="refresh_tokens" style="swimlane;startSize=24;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontStyle=1;fontSize=11;" vertex="1" parent="svc_id">
+      <mxGeometry x="25" y="265" width="310" height="130" as="geometry" />
+    </mxCell>
+    <mxCell id="t_rt_body" value="&lt;b&gt;PK&lt;/b&gt;  id: uuid&lt;br&gt;&lt;font color=&quot;#b05300&quot;&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;  user_id: uuid → users(id)&lt;br&gt;&lt;font color=&quot;#2e7d32&quot;&gt;&lt;b&gt;UK&lt;/b&gt;&lt;/font&gt;  token_hash: varchar(512)&lt;br&gt;&amp;nbsp;&amp;nbsp;expires_at: timestamptz&lt;br&gt;&amp;nbsp;&amp;nbsp;created_at: timestamptz&lt;br&gt;&amp;nbsp;&amp;nbsp;is_revoked: boolean" style="text;html=1;align=left;whiteSpace=wrap;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;" vertex="1" parent="t_rt">
+      <mxGeometry x="0" y="24" width="310" height="106" as="geometry" />
+    </mxCell>
+
+    <!-- FK edge: users → refresh_tokens (vertical, arc) -->
+    <mxCell id="e_users_rt" value="1:N (CASCADE)" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmanyToOne;startArrow=ERmandOne;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;fontSize=10;" edge="1" source="t_users" target="t_rt" parent="svc_id">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="7" value="&lt;b&gt;Track Service&lt;/b&gt;" style="swimlane;startSize=25;fillColor=#E8F5E9;strokeColor=#2E7D32;dashed=1;rounded=1;fontStyle=1;" vertex="1" parent="1">
-      <mxGeometry x="440" y="20" width="380" height="580" as="geometry" />
+
+    <!-- ═══════════════════════════════════════════════════════════
+         TRACK SERVICE  x=400 y=20 w=360 h=560
+         tracks (y=45 h=240)  tags (y=305 h=130)  track_tags (y=455 h=85)
+    ═══════════════════════════════════════════════════════════ -->
+    <mxCell id="svc_tr" value="Track Service" style="swimlane;startSize=30;dashed=1;rounded=1;fontStyle=1;fontSize=12;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="1">
+      <mxGeometry x="400" y="20" width="360" height="560" as="geometry" />
     </mxCell>
-    <mxCell id="8" value="&lt;b&gt;tracks&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;user_id: uuid &lt;i&gt;(value ref — no FK)&lt;/i&gt;&lt;br&gt;title: varchar(200)&lt;br&gt;artist: varchar(200)?&lt;br&gt;genre: varchar(100)?&lt;br&gt;bpm: smallint?&lt;br&gt;musical_key: varchar(10)?&lt;br&gt;duration_sec: integer?&lt;br&gt;storage_ref: varchar(500)?&lt;br&gt;artwork_ref: varchar(500)?&lt;br&gt;created_at: timestamptz&lt;br&gt;updated_at: timestamptz&lt;br&gt;deleted_at: timestamptz? &lt;i&gt;(soft-delete)&lt;/i&gt;" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="7">
-      <mxGeometry x="20" y="35" width="340" height="230" as="geometry" />
+
+    <mxCell id="t_tracks" value="tracks" style="swimlane;startSize=24;fillColor=#d5e8d4;strokeColor=#82b366;align=center;fontStyle=1;fontSize=11;" vertex="1" parent="svc_tr">
+      <mxGeometry x="25" y="45" width="310" height="240" as="geometry" />
     </mxCell>
-    <mxCell id="9" value="&lt;b&gt;tags&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;name: varchar(100)&lt;br&gt;user_id: uuid&lt;br&gt;created_at: timestamptz&lt;br&gt;&lt;i&gt;UNIQUE(name, user_id)&lt;/i&gt;" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="7">
-      <mxGeometry x="20" y="295" width="340" height="120" as="geometry" />
+    <mxCell id="t_tracks_body" value="&lt;b&gt;PK&lt;/b&gt;  id: uuid&lt;br&gt;&lt;font color=&quot;#888&quot;&gt;&lt;i&gt;ref&lt;/i&gt;&lt;/font&gt;  user_id: uuid &lt;i&gt;(value ref)&lt;/i&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;title: varchar(200)&lt;br&gt;&amp;nbsp;&amp;nbsp;artist: varchar(200)?&lt;br&gt;&amp;nbsp;&amp;nbsp;genre: varchar(100)?&lt;br&gt;&amp;nbsp;&amp;nbsp;bpm: smallint?&lt;br&gt;&amp;nbsp;&amp;nbsp;musical_key: varchar(10)?&lt;br&gt;&amp;nbsp;&amp;nbsp;duration_sec: integer?&lt;br&gt;&amp;nbsp;&amp;nbsp;storage_ref: varchar(500)?&lt;br&gt;&amp;nbsp;&amp;nbsp;artwork_ref: varchar(500)?&lt;br&gt;&amp;nbsp;&amp;nbsp;created_at: timestamptz&lt;br&gt;&amp;nbsp;&amp;nbsp;updated_at: timestamptz&lt;br&gt;&amp;nbsp;&amp;nbsp;deleted_at: timestamptz? &lt;i&gt;(soft-delete)&lt;/i&gt;" style="text;html=1;align=left;whiteSpace=wrap;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;" vertex="1" parent="t_tracks">
+      <mxGeometry x="0" y="24" width="310" height="216" as="geometry" />
     </mxCell>
-    <mxCell id="10" value="&lt;b&gt;track_tags&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;FK&lt;/b&gt; track_id: uuid → tracks(id)&lt;br&gt;&lt;b&gt;FK&lt;/b&gt; tag_id: uuid → tags(id)&lt;br&gt;&lt;b&gt;PK&lt;/b&gt;(track_id, tag_id)" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="7">
-      <mxGeometry x="20" y="445" width="340" height="100" as="geometry" />
+
+    <mxCell id="t_tags" value="tags" style="swimlane;startSize=24;fillColor=#d5e8d4;strokeColor=#82b366;align=center;fontStyle=1;fontSize=11;" vertex="1" parent="svc_tr">
+      <mxGeometry x="25" y="305" width="310" height="130" as="geometry" />
     </mxCell>
-    <mxCell id="11" value="CASCADE" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmanyToOne;startArrow=ERmandOne;" edge="1" source="8" target="10" parent="7">
+    <mxCell id="t_tags_body" value="&lt;b&gt;PK&lt;/b&gt;  id: uuid&lt;br&gt;&amp;nbsp;&amp;nbsp;name: varchar(100)&lt;br&gt;&amp;nbsp;&amp;nbsp;user_id: uuid &lt;i&gt;(value ref)&lt;/i&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;created_at: timestamptz&lt;br&gt;&lt;i&gt;UNIQUE(name, user_id)&lt;/i&gt;" style="text;html=1;align=left;whiteSpace=wrap;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;" vertex="1" parent="t_tags">
+      <mxGeometry x="0" y="24" width="310" height="106" as="geometry" />
+    </mxCell>
+
+    <mxCell id="t_tracktags" value="track_tags" style="swimlane;startSize=24;fillColor=#d5e8d4;strokeColor=#82b366;align=center;fontStyle=1;fontSize=11;" vertex="1" parent="svc_tr">
+      <mxGeometry x="25" y="455" width="310" height="85" as="geometry" />
+    </mxCell>
+    <mxCell id="t_tracktags_body" value="&lt;font color=&quot;#b05300&quot;&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;  track_id: uuid → tracks(id)&lt;br&gt;&lt;font color=&quot;#b05300&quot;&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;  tag_id: uuid → tags(id)&lt;br&gt;&lt;b&gt;PK&lt;/b&gt;(track_id, tag_id)" style="text;html=1;align=left;whiteSpace=wrap;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;" vertex="1" parent="t_tracktags">
+      <mxGeometry x="0" y="24" width="310" height="61" as="geometry" />
+    </mxCell>
+
+    <!-- FK edges within Track service (vertical, arc) -->
+    <mxCell id="e_tracks_tt" value="1:N (CASCADE)" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmanyToOne;startArrow=ERmandOne;exitX=0.4;exitY=1;exitDx=0;exitDy=0;entryX=0.4;entryY=0;entryDx=0;entryDy=0;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;fontSize=10;" edge="1" source="t_tracks" target="t_tracktags" parent="svc_tr">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="12" value="CASCADE" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmanyToOne;startArrow=ERmandOne;" edge="1" source="9" target="10" parent="7">
+    <mxCell id="e_tags_tt" value="1:N (CASCADE)" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmanyToOne;startArrow=ERmandOne;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.6;entryY=0;entryDx=0;entryDy=0;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;fontSize=10;" edge="1" source="t_tags" target="t_tracktags" parent="svc_tr">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="13" value="&lt;b&gt;Playlist Service&lt;/b&gt;" style="swimlane;startSize=25;fillColor=#FFF3E0;strokeColor=#E65100;dashed=1;rounded=1;fontStyle=1;" vertex="1" parent="1">
-      <mxGeometry x="860" y="20" width="380" height="380" as="geometry" />
+
+    <!-- ═══════════════════════════════════════════════════════════
+         PLAYLIST SERVICE  x=780 y=20 w=360 h=320
+         playlists (y=45 h=130)  playlist_tracks (y=195 h=100)
+    ═══════════════════════════════════════════════════════════ -->
+    <mxCell id="svc_pl" value="Playlist Service" style="swimlane;startSize=30;dashed=1;rounded=1;fontStyle=1;fontSize=12;fillColor=#FFF3E0;strokeColor=#E65100;" vertex="1" parent="1">
+      <mxGeometry x="780" y="20" width="360" height="320" as="geometry" />
     </mxCell>
-    <mxCell id="14" value="&lt;b&gt;playlists&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;user_id: uuid &lt;i&gt;(value ref — no FK)&lt;/i&gt;&lt;br&gt;name: varchar(200)&lt;br&gt;created_at: timestamptz&lt;br&gt;updated_at: timestamptz&lt;br&gt;&lt;i&gt;UNIQUE(user_id, name)&lt;/i&gt;" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="13">
-      <mxGeometry x="20" y="35" width="340" height="150" as="geometry" />
+
+    <mxCell id="t_playlists" value="playlists" style="swimlane;startSize=24;fillColor=#fff2cc;strokeColor=#d6b656;align=center;fontStyle=1;fontSize=11;" vertex="1" parent="svc_pl">
+      <mxGeometry x="25" y="45" width="310" height="130" as="geometry" />
     </mxCell>
-    <mxCell id="15" value="&lt;b&gt;playlist_tracks&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;FK&lt;/b&gt; playlist_id: uuid → playlists(id)&lt;br&gt;track_id: uuid &lt;i&gt;(value ref — no FK)&lt;/i&gt;&lt;br&gt;position: smallint &lt;i&gt;(1-based)&lt;/i&gt;&lt;br&gt;&lt;b&gt;PK&lt;/b&gt;(playlist_id, track_id)" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="13">
-      <mxGeometry x="20" y="220" width="340" height="120" as="geometry" />
+    <mxCell id="t_playlists_body" value="&lt;b&gt;PK&lt;/b&gt;  id: uuid&lt;br&gt;&lt;font color=&quot;#888&quot;&gt;&lt;i&gt;ref&lt;/i&gt;&lt;/font&gt;  user_id: uuid &lt;i&gt;(value ref)&lt;/i&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;name: varchar(200)&lt;br&gt;&amp;nbsp;&amp;nbsp;created_at: timestamptz&lt;br&gt;&amp;nbsp;&amp;nbsp;updated_at: timestamptz&lt;br&gt;&lt;i&gt;UNIQUE(user_id, name)&lt;/i&gt;" style="text;html=1;align=left;whiteSpace=wrap;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;" vertex="1" parent="t_playlists">
+      <mxGeometry x="0" y="24" width="310" height="106" as="geometry" />
     </mxCell>
-    <mxCell id="16" value="CASCADE" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmanyToOne;startArrow=ERmandOne;" edge="1" source="14" target="15" parent="13">
+
+    <mxCell id="t_pltracks" value="playlist_tracks" style="swimlane;startSize=24;fillColor=#fff2cc;strokeColor=#d6b656;align=center;fontStyle=1;fontSize=11;" vertex="1" parent="svc_pl">
+      <mxGeometry x="25" y="195" width="310" height="100" as="geometry" />
+    </mxCell>
+    <mxCell id="t_pltracks_body" value="&lt;font color=&quot;#b05300&quot;&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;  playlist_id: uuid → playlists(id)&lt;br&gt;&lt;font color=&quot;#888&quot;&gt;&lt;i&gt;ref&lt;/i&gt;&lt;/font&gt;  track_id: uuid &lt;i&gt;(value ref)&lt;/i&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;position: smallint &lt;i&gt;(1-based)&lt;/i&gt;&lt;br&gt;&lt;b&gt;PK&lt;/b&gt;(playlist_id, track_id)" style="text;html=1;align=left;whiteSpace=wrap;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;" vertex="1" parent="t_pltracks">
+      <mxGeometry x="0" y="24" width="310" height="76" as="geometry" />
+    </mxCell>
+
+    <!-- FK edge: playlists → playlist_tracks (vertical, arc) -->
+    <mxCell id="e_pl_plt" value="1:N (CASCADE)" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmanyToOne;startArrow=ERmandOne;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;fontSize=10;" edge="1" source="t_playlists" target="t_pltracks" parent="svc_pl">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="17" value="&lt;b&gt;Storage Service&lt;/b&gt;" style="swimlane;startSize=25;fillColor=#F3E5F5;strokeColor=#7B1FA2;dashed=1;rounded=1;fontStyle=1;" vertex="1" parent="1">
-      <mxGeometry x="860" y="440" width="380" height="200" as="geometry" />
+
+    <!-- ═══════════════════════════════════════════════════════════
+         STORAGE SERVICE  x=780 y=360 w=360 h=220
+         storage_objects (y=45 h=150)
+    ═══════════════════════════════════════════════════════════ -->
+    <mxCell id="svc_st" value="Storage Service" style="swimlane;startSize=30;dashed=1;rounded=1;fontStyle=1;fontSize=12;fillColor=#F3E5F5;strokeColor=#7B1FA2;" vertex="1" parent="1">
+      <mxGeometry x="780" y="360" width="360" height="220" as="geometry" />
     </mxCell>
-    <mxCell id="18" value="&lt;b&gt;storage_objects&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id: uuid&lt;br&gt;owner_id: uuid &lt;i&gt;(value ref — no FK)&lt;/i&gt;&lt;br&gt;blob_path: varchar(500) UNIQUE&lt;br&gt;content_type: varchar(100)&lt;br&gt;size_bytes: bigint&lt;br&gt;created_at: timestamptz&lt;br&gt;deleted_at: timestamptz?" style="swimlane;startSize=23;whiteSpace=wrap;html=1;align=left;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="17">
-      <mxGeometry x="20" y="35" width="340" height="145" as="geometry" />
+
+    <mxCell id="t_stobj" value="storage_objects" style="swimlane;startSize=24;fillColor=#e1d5e7;strokeColor=#9673a6;align=center;fontStyle=1;fontSize=11;" vertex="1" parent="svc_st">
+      <mxGeometry x="25" y="45" width="310" height="150" as="geometry" />
     </mxCell>
+    <mxCell id="t_stobj_body" value="&lt;b&gt;PK&lt;/b&gt;  id: uuid&lt;br&gt;&lt;font color=&quot;#888&quot;&gt;&lt;i&gt;ref&lt;/i&gt;&lt;/font&gt;  owner_id: uuid &lt;i&gt;(value ref)&lt;/i&gt;&lt;br&gt;&lt;font color=&quot;#2e7d32&quot;&gt;&lt;b&gt;UK&lt;/b&gt;&lt;/font&gt;  blob_path: varchar(500)&lt;br&gt;&amp;nbsp;&amp;nbsp;content_type: varchar(100)&lt;br&gt;&amp;nbsp;&amp;nbsp;size_bytes: bigint&lt;br&gt;&amp;nbsp;&amp;nbsp;created_at: timestamptz&lt;br&gt;&amp;nbsp;&amp;nbsp;deleted_at: timestamptz?" style="text;html=1;align=left;whiteSpace=wrap;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;" vertex="1" parent="t_stobj">
+      <mxGeometry x="0" y="24" width="310" height="126" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CROSS-SERVICE NOTE
+    ═══════════════════════════════════════════════════════════ -->
+    <mxCell id="note_xsvc" value="&lt;i&gt;Cross-service value references (no DB-level FK): user_id in tracks / playlists / storage_objects; track_id in playlist_tracks. Referential integrity enforced by application logic.&lt;/i&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=12;fillColor=#ffffcc;strokeColor=#999900;fontSize=9;align=left;verticalAlign=top;spacingLeft=4;spacingTop=4;" vertex="1" parent="1">
+      <mxGeometry x="400" y="600" width="740" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         LEGEND  x=20 y=450 w=220 h=216
+         8 entries × 22px + 32 header = 208 → 216
+    ═══════════════════════════════════════════════════════════ -->
+    <mxCell id="leg" value="Legend" style="swimlane;startSize=22;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="20" y="455" width="220" height="200" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_s1" value="" style="rounded=1;fillColor=#E3F2FD;strokeColor=#0078D4;" vertex="1" parent="leg">
+      <mxGeometry x="10" y="30" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_l1" value="Identity service boundary" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg">
+      <mxGeometry x="34" y="28" width="178" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_s2" value="" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="leg">
+      <mxGeometry x="10" y="52" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_l2" value="Identity tables" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg">
+      <mxGeometry x="34" y="50" width="178" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_s3" value="" style="rounded=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="leg">
+      <mxGeometry x="10" y="74" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_l3" value="Track service boundary" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg">
+      <mxGeometry x="34" y="72" width="178" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_s4" value="" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="leg">
+      <mxGeometry x="10" y="96" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_l4" value="Track tables" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg">
+      <mxGeometry x="34" y="94" width="178" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_s5" value="" style="rounded=1;fillColor=#FFF3E0;strokeColor=#E65100;" vertex="1" parent="leg">
+      <mxGeometry x="10" y="118" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_l5" value="Playlist service boundary" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg">
+      <mxGeometry x="34" y="116" width="178" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_s6" value="" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="leg">
+      <mxGeometry x="10" y="140" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_l6" value="Playlist tables" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg">
+      <mxGeometry x="34" y="138" width="178" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_s7" value="" style="rounded=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;" vertex="1" parent="leg">
+      <mxGeometry x="10" y="162" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_l7" value="Storage service boundary" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg">
+      <mxGeometry x="34" y="160" width="178" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_s8" value="" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="leg">
+      <mxGeometry x="10" y="184" width="18" height="16" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_l8" value="Storage tables" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg">
+      <mxGeometry x="34" y="182" width="178" height="20" as="geometry" />
+    </mxCell>
+
   </root>
 </mxGraphModel>

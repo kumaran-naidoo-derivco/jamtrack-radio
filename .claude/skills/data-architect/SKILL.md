@@ -28,6 +28,71 @@ Reference format:
 > _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
 ```
 
+### Diagram Visual Standards
+
+**Style templates** — use these as the visual reference for every diagram you produce:
+
+| Template | Use for |
+|----------|---------|
+| `.claude/redemptions.png` | All logical, flow, and interaction diagrams (ER diagram, data flow) |
+| `.claude/network.png` | Cloud topology and physical deployment diagrams |
+
+**Edge routing rules** — apply to every edge in every diagram:
+
+| Rule | draw.io style property |
+|------|----------------------|
+| Route edges as L-shaped paths (no diagonals) | `edgeStyle=orthogonalEdgeStyle` |
+| White bubble behind every edge label | `labelBackgroundColor=#ffffff;labelBorderColor=none;` |
+| Fan-out from one source to many targets: spread exit points evenly | `exitX=0.1`, `0.3`, `0.5`, `0.7`, `0.9` (one per target) |
+| Async / event edges | `dashed=1;endArrow=open;` |
+
+**Jump arc rules** — when two edges must cross:
+
+- **Vertical-primary edges** (travel mostly top-to-bottom): add `jumpStyle=arc;jumpSize=10;` → shows a semicircle arc at the crossing
+- **Horizontal-primary edges** (travel mostly left-to-right): add `jumpStyle=none;` → never show arcs
+- **Consistency rule**: ALL jumps arc in the same direction (vertical lines always jump; horizontal lines never jump)
+
+Example styles:
+```xml
+<!-- Vertical edge crossing another — shows arc -->
+style="edgeStyle=orthogonalEdgeStyle;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;"
+
+<!-- Horizontal edge — no arc, never jumps -->
+style="edgeStyle=orthogonalEdgeStyle;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;"
+```
+
+**Legend** — every diagram must include a colour legend in the bottom-left corner. Use this XML template, adding one row per colour used in the diagram:
+
+```xml
+<mxCell id="legend" value="Legend" style="swimlane;startSize=22;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+  <mxGeometry x="20" y="[BOTTOM_Y]" width="220" height="[ROW_COUNT*26+32]" as="geometry" />
+</mxCell>
+<!-- One row per colour: -->
+<mxCell id="legend_r1" value="" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="legend">
+  <mxGeometry x="10" y="32" width="20" height="16" as="geometry" />
+</mxCell>
+<mxCell id="legend_r1_lbl" value="Service boundary" style="text;html=1;align=left;" vertex="1" parent="legend">
+  <mxGeometry x="36" y="30" width="170" height="20" as="geometry" />
+</mxCell>
+```
+
+**Standard colour palette** — use consistently across all diagrams:
+
+| Meaning | Fill | Stroke |
+|---------|------|--------|
+| API Gateway | `#1ba1e2` | `#006EAF` |
+| Internal microservice | `#dae8fc` | `#6c8ebf` |
+| External system / browser | `#f5f5f5` | `#666666` |
+| PostgreSQL database | `#f3e5f5` | `#9e3799` |
+| Redis cache | `#fff3e0` | `#E65100` |
+| Async / event bus | `#fff2cc` | `#d6b656` |
+| Azure resource (icon shape) | `#0078D4` | `#005A9E` (white font) |
+| Trust zone — Internet | `#ffcccc` | `#b71c1c` |
+| Trust zone — DMZ | `#ffe6cc` | `#e65100` |
+| Trust zone — Internal | `#dae8fc` | `#0078D4` |
+| Trust zone — Data | `#f3e5f5` | `#7b1fa2` |
+| Sticky-note annotation | `#ffffcc` | `#999900` |
+
 ---
 
 ## 1. ER Diagram
@@ -37,12 +102,53 @@ Full entity-relationship diagram for all tables in scope.
 **File**: `docs/architecture/<feature>/diagrams/er-diagram.drawio`
 **Shape library**: Entity Relationship (`View → Shapes → Entity Relation`)
 
-Diagram elements:
-- **Entity** shapes (standard ER rectangle) for each table — header shows table name
-- **Columns** listed inside with `PK`, `FK`, `UK` badges and data type
-- **Relationship lines** with crow's foot notation: one-to-many (`||--o{`), one-to-one (`||--||`)
-- **Service ownership boundary**: draw a dashed container around each service's tables — no cross-boundary lines permitted
-- Use blue fill for PK columns, yellow for FK columns
+Diagram elements — use the **swimlane-header + text-body** pattern for entity tables:
+
+```xml
+<!-- Entity table: swimlane with table name as header -->
+<mxCell id="t_tablename" value="table_name"
+  style="swimlane;startSize=24;fillColor=#dae8fc;strokeColor=#6c8ebf;
+         align=center;fontStyle=1;fontSize=11;"
+  vertex="1" parent="svc_boundary">
+  <mxGeometry x="25" y="45" width="310" height="HEIGHT" as="geometry"/>
+</mxCell>
+<!-- Column list as a single left-aligned text child -->
+<mxCell id="t_tablename_body"
+  value="&lt;b&gt;PK&lt;/b&gt;  id: uuid&lt;br&gt;
+         &lt;font color=&quot;#b05300&quot;&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;  fk_col: uuid → other(id)&lt;br&gt;
+         &lt;font color=&quot;#2e7d32&quot;&gt;&lt;b&gt;UK&lt;/b&gt;&lt;/font&gt;  unique_col: varchar(254)&lt;br&gt;
+         &amp;nbsp;&amp;nbsp;regular_col: varchar(100)?&lt;br&gt;
+         &lt;i&gt;UNIQUE(col_a, col_b)&lt;/i&gt;"
+  style="text;html=1;align=left;whiteSpace=wrap;verticalAlign=top;
+         fontSize=10;spacingLeft=6;spacingTop=4;"
+  vertex="1" parent="t_tablename">
+  <mxGeometry x="0" y="24" width="310" height="CONTENT_HEIGHT" as="geometry"/>
+</mxCell>
+```
+
+**Height formula**: `CONTENT_HEIGHT` = N_lines × 16px + 8px padding. `HEIGHT` = 24 (header) + `CONTENT_HEIGHT`.
+
+Badge conventions (inline HTML in the `value`):
+- `PK` — `&lt;b&gt;PK&lt;/b&gt;` (bold, inherits table fill)
+- `FK` — `&lt;font color="#b05300"&gt;&lt;b&gt;FK&lt;/b&gt;&lt;/font&gt;` (amber bold)
+- `UK` — `&lt;font color="#2e7d32"&gt;&lt;b&gt;UK&lt;/b&gt;&lt;/font&gt;` (green bold)
+- Cross-service value ref — `&lt;font color="#888"&gt;&lt;i&gt;ref&lt;/i&gt;&lt;/font&gt;` (grey italic)
+- Regular column — `&amp;nbsp;&amp;nbsp;col_name: type` (indented)
+- Constraint note — `&lt;i&gt;UNIQUE(...)&lt;/i&gt;` (italic, last line)
+
+Service boundary swimlanes — service fill colours:
+- Identity Service: `fillColor=#E3F2FD;strokeColor=#0078D4`
+- Track Service: `fillColor=#E8F5E9;strokeColor=#2E7D32`
+- Playlist Service: `fillColor=#FFF3E0;strokeColor=#E65100`
+- Storage Service: `fillColor=#F3E5F5;strokeColor=#7B1FA2`
+
+Table fill colours (match each service's palette):
+- Identity tables: `fillColor=#dae8fc;strokeColor=#6c8ebf`
+- Track tables: `fillColor=#d5e8d4;strokeColor=#82b366`
+- Playlist tables: `fillColor=#fff2cc;strokeColor=#d6b656`
+- Storage tables: `fillColor=#e1d5e7;strokeColor=#9673a6`
+
+**Relationship lines**: connect between entity swimlane cells (not body text cells). Use `endArrow=ERmanyToOne;startArrow=ERmandOne` for crow's foot notation. No cross-service FK lines — add a `shape=note;fillColor=#ffffcc;strokeColor=#999900` annotation documenting cross-service value references.
 
 Reference in this document:
 ```
@@ -111,6 +217,13 @@ Show how data moves through the system for the key scenario, using interaction d
 
 **File**: `docs/architecture/<feature>/diagrams/data-flow.drawio`
 **Shape library**: Software + UML
+
+Layout rules for data flow diagrams:
+- Arrange shapes left-to-right for synchronous calls; reserve a lower row for async callbacks
+- Avoid negative x/y coordinates — all shapes must be within the page bounds
+- When two edges share the same source and target (e.g. INSERT and UPDATE to same DB), offset their entry points: use `entryX=0.4` and `entryX=0.6` so labels don't overlap
+- Edge labels for multi-step numbered flows: use format `N. action: detail` (e.g. `3. INSERT track`)
+- Async back-edges (dashed): route via explicit waypoints below the main flow row to avoid crossing solid edges
 
 Diagram elements — follow the interaction diagram symbol conventions:
 - **`<<component>>`** shapes for services

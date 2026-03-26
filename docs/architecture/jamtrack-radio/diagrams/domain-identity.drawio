@@ -1,42 +1,89 @@
-<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
-  <root>
-    <mxCell id="0" />
-    <mxCell id="1" parent="0" />
-    <mxCell id="2" value="&lt;b&gt;Identity Bounded Context&lt;/b&gt;" style="swimlane;startSize=30;fillColor=none;strokeColor=#0078D4;dashed=1;rounded=1;fontStyle=1;fontSize=13;" vertex="1" parent="1">
-      <mxGeometry x="20" y="20" width="940" height="500" as="geometry" />
-    </mxCell>
-    <mxCell id="3" value="&lt;&lt;Aggregate Root&gt;&gt;&lt;br&gt;&lt;b&gt;User&lt;/b&gt;&lt;hr/&gt;+ Id: Guid&lt;br&gt;+ Email: Email&lt;br&gt;+ PasswordHash: PasswordHash&lt;br&gt;+ DisplayName: string&lt;br&gt;+ TotpSeed: TotpSeed?&lt;br&gt;+ CreatedAt: DateTimeOffset&lt;br&gt;+ IsActive: bool&lt;hr/&gt;+ Create(email, pwd): User&lt;br&gt;+ ValidatePassword(plain): bool&lt;br&gt;+ EnableTotp(seed): void" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="330" y="50" width="250" height="230" as="geometry" />
-    </mxCell>
-    <mxCell id="4" value="&lt;&lt;Value Object&gt;&gt;&lt;br&gt;&lt;b&gt;Email&lt;/b&gt;&lt;hr/&gt;+ Value: string&lt;hr/&gt;Invariant: RFC 5321 format&lt;br&gt;Immutable after creation" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="40" y="40" width="210" height="120" as="geometry" />
-    </mxCell>
-    <mxCell id="5" value="&lt;&lt;Value Object&gt;&gt;&lt;br&gt;&lt;b&gt;PasswordHash&lt;/b&gt;&lt;hr/&gt;+ Hash: string&lt;hr/&gt;Invariant: BCrypt cost 12&lt;br&gt;Never stores plaintext" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="40" y="200" width="210" height="120" as="geometry" />
-    </mxCell>
-    <mxCell id="6" value="&lt;&lt;Value Object&gt;&gt;&lt;br&gt;&lt;b&gt;TotpSeed&lt;/b&gt;&lt;hr/&gt;+ EncryptedSeed: string&lt;hr/&gt;Invariant: AES-256-GCM encrypted&lt;br&gt;Nullable — 2FA optional" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="40" y="360" width="210" height="120" as="geometry" />
-    </mxCell>
-    <mxCell id="7" value="&lt;&lt;Entity&gt;&gt;&lt;br&gt;&lt;b&gt;RefreshToken&lt;/b&gt;&lt;hr/&gt;+ Id: Guid&lt;br&gt;+ UserId: Guid&lt;br&gt;+ TokenHash: string&lt;br&gt;&lt;i&gt;(SHA-256 — raw token not stored)&lt;/i&gt;&lt;br&gt;+ ExpiresAt: DateTimeOffset&lt;br&gt;+ IsRevoked: bool&lt;hr/&gt;+ Revoke(): void" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="690" y="40" width="220" height="200" as="geometry" />
-    </mxCell>
-    <mxCell id="8" value="&lt;&lt;Domain Event&gt;&gt;&lt;br&gt;&lt;b&gt;UserRegistered&lt;/b&gt;&lt;hr/&gt;+ UserId: Guid&lt;br&gt;+ Email: string (hashed in logs)&lt;br&gt;+ Timestamp: DateTimeOffset&lt;br&gt;+ Provider: string?" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;fontSize=11;" vertex="1" parent="2">
-      <mxGeometry x="690" y="280" width="220" height="140" as="geometry" />
-    </mxCell>
-    <mxCell id="9" value="has" style="endArrow=block;endFill=0;html=1;" edge="1" source="3" target="4" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="10" value="has" style="endArrow=block;endFill=0;html=1;" edge="1" source="3" target="5" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="11" value="has (optional)" style="endArrow=block;endFill=0;html=1;" edge="1" source="3" target="6" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="12" value="1..*" style="endArrow=block;endFill=0;html=1;" edge="1" source="3" target="7" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="13" value="raises" style="endArrow=open;dashed=1;html=1;" edge="1" source="3" target="8" parent="2">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-  </root>
-</mxGraphModel>
+<mxfile host="65bd71144e">
+    <diagram id="QRKI-YOmPNGH5Mr__pLx" name="Page-1">
+        <mxGraphModel dx="1326" dy="1465" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="&lt;b&gt;Identity Bounded Context&lt;/b&gt;" style="swimlane;startSize=30;fillColor=none;strokeColor=#0078D4;dashed=1;rounded=1;fontStyle=1;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="20" width="940" height="500" as="geometry">
+                        <mxRectangle x="20" y="20" width="230" height="30" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="3" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: rgb(63, 63, 63);&quot;&gt;&amp;lt;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;b&gt;User&lt;/b&gt;&lt;hr&gt;+ Id: Guid&lt;br&gt;+ Email: Email&lt;br&gt;+ PasswordHash: PasswordHash&lt;br&gt;+ DisplayName: string&lt;br&gt;+ TotpSeed: TotpSeed?&lt;br&gt;+ CreatedAt: DateTimeOffset&lt;br&gt;+ IsActive: bool&lt;hr&gt;+ Create(email, pwd): User&lt;br&gt;+ ValidatePassword(plain): bool&lt;br&gt;+ EnableTotp(seed): void" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="330" y="50" width="250" height="230" as="geometry">
+                        <mxRectangle x="330" y="50" width="200" height="200" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="4" value="&lt;&lt;Value Object&gt;&gt;&lt;br&gt;&lt;b&gt;Email&lt;/b&gt;&lt;hr/&gt;+ Value: string&lt;hr/&gt;Invariant: RFC 5321 format&lt;br&gt;Immutable after creation" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="40" y="40" width="210" height="120" as="geometry">
+                        <mxRectangle x="40" y="40" width="170" height="110" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="5" value="&lt;&lt;Value Object&gt;&gt;&lt;br&gt;&lt;b&gt;PasswordHash&lt;/b&gt;&lt;hr/&gt;+ Hash: string&lt;hr/&gt;Invariant: BCrypt cost 12&lt;br&gt;Never stores plaintext" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="40" y="200" width="210" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="&lt;&lt;Value Object&gt;&gt;&lt;br&gt;&lt;b&gt;TotpSeed&lt;/b&gt;&lt;hr/&gt;+ EncryptedSeed: string&lt;hr/&gt;Invariant: AES-256-GCM encrypted&lt;br&gt;Nullable — 2FA optional" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="40" y="360" width="210" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&amp;lt;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;b&gt;RefreshToken&lt;/b&gt;&lt;hr&gt;+ Id: Guid&lt;br&gt;+ UserId: Guid&lt;br&gt;+ TokenHash: string&lt;br&gt;&lt;i&gt;(SHA-256 — raw token not stored)&lt;/i&gt;&lt;br&gt;+ ExpiresAt: DateTimeOffset&lt;br&gt;+ IsRevoked: bool&lt;hr&gt;+ Revoke(): void" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="690" y="40" width="220" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="&lt;&lt;Domain Event&gt;&gt;&lt;br&gt;&lt;b&gt;UserRegistered&lt;/b&gt;&lt;hr/&gt;+ UserId: Guid&lt;br&gt;+ Email: string (hashed in logs)&lt;br&gt;+ Timestamp: DateTimeOffset&lt;br&gt;+ Provider: string?" style="swimlane;startSize=23;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="690" y="280" width="220" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="has" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=0;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" parent="2" source="3" target="4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="has" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=0;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" parent="2" source="3" target="5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="has (optional)" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=0;html=1;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;" parent="2" source="3" target="6" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="460" y="420"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="12" value="1..*" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=0;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" parent="2" source="3" target="7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="raises" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" parent="2" source="3" target="8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_container" value="Legend" style="swimlane;startSize=22;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="640" width="210" height="162" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_swatch_1" value="" style="rounded=1;fillColor=none;strokeColor=#0078D4;" parent="leg_container" vertex="1">
+                    <mxGeometry x="10" y="32" width="18" height="16" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_label_1" value="Bounded context boundary" style="text;html=1;align=left;fontSize=10;" parent="leg_container" vertex="1">
+                    <mxGeometry x="34" y="30" width="170" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_swatch_2" value="" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="leg_container" vertex="1">
+                    <mxGeometry x="10" y="58" width="18" height="16" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_label_2" value="Aggregate root" style="text;html=1;align=left;fontSize=10;" parent="leg_container" vertex="1">
+                    <mxGeometry x="34" y="56" width="170" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_swatch_3" value="" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="leg_container" vertex="1">
+                    <mxGeometry x="10" y="84" width="18" height="16" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_label_3" value="Value object" style="text;html=1;align=left;fontSize=10;" parent="leg_container" vertex="1">
+                    <mxGeometry x="34" y="82" width="170" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_swatch_4" value="" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="leg_container" vertex="1">
+                    <mxGeometry x="10" y="110" width="18" height="16" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_label_4" value="Entity" style="text;html=1;align=left;fontSize=10;" parent="leg_container" vertex="1">
+                    <mxGeometry x="34" y="108" width="170" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_swatch_5" value="" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="leg_container" vertex="1">
+                    <mxGeometry x="10" y="136" width="18" height="16" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_label_5" value="Domain event" style="text;html=1;align=left;fontSize=10;" parent="leg_container" vertex="1">
+                    <mxGeometry x="34" y="134" width="170" height="20" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
