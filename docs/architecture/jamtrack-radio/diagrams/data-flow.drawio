@@ -1,4 +1,4 @@
-<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="560" math="0" shadow="0">
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="580" math="0" shadow="0">
   <root>
     <mxCell id="0" />
     <mxCell id="1" parent="0" />
@@ -28,7 +28,7 @@
       <mxGeometry x="112" y="4" width="24" height="24" as="geometry" />
     </mxCell>
 
-    <!-- tracks DB (rounded rect, was cylinder) -->
+    <!-- tracks DB (rounded rect) -->
     <mxCell id="tracksdb" value="&lt;b&gt;tracks DB&lt;/b&gt;&lt;br&gt;PostgreSQL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
       <mxGeometry x="670" y="70" width="130" height="80" as="geometry" />
     </mxCell>
@@ -52,7 +52,7 @@
       <mxGeometry x="112" y="4" width="24" height="24" as="geometry" />
     </mxCell>
 
-    <!-- storage_objects DB (rounded rect, was cylinder) -->
+    <!-- storage_objects DB (rounded rect) -->
     <mxCell id="storagedb" value="&lt;b&gt;storage_objects DB&lt;/b&gt;&lt;br&gt;PostgreSQL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
       <mxGeometry x="670" y="230" width="130" height="80" as="geometry" />
     </mxCell>
@@ -68,31 +68,45 @@
       <mxGeometry x="122" y="4" width="24" height="24" as="geometry" />
     </mxCell>
 
-    <!-- Async annotation note -->
-    <mxCell id="async_note" value="Async completion (eventually consistent)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#999900;fontSize=10;align=center;size=15;" vertex="1" parent="1">
-      <mxGeometry x="840" y="190" width="220" height="40" as="geometry" />
-    </mxCell>
-
     <!-- ═══════════════════════════════════════════════════════════
-         SYNC EDGES (solid arrows, jumpStyle=none)
+         SYNC EDGES (solid arrows)
     ═══════════════════════════════════════════════════════════ -->
 
+    <!-- e1: Client → API Gateway -->
     <mxCell id="e1" value="1. POST /tracks" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="client" target="apigw" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
+
+    <!-- e2: API Gateway → Track Service (exits upper-right → enters left) -->
     <mxCell id="e2" value="2. gRPC: UploadTrack" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="apigw" target="tracksvc" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="e3" value="3. INSERT track&#xa;(storage_ref=NULL)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;entryX=0.4;entryY=1;entryDx=0;entryDy=0;" edge="1" source="tracksvc" target="tracksdb" parent="1">
+
+    <!-- e3: Track Service → tracks DB (sync INSERT) — upper horizontal lane -->
+    <mxCell id="e3" value="3. INSERT track (storage_ref=NULL)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=1;exitY=0.35;exitDx=0;exitDy=0;entryX=0;entryY=0.35;entryDx=0;entryDy=0;" edge="1" source="tracksvc" target="tracksdb" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
+
+    <!-- e4: API Gateway → Storage Service (exits lower-right, crosses to async row) -->
     <mxCell id="e4" value="4. gRPC: Store (blob bytes)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="apigw" target="storagesvc" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="e5" value="5. SDK: UploadBlob" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="storagesvc" target="azureblob" parent="1">
-      <mxGeometry relative="1" as="geometry" />
+
+    <!-- e5: Storage Service → Azure Blob Storage
+         Routes above storagedb (which sits between them horizontally):
+         exits storagesvc top, jogs up to y=225 (above storagedb top y=230),
+         crosses right, drops into azureblob left. -->
+    <mxCell id="e5" value="5. SDK: UploadBlob" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=0.8;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" source="storagesvc" target="azureblob" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="562" y="225" />
+          <mxPoint x="880" y="225" />
+        </Array>
+      </mxGeometry>
     </mxCell>
-    <mxCell id="e6" value="6. INSERT storage_objects" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;entryX=0.3;entryY=1;entryDx=0;entryDy=0;" edge="1" source="storagesvc" target="storagedb" parent="1">
+
+    <!-- e6: Storage Service → storage_objects DB (clean horizontal right → left) -->
+    <mxCell id="e6" value="6. INSERT storage_objects" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="storagesvc" target="storagedb" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
 
@@ -100,26 +114,45 @@
          ASYNC EDGES (dashed, endArrow=open)
     ═══════════════════════════════════════════════════════════ -->
 
-    <mxCell id="e7" value="7. publish: TrackUploaded" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="tracksvc" target="dapr" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="e8" value="8. subscribe:&#xa;StorageObjectCreated" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="dapr" target="storagesvc" parent="1">
+    <!-- e7: Track Service → Dapr (publish TrackUploaded)
+         MUST route ABOVE the sync row — tracksdb sits between them
+         at x=670-800 y=70-150. Arc at y=45 clears tracksdb top. -->
+    <mxCell id="e7" value="7. publish: TrackUploaded" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="tracksvc" target="dapr" parent="1">
       <mxGeometry relative="1" as="geometry">
         <Array as="points">
-          <mxPoint x="960" y="200" />
-          <mxPoint x="520" y="200" />
+          <mxPoint x="520" y="45" />
+          <mxPoint x="960" y="45" />
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="e9" value="9. gRPC: SetStorageRef (async)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" source="storagesvc" target="tracksvc" parent="1">
+
+    <!-- e8: Dapr → Storage Service (subscribe StorageObjectCreated)
+         Exits dapr bottom → drops to y=210 (gap between rows) →
+         routes left → enters storagesvc top. -->
+    <mxCell id="e8" value="8. subscribe: StorageObjectCreated" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="dapr" target="storagesvc" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="960" y="210" />
+          <mxPoint x="520" y="210" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- e9: Storage Service → Track Service (SetStorageRef async)
+         Exits storagesvc left → jogs left to x=410 → rises to y=110 →
+         enters tracksvc left side. -->
+    <mxCell id="e9" value="9. gRPC: SetStorageRef (async)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="storagesvc" target="tracksvc" parent="1">
       <mxGeometry relative="1" as="geometry">
         <Array as="points">
           <mxPoint x="410" y="270" />
-          <mxPoint x="410" y="170" />
+          <mxPoint x="410" y="110" />
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="e10" value="10. UPDATE tracks&#xa;SET storage_ref" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;entryX=0.6;entryY=1;entryDx=0;entryDy=0;" edge="1" source="tracksvc" target="tracksdb" parent="1">
+
+    <!-- e10: Track Service → tracks DB (async UPDATE SET storage_ref)
+         Lower horizontal lane — offset below e3 to keep lanes separate. -->
+    <mxCell id="e10" value="10. UPDATE tracks SET storage_ref" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;exitX=1;exitY=0.65;exitDx=0;exitDy=0;entryX=0;entryY=0.65;entryDx=0;entryDy=0;" edge="1" source="tracksvc" target="tracksdb" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
 
