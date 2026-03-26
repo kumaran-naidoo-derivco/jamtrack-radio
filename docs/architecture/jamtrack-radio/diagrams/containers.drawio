@@ -2,50 +2,113 @@
   <root>
     <mxCell id="0" />
     <mxCell id="1" parent="0" />
+
+    <!-- Browser Client -->
     <mxCell id="2" value="&lt;b&gt;Browser Client&lt;/b&gt;&lt;br&gt;[Browser]&lt;br&gt;JavaScript SPA (Phase 5+)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
       <mxGeometry x="660" y="20" width="180" height="70" as="geometry" />
     </mxCell>
+
+    <!-- API Gateway -->
     <mxCell id="3" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;&lt;br&gt;YARP Reverse Proxy&lt;br&gt;JWT validation middleware&lt;br&gt;Port: 5000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;" vertex="1" parent="1">
       <mxGeometry x="620" y="140" width="180" height="100" as="geometry" />
     </mxCell>
+    <mxCell id="3_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/networking/Application_Gateway.svg;" vertex="1" parent="3">
+      <mxGeometry x="152" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Identity Service -->
     <mxCell id="4" value="&lt;b&gt;Identity Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;&lt;br&gt;Register, Login, TOTP&lt;br&gt;RS256 JWT issuance&lt;br&gt;Port: 5001" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
       <mxGeometry x="60" y="320" width="160" height="110" as="geometry" />
     </mxCell>
+    <mxCell id="4_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/containers/Kubernetes_Services.svg;" vertex="1" parent="4">
+      <mxGeometry x="132" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Track Service -->
     <mxCell id="5" value="&lt;b&gt;Track Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;&lt;br&gt;Track metadata CRUD&lt;br&gt;Tag management&lt;br&gt;Port: 5002" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
       <mxGeometry x="290" y="320" width="160" height="110" as="geometry" />
     </mxCell>
+    <mxCell id="5_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/containers/Kubernetes_Services.svg;" vertex="1" parent="5">
+      <mxGeometry x="132" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Playlist Service -->
     <mxCell id="6" value="&lt;b&gt;Playlist Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;&lt;br&gt;Playlist CRUD&lt;br&gt;Track ordering&lt;br&gt;Port: 5003" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
       <mxGeometry x="620" y="320" width="160" height="110" as="geometry" />
     </mxCell>
+    <mxCell id="6_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/containers/Kubernetes_Services.svg;" vertex="1" parent="6">
+      <mxGeometry x="132" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Streaming Service -->
     <mxCell id="7" value="&lt;b&gt;Streaming Service&lt;/b&gt;&lt;br&gt;&lt;&lt;api&gt;&gt; REST&lt;br&gt;HTTP range requests&lt;br&gt;Stateless — no DB&lt;br&gt;Port: 5004" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
       <mxGeometry x="860" y="320" width="160" height="110" as="geometry" />
     </mxCell>
+    <mxCell id="7_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/containers/Kubernetes_Services.svg;" vertex="1" parent="7">
+      <mxGeometry x="132" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Storage Service -->
     <mxCell id="8" value="&lt;b&gt;Storage Service&lt;/b&gt;&lt;br&gt;&lt;&lt;gRPC&gt;&gt;&lt;br&gt;Azure Blob abstraction&lt;br&gt;Blob CRUD&lt;br&gt;Port: 5005" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
       <mxGeometry x="1100" y="320" width="160" height="110" as="geometry" />
     </mxCell>
-    <mxCell id="9" value="&lt;b&gt;Identity DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;users, refresh_tokens" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
+    <mxCell id="8_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/containers/Kubernetes_Services.svg;" vertex="1" parent="8">
+      <mxGeometry x="132" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Identity DB (rounded rect, was cylinder) -->
+    <mxCell id="9" value="&lt;b&gt;Identity DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;users, refresh_tokens" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
       <mxGeometry x="70" y="510" width="140" height="80" as="geometry" />
     </mxCell>
-    <mxCell id="10" value="&lt;b&gt;Track DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;tracks, tags, track_tags" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
+    <mxCell id="9_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" vertex="1" parent="9">
+      <mxGeometry x="112" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Track DB (rounded rect, was cylinder) -->
+    <mxCell id="10" value="&lt;b&gt;Track DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;tracks, tags, track_tags" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
       <mxGeometry x="300" y="510" width="140" height="80" as="geometry" />
     </mxCell>
-    <mxCell id="11" value="&lt;b&gt;Playlist DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;playlists, playlist_tracks" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
+    <mxCell id="10_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" vertex="1" parent="10">
+      <mxGeometry x="112" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Playlist DB (rounded rect, was cylinder) -->
+    <mxCell id="11" value="&lt;b&gt;Playlist DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;playlists, playlist_tracks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
       <mxGeometry x="630" y="510" width="140" height="80" as="geometry" />
     </mxCell>
-    <mxCell id="12" value="&lt;b&gt;Storage DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;storage_objects" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
+    <mxCell id="11_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" vertex="1" parent="11">
+      <mxGeometry x="112" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Storage DB (rounded rect, was cylinder) -->
+    <mxCell id="12" value="&lt;b&gt;Storage DB&lt;/b&gt;&lt;br&gt;PostgreSQL 16&lt;br&gt;storage_objects" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="1">
       <mxGeometry x="1110" y="510" width="140" height="80" as="geometry" />
     </mxCell>
+    <mxCell id="12_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" vertex="1" parent="12">
+      <mxGeometry x="112" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Azure Blob Storage -->
     <mxCell id="13" value="&lt;b&gt;Azure Blob Storage&lt;/b&gt;&lt;br&gt;&lt;&lt;external&gt;&gt;&lt;br&gt;Audio + artwork files" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
       <mxGeometry x="1100" y="140" width="160" height="80" as="geometry" />
     </mxCell>
+    <mxCell id="13_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/storage/Blob_Storage.svg;" vertex="1" parent="13">
+      <mxGeometry x="132" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- Dapr Pub/Sub -->
     <mxCell id="14" value="&lt;b&gt;Dapr Pub/Sub&lt;/b&gt;&lt;br&gt;&lt;&lt;async&gt;&gt;&lt;br&gt;Redis (Phase 2-3)&lt;br&gt;Azure Service Bus (Phase 4)&lt;br&gt;Topic: track.uploaded&lt;br&gt;&lt;i&gt;eventually consistent&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
       <mxGeometry x="610" y="670" width="210" height="100" as="geometry" />
     </mxCell>
+    <mxCell id="14_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/databases/Azure_Cache_for_Redis.svg;" vertex="1" parent="14">
+      <mxGeometry x="182" y="4" width="24" height="24" as="geometry" />
+    </mxCell>
+
     <!-- Browser→Gateway: vertical-primary (y=20→140), arc -->
     <mxCell id="15" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="2" target="3" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <!-- Gateway→Identity: vertical-primary (fan-out downward), arc -->
+    <!-- Gateway→Identity: vertical-primary, arc -->
     <mxCell id="16" value="gRPC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="3" target="4" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
@@ -81,55 +144,59 @@
     <mxCell id="24" value="SQL / Dapper" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="8" target="12" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <!-- Storage→Blob: horizontal-primary (both at y~140/320, moving right), none -->
+    <!-- Storage→Blob: horizontal-primary, none -->
     <mxCell id="25" value="Azure Blob SDK" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="8" target="13" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <!-- Streaming→Track: horizontal-primary (both at y=320-430), none -->
+    <!-- Streaming→Track: horizontal-primary, none -->
     <mxCell id="26" value="gRPC: ValidateOwnership" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;jumpStyle=none;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="7" target="5" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <!-- Track→EventBus: vertical-primary (y=320→670), arc -->
+    <!-- Track→EventBus: vertical-primary, arc -->
     <mxCell id="27" value="publish: TrackUploaded" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="5" target="14" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <!-- EventBus→Storage: vertical-primary (y=670→320, going up), arc -->
+    <!-- EventBus→Storage: vertical-primary, arc -->
     <mxCell id="28" value="subscribe" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;jumpStyle=arc;jumpSize=10;labelBackgroundColor=#ffffff;labelBorderColor=none;" edge="1" source="14" target="8" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <!-- Legend: 5 colours (API Gateway, Microservice, External, DB, Event bus) → height = 5*26+32 = 162, y = 800 -->
+
+    <!-- Legend: 5 colours + icon note -->
     <mxCell id="leg_container" value="Legend" style="swimlane;startSize=22;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;" vertex="1" parent="1">
-      <mxGeometry x="20" y="800" width="200" height="162" as="geometry" />
+      <mxGeometry x="20" y="800" width="220" height="188" as="geometry" />
     </mxCell>
     <mxCell id="leg_swatch_1" value="" style="rounded=1;fillColor=#1ba1e2;strokeColor=#006EAF;" vertex="1" parent="leg_container">
       <mxGeometry x="10" y="32" width="18" height="16" as="geometry" />
     </mxCell>
     <mxCell id="leg_label_1" value="API Gateway" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
-      <mxGeometry x="34" y="30" width="160" height="20" as="geometry" />
+      <mxGeometry x="34" y="30" width="178" height="20" as="geometry" />
     </mxCell>
     <mxCell id="leg_swatch_2" value="" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="leg_container">
       <mxGeometry x="10" y="58" width="18" height="16" as="geometry" />
     </mxCell>
-    <mxCell id="leg_label_2" value="Microservice" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
-      <mxGeometry x="34" y="56" width="160" height="20" as="geometry" />
+    <mxCell id="leg_label_2" value="Microservice (AKS pod)" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
+      <mxGeometry x="34" y="56" width="178" height="20" as="geometry" />
     </mxCell>
     <mxCell id="leg_swatch_3" value="" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="leg_container">
       <mxGeometry x="10" y="84" width="18" height="16" as="geometry" />
     </mxCell>
     <mxCell id="leg_label_3" value="External system" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
-      <mxGeometry x="34" y="82" width="160" height="20" as="geometry" />
+      <mxGeometry x="34" y="82" width="178" height="20" as="geometry" />
     </mxCell>
     <mxCell id="leg_swatch_4" value="" style="rounded=1;fillColor=#f3e5f5;strokeColor=#9e3799;" vertex="1" parent="leg_container">
       <mxGeometry x="10" y="110" width="18" height="16" as="geometry" />
     </mxCell>
     <mxCell id="leg_label_4" value="Database (PostgreSQL)" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
-      <mxGeometry x="34" y="108" width="160" height="20" as="geometry" />
+      <mxGeometry x="34" y="108" width="178" height="20" as="geometry" />
     </mxCell>
     <mxCell id="leg_swatch_5" value="" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="leg_container">
       <mxGeometry x="10" y="136" width="18" height="16" as="geometry" />
     </mxCell>
     <mxCell id="leg_label_5" value="Async / event bus" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="leg_container">
-      <mxGeometry x="34" y="134" width="160" height="20" as="geometry" />
+      <mxGeometry x="34" y="134" width="178" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_label_6" value="⬡ Top-right icon = Azure service type" style="text;html=1;align=left;fontSize=9;fontColor=#666666;fontStyle=2;" vertex="1" parent="leg_container">
+      <mxGeometry x="10" y="160" width="202" height="20" as="geometry" />
     </mxCell>
   </root>
 </mxGraphModel>
