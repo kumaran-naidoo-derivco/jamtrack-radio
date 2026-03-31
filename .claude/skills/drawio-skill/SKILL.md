@@ -1,15 +1,119 @@
 ---
 name: drawio
-description: Create and edit draw.io diagram files (.drawio) for architecture diagrams, flowcharts, network diagrams, and technical illustrations. Use when the user asks to create diagrams, architecture visuals, flowcharts, wireframes, network topology, or any visual that should be editable in draw.io/diagrams.net. Outputs XML-based .drawio files that can be imported directly into draw.io desktop or web app.
+description: Create and edit draw.io diagram files for architecture diagrams, flowcharts, network diagrams, and technical illustrations. Use when the user asks to create diagrams, architecture visuals, flowcharts, wireframes, network topology, or any visual that should be editable in draw.io/diagrams.net. Outputs .drawio source files and .drawio.svg embedded SVGs for inline GitHub rendering.
 ---
 
 # Draw.io Diagram Skill
 
 Create professional, editable diagram files in draw.io's native XML format.
 
-## Output Format
+## File Format Standard
 
-Draw.io files are XML with this structure:
+Every diagram produces **two files**:
+
+| File | Purpose |
+|------|---------|
+| `<name>.drawio` | Source — XML edited in VS Code or draw.io app |
+| `<name>.drawio.svg` | Output — SVG with embedded XML + dark mode CSS, renders in GitHub and VS Code |
+
+The `.drawio.svg` has the draw.io XML embedded (editable in VS Code's draw.io extension) and a CSS `filter` injected that automatically adapts to the viewer's colour scheme — one file, no duplication.
+
+The SVG is exported with an explicit white background so it renders as a self-contained diagram in any context — VS Code dark mode, GitHub light mode, browser. No CSS tricks needed.
+
+**Embedding in markdown:**
+```markdown
+![Diagram title](diagrams/name.drawio.svg)
+
+> _Edit: open [`name.drawio`](diagrams/name.drawio) in VS Code with the Draw.io Integration extension, then re-export as `.drawio.svg`._
+```
+
+## Export `.drawio` → `.drawio.svg` (Docker)
+
+Uses the `rlespinasse/drawio-export` Docker image (pull once: `docker pull rlespinasse/drawio-export:latest`).
+
+```bash
+DIAGRAMS_DIR="<absolute-path-to-diagrams-folder>"
+
+# Wrap bare mxGraphModel files (only needed if file lacks <mxfile> wrapper)
+python3 << 'EOF'
+import os, uuid
+path = f"{os.environ['DIAGRAMS_DIR']}/<name>.drawio"
+content = open(path).read().strip()
+if not content.startswith('<mxfile'):
+    wrapped = f'<mxfile host="app.diagrams.net">\n    <diagram id="{uuid.uuid4().hex[:20]}" name="Page-1">\n        {content}\n    </diagram>\n</mxfile>'
+    open(path, 'w').write(wrapped)
+EOF
+
+# Export as embedded SVG
+docker run --rm \
+  -v "${DIAGRAMS_DIR}:/data" \
+  rlespinasse/drawio-export:latest \
+  --format svg \
+  --embed-diagram \
+  --remove-page-suffix \
+  --output /data/svg-export \
+  "/data/<name>.drawio"
+
+# Rename output to .drawio.svg
+mv "${DIAGRAMS_DIR}/svg-export/<name>.svg" "${DIAGRAMS_DIR}/<name>.drawio.svg"
+rmdir "${DIAGRAMS_DIR}/svg-export" 2>/dev/null || true
+```
+
+**Batch export all `.drawio` files in a folder:**
+```bash
+DIAGRAMS_DIR="<absolute-path-to-diagrams-folder>"
+FILES=(context containers domain-identity er-diagram data-flow)  # no extension
+
+# Step 1 — Ensure <mxfile> wrapper (needed if file starts with bare <mxGraphModel>)
+python3 << 'PYEOF'
+import os, uuid
+diagrams_dir = "<absolute-path-to-diagrams-folder>"
+files = ["context", "containers", "domain-identity", "er-diagram", "data-flow"]
+for name in files:
+    path = f"{diagrams_dir}/{name}.drawio"
+    c = open(path, encoding="utf-8").read().strip()
+    if not c.startswith("<mxfile"):
+        wrapped = f'<mxfile host="app.diagrams.net">\n    <diagram id="{uuid.uuid4().hex[:20]}" name="Page-1">\n        {c}\n    </diagram>\n</mxfile>'
+        open(path, "w", encoding="utf-8").write(wrapped)
+        print(f"Wrapped: {name}.drawio")
+PYEOF
+
+# Step 2 — Export as embedded SVG (light theme base)
+for f in "${FILES[@]}"; do
+  docker run --rm \
+    -v "${DIAGRAMS_DIR}:/data" \
+    rlespinasse/drawio-export:latest \
+    --format svg --embed-diagram --remove-page-suffix \
+    --output /data/svg-export "/data/${f}.drawio"
+  mv "${DIAGRAMS_DIR}/svg-export/${f}.svg" "${DIAGRAMS_DIR}/${f}.drawio.svg"
+done
+rmdir "${DIAGRAMS_DIR}/svg-export" 2>/dev/null || true
+
+# Step 3 — Ensure explicit white background (renders correctly in VS Code dark mode and GitHub)
+python3 << 'PYEOF'
+import os, re
+diagrams_dir = "<absolute-path-to-diagrams-folder>"
+for filename in os.listdir(diagrams_dir):
+    if not filename.endswith(".drawio.svg"):
+        continue
+    path = os.path.join(diagrams_dir, filename)
+    content = open(path, encoding="utf-8").read()
+    content = re.sub(
+        r'background:\s*[^;]+;?\s*background-color:\s*[^;]+;?',
+        'background: white; background-color: white;',
+        content
+    )
+    open(path, "w", encoding="utf-8").write(content)
+    print(f"Patched: {filename}")
+PYEOF
+
+# Step 4 — Restore wrapped .drawio source files (git repo only)
+git restore <space-separated .drawio filenames>
+```
+
+## Source File Format
+
+Draw.io source files are XML with this structure:
 
 ```xml
 <mxfile host="app.diagrams.net" modified="DATE" agent="Claude" version="21.0.0" type="device">
@@ -283,8 +387,10 @@ See `references/branding.md` for full customisation instructions.
 5. Add connectors referencing source/target IDs
 6. Add labels and annotations
 7. Add legend if using color coding
-8. Save as `.drawio` file
-9. Copy to `/mnt/user-data/outputs/` and present to user
+8. Write source as `<name>.drawio` (mxfile XML)
+9. Export using the Docker batch export command above (wraps, exports, injects dark mode CSS)
+10. Embed in markdown: `![Title](diagrams/<name>.drawio.svg)`
+11. Commit both files: `.drawio` (source) and `.drawio.svg` (output)
 
 ## Cloud Provider Icons (AWS, Azure, GCP)
 

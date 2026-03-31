@@ -11,8 +11,9 @@
 
 Shows the system boundary and its relationships with external actors and systems.
 
-> **Diagram**: [context.drawio](diagrams/context.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+![System Context Diagram](diagrams/context.drawio.svg)
+
+> _Edit this diagram: open [`context.drawio`](diagrams/context.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
 
 ---
 
@@ -20,8 +21,9 @@ Shows the system boundary and its relationships with external actors and systems
 
 Shows each microservice, its technology, communication protocol, and data ownership. Synchronous gRPC calls are solid arrows; the async Dapr event bus uses dashed arrows through a queue shape annotated `eventually consistent`.
 
-> **Diagram**: [containers.drawio](diagrams/containers.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+![Container Diagram](diagrams/containers.drawio.svg)
+
+> _Edit this diagram: open [`containers.drawio`](diagrams/containers.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
 
 ### Service Port Map
 
@@ -40,8 +42,9 @@ Shows each microservice, its technology, communication protocol, and data owners
 
 ### Bounded Context: Identity
 
-> **Diagram**: [domain-identity.drawio](diagrams/domain-identity.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+![Domain Model — Identity](diagrams/domain-identity.drawio.svg)
+
+> _Edit this diagram: open [`domain-identity.drawio`](diagrams/domain-identity.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
 
 | Element | Type | Key properties / invariants |
 |---------|------|----------------------------|

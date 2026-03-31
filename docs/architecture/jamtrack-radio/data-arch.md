@@ -12,8 +12,9 @@
 
 Full entity-relationship diagram across all services. Each service's tables are shown within a dashed ownership boundary — no cross-boundary foreign keys.
 
-> **Diagram**: [er-diagram.drawio](diagrams/er-diagram.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+![ER Diagram](diagrams/er-diagram.drawio.svg)
+
+> _Edit this diagram: open [`er-diagram.drawio`](diagrams/er-diagram.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
 
 ### Schema — Identity Service
 
@@ -146,8 +147,9 @@ deleted_at   timestamptz   NULL
 
 Shows the complete track upload flow — synchronous write path (solid arrows) and asynchronous `TrackUploaded` event path (dashed arrows, `eventually consistent`).
 
-> **Diagram**: [data-flow.drawio](diagrams/data-flow.drawio)
-> _Open in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension (`hediet.vscode-drawio`)_
+![Data Flow Diagram](diagrams/data-flow.drawio.svg)
+
+> _Edit this diagram: open [`data-flow.drawio`](diagrams/data-flow.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
 
 ---
 
