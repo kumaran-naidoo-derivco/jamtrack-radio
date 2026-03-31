@@ -13,7 +13,7 @@ Shows the system boundary and its relationships with external actors and systems
 
 ![System Context Diagram](diagrams/context.drawio.svg)
 
-> _Edit this diagram: open [`context.drawio`](diagrams/context.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
+> _Edit this diagram: open the `.drawio.svg` file directly in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension — the source XML is embedded._
 
 ---
 
@@ -23,7 +23,7 @@ Shows each microservice, its technology, communication protocol, and data owners
 
 ![Container Diagram](diagrams/containers.drawio.svg)
 
-> _Edit this diagram: open [`containers.drawio`](diagrams/containers.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
+> _Edit this diagram: open the `.drawio.svg` file directly in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension — the source XML is embedded._
 
 ### Service Port Map
 
@@ -44,7 +44,7 @@ Shows each microservice, its technology, communication protocol, and data owners
 
 ![Domain Model — Identity](diagrams/domain-identity.drawio.svg)
 
-> _Edit this diagram: open [`domain-identity.drawio`](diagrams/domain-identity.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
+> _Edit this diagram: open the `.drawio.svg` file directly in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension — the source XML is embedded._
 
 | Element | Type | Key properties / invariants |
 |---------|------|----------------------------|
