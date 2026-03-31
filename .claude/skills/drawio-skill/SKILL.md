@@ -9,14 +9,15 @@ Create professional, editable diagram files in draw.io's native XML format.
 
 ## File Format Standard
 
-Every diagram produces **two files**:
+Every diagram is a **single file**: `<name>.drawio.svg`
 
-| File | Purpose |
-|------|---------|
-| `<name>.drawio` | Source — XML edited in VS Code or draw.io app |
-| `<name>.drawio.svg` | Output — SVG with embedded XML + dark mode CSS, renders in GitHub and VS Code |
+| Property | Detail |
+|----------|--------|
+| Renders inline | GitHub markdown, VS Code markdown preview |
+| Editable | Open directly in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension — source XML is embedded |
+| White background | Set explicitly so diagrams are readable in VS Code dark mode and GitHub light mode |
 
-The `.drawio.svg` has the draw.io XML embedded (editable in VS Code's draw.io extension) and a CSS `filter` injected that automatically adapts to the viewer's colour scheme — one file, no duplication.
+No separate `.drawio` source file needed — the SVG already contains the full draw.io XML.
 
 The SVG is exported with an explicit white background so it renders as a self-contained diagram in any context — VS Code dark mode, GitHub light mode, browser. No CSS tricks needed.
 
@@ -387,10 +388,10 @@ See `references/branding.md` for full customisation instructions.
 5. Add connectors referencing source/target IDs
 6. Add labels and annotations
 7. Add legend if using color coding
-8. Write source as `<name>.drawio` (mxfile XML)
-9. Export using the Docker batch export command above (wraps, exports, injects dark mode CSS)
-10. Embed in markdown: `![Title](diagrams/<name>.drawio.svg)`
-11. Commit both files: `.drawio` (source) and `.drawio.svg` (output)
+8. Write source as `<name>.drawio` (temporary — used only for the export step)
+9. Run the Docker batch export (wraps, exports, sets white background, renames to `.drawio.svg`)
+10. Delete the temporary `.drawio` file — only commit the `.drawio.svg`
+11. Embed in markdown: `![Title](diagrams/<name>.drawio.svg)`
 
 ## Cloud Provider Icons (AWS, Azure, GCP)
 

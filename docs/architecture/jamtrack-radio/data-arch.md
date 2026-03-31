@@ -14,7 +14,7 @@ Full entity-relationship diagram across all services. Each service's tables are 
 
 ![ER Diagram](diagrams/er-diagram.drawio.svg)
 
-> _Edit this diagram: open [`er-diagram.drawio`](diagrams/er-diagram.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
+> _Edit this diagram: open the `.drawio.svg` file directly in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension — the source XML is embedded._
 
 ### Schema — Identity Service
 
@@ -149,7 +149,7 @@ Shows the complete track upload flow — synchronous write path (solid arrows) a
 
 ![Data Flow Diagram](diagrams/data-flow.drawio.svg)
 
-> _Edit this diagram: open [`data-flow.drawio`](diagrams/data-flow.drawio) in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension, then re-export as `.drawio.svg`._
+> _Edit this diagram: open the `.drawio.svg` file directly in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension — the source XML is embedded._
 
 ---
 
