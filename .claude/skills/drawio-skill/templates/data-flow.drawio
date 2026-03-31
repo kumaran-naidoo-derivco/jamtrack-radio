@@ -1,0 +1,217 @@
+<mxfile host="app.diagrams.net" modified="2026-03-26" agent="Claude" version="21.0.0" type="device">
+  <diagram name="Data Flow" id="data-flow-template">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- DATA FLOW DIAGRAM TEMPLATE                                     -->
+        <!-- Two-row layout: SYNC (top) / ASYNC (bottom)                   -->
+        <!-- Key rules to preserve correct edge routing:                   -->
+        <!--   • Sync edges: exitY=0.35 / entryY=0.35 (upper lane)         -->
+        <!--   • Async edges: exitY=0.65 / entryY=0.65 (lower lane)        -->
+        <!--   • Cross-row edges: use explicit waypoints to avoid nodes     -->
+        <!--   • DB entry always from LEFT side (entryX=0)                 -->
+        <!--   • Jump arcs (jumpStyle=arc) where edges must cross           -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <!-- Title bar -->
+        <mxCell id="title-bar" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0066CC;strokeColor=#0066CC;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="title-text" value="[Feature Name] — Data Flow" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="55" y="25" width="500" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="title-tag" value="SYNC path (top row) · ASYNC path (bottom row)" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;fontSize=10;fontColor=#CCDDFF;" vertex="1" parent="1">
+          <mxGeometry x="700" y="25" width="650" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ─── ROW LABELS ─────────────────────────────────────────── -->
+        <mxCell id="lbl-sync" value="SYNC" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#0066CC;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="55" y="215" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl-async" value="ASYNC" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#d79b00;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="55" y="440" width="40" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ─── SYNC ROW COMPONENTS ──────────────────────────────────
+             Horizontal band ~y=170–310
+             Service boxes: h=100, positioned at y=210
+             DB cylinders: positioned to the RIGHT of their service
+        ─────────────────────────────────────────────────────────────── -->
+
+        <!-- Client / Entry point -->
+        <mxCell id="client" value="&lt;b&gt;[Client]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;Browser / Mobile App&lt;br&gt;or upstream service&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="210" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Service A (sync) -->
+        <mxCell id="svc-a" value="&lt;b&gt;[Service A]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;Describe action&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="340" y="210" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- DB A — sits to the RIGHT of Service A -->
+        <mxCell id="db-a" value="&lt;b&gt;[DB A]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;PostgreSQL&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="200" width="100" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Service B (sync) -->
+        <mxCell id="svc-b" value="&lt;b&gt;[Service B]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;Describe action&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="760" y="210" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- DB B — sits to the RIGHT of Service B -->
+        <mxCell id="db-b" value="&lt;b&gt;[DB B]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;PostgreSQL&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#f8cecc;strokeColor=#b85450;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="980" y="200" width="100" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ─── ASYNC ROW COMPONENTS ─────────────────────────────────
+             Horizontal band ~y=420–560
+             Message bus in the middle; async services on either side
+        ─────────────────────────────────────────────────────────────── -->
+
+        <!-- Message Bus / Dapr -->
+        <mxCell id="msgbus" value="&lt;b&gt;[Message Bus]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;Dapr pub/sub · Redis&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="430" width="150" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="msgbus_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/databases/Azure_Cache_for_Redis.svg;" vertex="1" parent="msgbus">
+          <mxGeometry x="122" y="4" width="24" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- Async Consumer Service -->
+        <mxCell id="svc-c" value="&lt;b&gt;[Consumer Service]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;Handles async event&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="820" y="430" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- External service (e.g. blob storage, CDN, 3rd party) -->
+        <mxCell id="ext-svc" value="&lt;b&gt;[External Service]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#999;&quot;&gt;Azure Blob / CDN / API&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="430" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ext_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/storage/Blob_Storage.svg;" vertex="1" parent="ext-svc">
+          <mxGeometry x="132" y="4" width="24" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- ─── SYNC EDGES (upper lane — use entryY/exitY = 0.35) ────
+             All DB connections enter from the LEFT (entryX=0)
+        ─────────────────────────────────────────────────────────────── -->
+
+        <!-- Client → Service A -->
+        <mxCell id="e1" value="[action / protocol]" style="endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="client" target="svc-a">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Service A → DB A (sync INSERT/SELECT) -->
+        <mxCell id="e2" value="INSERT / SELECT" style="endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;fontSize=10;exitX=1;exitY=0.35;entryX=0;entryY=0.35;" edge="1" parent="1" source="svc-a" target="db-a">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Service A → Service B (sync call, routes ABOVE db-a via waypoints) -->
+        <!-- IMPORTANT: if db-a sits between svc-a and svc-b horizontally,   -->
+        <!-- add a waypoint above db-a top (e.g. y = db-a.y - 20)            -->
+        <mxCell id="e3" value="[gRPC call]" style="endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;exitX=0.5;exitY=0;entryX=0.5;entryY=0;jumpStyle=arc;" edge="1" parent="1" source="svc-a" target="svc-b">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="415" y="170" />
+              <mxPoint x="835" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Service B → DB B (sync INSERT) -->
+        <mxCell id="e4" value="INSERT / SELECT" style="endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;fontSize=10;exitX=1;exitY=0.35;entryX=0;entryY=0.35;" edge="1" parent="1" source="svc-b" target="db-b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ─── ASYNC EDGES (lower lane — use entryY/exitY = 0.65) ── -->
+
+        <!-- Service A → Message Bus (publish) -->
+        <!-- Routes from bottom of svc-a down into async row           -->
+        <mxCell id="e5" value="publish [topic]" style="endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d79b00;dashed=1;dashPattern=6 4;fontSize=10;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="svc-a" target="msgbus">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="415" y="380" />
+              <mxPoint x="540" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Message Bus → Consumer Service (subscribe / async delivery) -->
+        <mxCell id="e6" value="subscribe [topic]" style="endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#d79b00;dashed=1;dashPattern=6 4;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="msgbus" target="svc-c">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Consumer Service → External Service -->
+        <mxCell id="e7" value="[action]&#xa;Managed Identity" style="endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;dashed=1;dashPattern=4 4;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="svc-c" target="ext-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Async UPDATE back to DB (Service B lower lane) -->
+        <mxCell id="e8" value="async UPDATE" style="endArrow=classic;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;dashed=1;dashPattern=4 4;fontSize=10;exitX=0.5;exitY=1;entryX=0;entryY=0.65;" edge="1" parent="1" source="svc-c" target="db-b">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="895" y="560" />
+              <mxPoint x="1030" y="560" />
+              <mxPoint x="1030" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ─── LEGEND ──────────────────────────────────────────────── -->
+        <mxCell id="legend-bg" value="" style="rounded=0;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="700" width="580" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="Legend" style="text;fontSize=11;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="55" y="706" width="60" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Solid arrow = sync -->
+        <mxCell id="leg-sync-line" value="" style="endArrow=classic;html=1;strokeColor=#555555;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="55" y="742" as="sourcePoint" />
+            <mxPoint x="105" y="742" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg-sync-lbl" value="Synchronous (HTTP/gRPC)" style="text;fontSize=10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="112" y="735" width="160" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Dashed orange = async publish -->
+        <mxCell id="leg-async-line" value="" style="endArrow=classic;html=1;strokeColor=#d79b00;strokeWidth=2;dashed=1;dashPattern=6 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="55" y="762" as="sourcePoint" />
+            <mxPoint x="105" y="762" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg-async-lbl" value="Asynchronous (pub/sub / event)" style="text;fontSize=10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="112" y="755" width="180" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Dashed grey = managed identity -->
+        <mxCell id="leg-mi-line" value="" style="endArrow=classic;html=1;strokeColor=#666666;strokeWidth=1;dashed=1;dashPattern=4 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="300" y="742" as="sourcePoint" />
+            <mxPoint x="350" y="742" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg-mi-lbl" value="Managed Identity / external access" style="text;fontSize=10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="357" y="735" width="200" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Red cylinder = DB -->
+        <mxCell id="leg-db-box" value="" style="shape=cylinder3;fillColor=#f8cecc;strokeColor=#b85450;backgroundOutline=1;size=6;" vertex="1" parent="1">
+          <mxGeometry x="300" y="752" width="30" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-db-lbl" value="PostgreSQL database (per-service)" style="text;fontSize=10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="338" y="755" width="210" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Footer -->
+        <mxCell id="footer" value="" style="rounded=0;fillColor=#1a1a2e;strokeColor=#1a1a2e;" vertex="1" parent="1">
+          <mxGeometry x="40" y="786" width="1320" height="4" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
