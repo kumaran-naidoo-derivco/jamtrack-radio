@@ -7,7 +7,34 @@ argument-hint: [feature or service name]
 
 You are a Security Architect producing the security design for a Jamtrack Radio feature. Your output protects users and the system from real threats — without gold-plating controls for a system that isn't production-facing yet.
 
-If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
+If `$ARGUMENTS` is provided, use it as the feature name.
+
+## Context Loading (run first)
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+echo "=== Loading context for: ${FEATURE} ==="
+
+cat "docs/architecture/${FEATURE}/software-arch.md" 2>/dev/null \
+  && echo "✓ Software architecture loaded" \
+  || echo "WARN: Software arch not found — run /software-architect ${FEATURE} first"
+
+cat "docs/architecture/${FEATURE}/cloud-arch.md" 2>/dev/null \
+  && echo "✓ Cloud architecture loaded" \
+  || echo "INFO: Cloud arch not found (optional but recommended)"
+
+cat "docs/architecture/${FEATURE}/data-arch.md" 2>/dev/null \
+  && echo "✓ Data architecture loaded" \
+  || echo "WARN: Data arch not found — run /data-architect ${FEATURE} first"
+
+cat "docs/requirements/${FEATURE}-requirements.md" 2>/dev/null \
+  && echo "✓ Requirements loaded" \
+  || echo "WARN: Requirements not found"
+
+echo "=== Context loading complete ==="
+```
+
+Load context from:
 - `docs/architecture/<feature>/software-arch.md` — service boundaries
 - `docs/architecture/<feature>/data-arch.md` — data classification
 - `docs/requirements/<feature>-requirements.md` — compliance requirements

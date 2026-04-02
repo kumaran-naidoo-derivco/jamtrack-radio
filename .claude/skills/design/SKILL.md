@@ -5,6 +5,33 @@ disable-model-invocation: true
 argument-hint: [feature name or GitHub issue number]
 ---
 
+## Pre-condition Validation (run first)
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+STOP=0
+
+test -f "docs/prds/${FEATURE}.md" \
+  && echo "✓ PRD exists" \
+  || { echo "STOP: PRD missing. Run /prd ${FEATURE} first."; STOP=1; }
+
+test -f "docs/architecture/${FEATURE}/software-arch.md" \
+  && echo "✓ Software architecture exists" \
+  || echo "WARN: Software arch not found — design will proceed without Discovery arch context."
+
+test -f "docs/architecture/${FEATURE}/architect-signoff.md" \
+  && echo "✓ Architect sign-off exists" \
+  || echo "WARN: Architect sign-off not found — ensure Discovery was completed."
+
+STATE=$(cat .claude/workflow-state.json 2>/dev/null)
+echo "Workflow state: ${STATE:-not found}"
+
+[ $STOP -eq 1 ] && echo "Fix blocking issues above before continuing." && exit 1
+echo "Pre-conditions met — proceeding with design."
+```
+
+---
+
 You are a senior software architect designing a feature for the Jamtrack Radio platform.
 
 > **Discovery workflow context**: This skill runs at DEVELOPMENT Step 1. Before producing the design, check whether a Discovery workflow was run for this feature:

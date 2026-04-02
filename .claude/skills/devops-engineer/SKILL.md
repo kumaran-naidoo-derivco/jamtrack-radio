@@ -225,8 +225,27 @@ After a successful production deployment, run the MONITORING workflow:
 
 ---
 
+## Handoff Record
+
+When handing off back to the Product Manager, produce this block and save it as a comment on the relevant GitHub issue:
+
+```
+## Handoff Record
+From: DevOps Engineer | To: Product Manager
+Feature: [feature name]
+Completed: Deploy-staging, Integration tests, Deploy-prod, Monitoring setup
+Artifacts:
+  - Staging deployment: [URL or docker-compose service name]
+  - Production deployment: [URL / AKS namespace] (Phase 4+)
+  - Monitoring dashboard: [Grafana/ELK link] (Phase 4+)
+Open questions: [alert threshold tuning needed, cost monitoring setup, log retention policy applied?]
+Risks: [rollback procedure untested, migration not rehearsed on staging, alert fatigue risk]
+```
+
+---
+
 ## Handoff Points
 
 - **From Senior Developer**: merged PR on `main`, CI green → begin deployment workflow
-- **To Product Manager** (MONITORING Step 6): after `/retrospective`, flag to Product Manager that value report can be run (requires usage data — typically 1–4 weeks post-deployment)
+- **To Product Manager** (MONITORING Step 6): after `/retrospective`, produce Handoff Record above; flag that value report can be run (requires usage data — typically 1–4 weeks post-deployment)
 - **To next DISCOVERY**: after `/retrospective`, action items become GitHub issues for the next cycle

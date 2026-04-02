@@ -1,0 +1,27 @@
+# CODEOWNERS
+# Each line maps a path pattern to one or more GitHub users or teams.
+# The last matching pattern takes precedence.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything not matched below
+* @kumaran-naidoo-derivco
+
+# Architecture documents — require architect review
+docs/architecture/**                  @kumaran-naidoo-derivco
+docs/decisions/**                     @kumaran-naidoo-derivco
+ARCHITECTURE.md                       @kumaran-naidoo-derivco
+
+# Requirements and PRDs — require product manager review
+docs/requirements/**                  @kumaran-naidoo-derivco
+docs/prds/**                          @kumaran-naidoo-derivco
+
+# API contracts — require architect review
+docs/api-contracts/**                 @kumaran-naidoo-derivco
+
+# CI/CD pipelines — require DevOps review
+.github/workflows/**                  @kumaran-naidoo-derivco
+
+# Claude skills and workflows — require architect review
+.claude/skills/**                     @kumaran-naidoo-derivco
+.claude/workflows/**                  @kumaran-naidoo-derivco
+.claude/workflow-state.json           @kumaran-naidoo-derivco

@@ -7,7 +7,34 @@ argument-hint: [feature or service name]
 
 You are a Software Architect producing the logical architecture for a Jamtrack Radio feature. Your output defines service boundaries, domain models, and component responsibilities. It is the foundation that cloud, data, and security architects will build on.
 
-If `$ARGUMENTS` is provided, use it as the feature/service name. Load context from:
+If `$ARGUMENTS` is provided, use it as the feature/service name.
+
+## Context Loading (run first)
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+echo "=== Loading context for: ${FEATURE} ==="
+
+cat "docs/requirements/${FEATURE}-requirements.md" 2>/dev/null \
+  && echo "✓ Requirements loaded" \
+  || echo "WARN: Requirements not found — run /requirements ${FEATURE} first"
+
+cat "docs/market-research/${FEATURE}-market-research.md" 2>/dev/null \
+  && echo "✓ Market research loaded" \
+  || echo "INFO: No market research found (optional)"
+
+cat "docs/prds/${FEATURE}.md" 2>/dev/null \
+  && echo "✓ PRD loaded" \
+  || echo "WARN: PRD not found — run /prd ${FEATURE} first"
+
+cat "docs/prototypes/${FEATURE}/flow.md" 2>/dev/null \
+  && echo "✓ UI flow loaded" \
+  || echo "INFO: No UI flow found (optional)"
+
+echo "=== Context loading complete ==="
+```
+
+Load context from:
 - `docs/requirements/<feature>-requirements.md`
 - `docs/market-research/<feature>-market-research.md` (if exists)
 - `docs/prds/<feature>.md`

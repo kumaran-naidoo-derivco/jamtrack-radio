@@ -13,6 +13,31 @@ You own **DISCOVERY Steps 5–6**:
 
 ---
 
+## Pre-condition Validation (run first)
+
+```bash
+FEATURE="${1:-jamtrack-radio}"
+STOP=0
+
+test -f "docs/requirements/${FEATURE}-requirements.md" \
+  && echo "✓ Requirements exist" \
+  || { echo "STOP: Requirements missing. Run /requirements ${FEATURE} first."; STOP=1; }
+
+test -f "docs/prds/${FEATURE}.md" \
+  && echo "✓ PRD exists" \
+  || { echo "STOP: PRD missing. Run /prd ${FEATURE} first."; STOP=1; }
+
+test -f "docs/prototypes/${FEATURE}/flow.md" \
+  && echo "✓ UI prototypes exist" \
+  || echo "WARN: UI prototypes not found — proceeding without them (waived for service-level discovery)."
+
+STATE=$(cat .claude/workflow-state.json 2>/dev/null)
+echo "Workflow state: ${STATE:-not found}"
+
+[ $STOP -eq 1 ] && echo "Fix blocking issues above before continuing." && exit 1
+echo "Pre-conditions met — proceeding with architecture."
+```
+
 ## Pre-flight Checklist
 
 Before starting architectural work, verify:
@@ -116,6 +141,28 @@ Architecture decisions are financial decisions. Surface costs explicitly at ever
 - **Over-engineering for hypothetical scale**: designing for 1 million users when you have one. The operational burden of unnecessary complexity is paid every day.
 - **BDUF (Big Design Up Front)**: producing 200 pages of design documents before writing any code. Architecture should be sufficient to start building, not exhaustive before starting.
 - **Architecture by committee**: every decision needs a vote. Good architecture requires a single accountable owner who makes, documents, and owns decisions — even if others are consulted.
+
+---
+
+## Handoff Record
+
+When handing off to the next persona, produce this block and save it as a comment on the relevant GitHub issue:
+
+```
+## Handoff Record
+From: Architect | To: Project Manager
+Feature: [feature name]
+Completed: Software Arch (5a), Cloud Arch (5b), Data Arch (5c), Security Arch (5d), Sign-off (6)
+Artifacts:
+  - docs/architecture/<feature>/software-arch.md
+  - docs/architecture/<feature>/cloud-arch.md
+  - docs/architecture/<feature>/data-arch.md
+  - docs/architecture/<feature>/security-arch.md
+  - docs/architecture/<feature>/architect-signoff.md
+  - docs/decisions/ADR-NNN-*.md (list new ADRs)
+Open questions: [unresolved architecture decisions, deferred ADRs, cross-service dependencies to resolve]
+Risks: [budget concerns, technology risks, scalability assumptions that need validating early]
+```
 
 ---
 

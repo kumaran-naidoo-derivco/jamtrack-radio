@@ -7,7 +7,30 @@ argument-hint: [feature or service name]
 
 You are a Data Architect producing the data model and data flow for a Jamtrack Radio feature. Your output defines what data exists, who owns it, how it flows through the system, and what it costs to store and query.
 
-If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
+If `$ARGUMENTS` is provided, use it as the feature name.
+
+## Context Loading (run first)
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+echo "=== Loading context for: ${FEATURE} ==="
+
+cat "docs/architecture/${FEATURE}/software-arch.md" 2>/dev/null \
+  && echo "✓ Software architecture loaded" \
+  || echo "WARN: Software arch not found — run /software-architect ${FEATURE} first"
+
+cat "docs/architecture/${FEATURE}/cloud-arch.md" 2>/dev/null \
+  && echo "✓ Cloud architecture loaded" \
+  || echo "WARN: Cloud arch not found — run /cloud-architect ${FEATURE} first"
+
+cat "docs/requirements/${FEATURE}-requirements.md" 2>/dev/null \
+  && echo "✓ Requirements loaded" \
+  || echo "WARN: Requirements not found"
+
+echo "=== Context loading complete ==="
+```
+
+Load context from:
 - `docs/architecture/<feature>/software-arch.md` — domain model and service boundaries
 - `docs/requirements/<feature>-requirements.md` — data retention and compliance requirements
 

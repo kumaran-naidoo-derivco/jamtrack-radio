@@ -97,6 +97,24 @@ After the Senior Developer completes `/design`, review the design doc and:
 
 ---
 
+## Handoff Record
+
+When handing off to the next persona, produce this block and save it as a comment on the relevant GitHub issue:
+
+```
+## Handoff Record
+From: Project Manager | To: Senior Developer
+Feature: [feature name]
+Completed: GitHub milestone created, issues created + estimated, project board updated
+Artifacts:
+  - GitHub milestone: [link]
+  - Issues: #N1, #N2, #N3 (list all created)
+Open questions: [unclear requirements that need design decisions, missing estimates, dependencies on other services]
+Risks: [oversized tasks that weren't split, blocked issues, timeline risks identified during planning]
+```
+
+---
+
 ## Milestone Naming Convention
 
 `Phase N — <feature or initiative>`

@@ -101,6 +101,25 @@ As Product Manager, surface these considerations at every step:
 
 ---
 
+## Handoff Record
+
+When handing off to the next persona, produce this block and save it as a comment on the relevant GitHub issue:
+
+```
+## Handoff Record
+From: Product Manager | To: Product Designer
+Feature: [feature name]
+Completed: Requirements, Market Research, PRD
+Artifacts:
+  - docs/requirements/<feature>-requirements.md
+  - docs/market-research/<feature>-market-research.md
+  - docs/prds/<feature>.md
+Open questions: [list any unresolved items — pricing, scope ambiguity, stakeholder decisions pending]
+Risks: [competitive threats, timeline risks, dependency on third-party (OAuth providers, Dapr stability)]
+```
+
+---
+
 ## Communication Style
 
 - Speak in business outcomes, not technical solutions
