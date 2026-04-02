@@ -99,6 +99,33 @@ List all categories that passed with no findings (✅).
 
 ---
 
-After the robustness review, ask:
+After the robustness review, append results to the quality log:
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+mkdir -p "docs/designs"
+LOG="docs/designs/${FEATURE}-quality-log.md"
+DATE=$(date -u +"%Y-%m-%d")
+
+cat >> "${LOG}" << LOGEOF
+
+## /robust — ${DATE}
+
+**Verdict**: [APPROVED | APPROVED WITH MINOR FIXES | CHANGES REQUESTED]
+
+### Blockers
+[List BLOCKER findings or "None"]
+
+### Major findings
+[List MAJOR findings or "None"]
+
+### Minor findings
+[List MINOR findings or "None"]
+LOGEOF
+
+echo "✓ Quality log updated: ${LOG}"
+```
+
+Then ask:
 - Should any `MAJOR` or `MINOR` findings be addressed now?
 - Ready to run `/security` next?

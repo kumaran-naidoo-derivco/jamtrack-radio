@@ -42,6 +42,73 @@ jobs:
       # .sln file is detected in the repository root.
       # ---------------------------------------------------------------
 
+      # ---------------------------------------------------------------
+      # Architecture fitness functions — run on every PR
+      # Checks Clean Architecture dependency rules in C# projects
+      # ---------------------------------------------------------------
+
+      - name: Check Clean Architecture dependency rules
+        run: |
+          python3 << 'PYEOF'
+          import os, sys, re, glob
+
+          VIOLATIONS = []
+
+          # Find all C# project files
+          csproj_files = glob.glob("src/**/*.csproj", recursive=True)
+
+          for csproj in csproj_files:
+              project_dir = os.path.dirname(csproj)
+              project_name = os.path.basename(csproj).replace(".csproj", "")
+
+              # Determine layer from project name suffix
+              if project_name.endswith(".Domain"):
+                  layer = "Domain"
+                  forbidden = ["Application", "Infrastructure", "Api", "Dapper", "Grpc", "AspNetCore"]
+              elif project_name.endswith(".Application"):
+                  layer = "Application"
+                  forbidden = ["Infrastructure", "Api", "Dapper", "Grpc.AspNetCore", "AspNetCore"]
+              else:
+                  layer = None
+                  forbidden = []
+
+              if not layer:
+                  continue
+
+              # Check .csproj for forbidden PackageReference / ProjectReference
+              with open(csproj) as f:
+                  content = f.read()
+
+              for f_ref in forbidden:
+                  if f_ref in content:
+                      VIOLATIONS.append(
+                          f"VIOLATION: {project_name} ({layer}) references '{f_ref}' — inner layers must not depend on outer layers"
+                      )
+
+              # Check .cs files for forbidden namespace imports
+              cs_files = glob.glob(os.path.join(project_dir, "**/*.cs"), recursive=True)
+              for cs_file in cs_files:
+                  with open(cs_file, errors="ignore") as f:
+                      lines = f.readlines()
+                  for i, line in enumerate(lines, 1):
+                      if line.strip().startswith("using "):
+                          for f_ref in forbidden:
+                              if f_ref in line:
+                                  VIOLATIONS.append(
+                                      f"VIOLATION: {cs_file}:{i} — {layer} layer imports '{f_ref.strip()}'"
+                                  )
+
+          if VIOLATIONS:
+              print("\n".join(VIOLATIONS))
+              print(f"\n{len(VIOLATIONS)} Clean Architecture violation(s) found.")
+              sys.exit(1)
+          else:
+              if csproj_files:
+                  print(f"✓ Clean Architecture dependency rules passed ({len(csproj_files)} projects checked)")
+              else:
+                  print("No C# projects found — skipping dependency rule check")
+          PYEOF
+
       - name: Detect .NET solution
         id: detect-dotnet
         run: |

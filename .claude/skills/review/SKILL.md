@@ -110,12 +110,30 @@ Work through every category below. For each item, either confirm it passes (✅)
 
 ### 9. Quality Pass Verification
 
+First, check the quality log:
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+LOG="docs/designs/${FEATURE}-quality-log.md"
+
+if [ -f "${LOG}" ]; then
+  echo "✓ Quality log found: ${LOG}"
+  grep "^## /" "${LOG}" | sort
+  # Check mandatory passes exist
+  grep -q "^## /robust" "${LOG}" && echo "✓ /robust logged" || echo "WARN: /robust not in quality log"
+  grep -q "^## /security" "${LOG}" && echo "✓ /security logged" || echo "WARN: /security not in quality log — mandatory"
+else
+  echo "WARN: No quality log found at ${LOG}"
+  echo "      Run /robust, /security (mandatory) and /scalable, /performant (recommended) before review"
+fi
+```
+
 - [ ] `/robust` was run and all `BLOCKER` and `MAJOR` findings resolved. Flag any obvious robustness gaps not addressed: unhandled exception paths, missing input validation, no cancellation support, silent failures.
 - [ ] `/security` was run and all `BLOCKER` and `MAJOR` findings resolved. Flag any obvious security gaps: unvalidated inputs, hardcoded secrets, missing JWT validation, SQL injection risk, sensitive data in responses or logs.
 - [ ] `/scalable` was run for any feature touching DB access or service-to-service calls. Flag obvious scalability gaps: unbounded queries, shared mutable state, sync-over-async patterns.
 - [ ] `/performant` was run for any feature with list endpoints or high-frequency operations. Flag obvious performance gaps: N+1 queries, missing indexes, blocking calls.
 
-If there is clear evidence that a quality pass was skipped (e.g. obvious unvalidated inputs, raw Infrastructure exceptions leaking to the caller, unbounded `SELECT`s on list endpoints), raise a `MAJOR` finding and require the relevant skill to be run before merge.
+If `/robust` or `/security` quality log entries are missing, raise a `BLOCKER` finding — these two are mandatory before any feature merges. `/scalable` and `/performant` are recommended; raise a `MAJOR` if skipped for DB-touching or list-endpoint features.
 
 ---
 

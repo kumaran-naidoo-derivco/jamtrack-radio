@@ -106,6 +106,33 @@ The document structure:
 
 ---
 
+## Retrospective Feedback Loop
+
+Before writing new requirements, check if a retrospective exists for the previous cycle:
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+
+# Load learnings from previous retrospectives
+echo "=== Loading retrospective learnings ==="
+for retro in docs/retrospectives/*.md; do
+  [ -f "$retro" ] && cat "$retro" && echo "✓ Loaded: $retro" || true
+done
+
+# Load previous requirements for this feature (if updating)
+test -f "docs/requirements/${FEATURE}-requirements.md" \
+  && echo "✓ Existing requirements found — review open questions and update rather than replace" \
+  || echo "INFO: No existing requirements — starting fresh"
+echo "=== Retrospective check complete ==="
+```
+
+Incorporate any lessons flagged in past retrospectives before adding new requirements. Common patterns to look for:
+- Open questions from the previous cycle that were never resolved — resolve them before this cycle starts
+- Requirements that turned out to be wrong (user didn't want it) — add a "What we learned" note
+- Estimates that were significantly off — adjust confidence levels
+
+---
+
 ## Gate
 
 Requirements are **agreed** when:
