@@ -61,7 +61,7 @@ Systematically enumerate tasks from the architecture outputs:
 - Example: "Configure ELK index template for jamtrack.identity logs"
 
 **DevOps — CI/CD tasks**:
-- Source: DEVELOPMENT.md pipeline requirements
+- Source: 03-build-and-deploy.md pipeline requirements
 - Example: "Set up GitHub Actions CI pipeline (build + test)"
 
 **Testing tasks**:

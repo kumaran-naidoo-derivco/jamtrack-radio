@@ -1,10 +1,10 @@
 # Jamtrack Radio — Development Workflow
 
-**Prerequisite**: `DISCOVERY.md` completed, architecture sign-off obtained, project plan and all GitHub issues created via `/project-plan`.
+**Prerequisite**: `02-feature-discovery.md` completed, architecture sign-off obtained, project plan and all GitHub issues created via `/project-plan`.
 
 This document defines the end-to-end development lifecycle for every feature, bug fix, or change in the Jamtrack Radio project. Each step has a corresponding Claude Code skill and an assigned agent persona. Follow the steps in order — each gate must be passed before moving on.
 
-After Step 7, proceed to `MONITORING.md`.
+After Step 7, proceed to `04-monitor-and-learn.md`.
 
 ---
 
@@ -12,7 +12,7 @@ After Step 7, proceed to `MONITORING.md`.
 
 Before starting DEVELOPMENT, verify all of the following:
 
-- [ ] DISCOVERY.md completed for this feature:
+- [ ] 02-feature-discovery.md completed for this feature:
   - [ ] `/requirements` output exists in `docs/requirements/`
   - [ ] `/market-research` report exists in `docs/market-research/` (or explicitly waived with documented reason)
   - [ ] PRD approved and saved to `docs/prds/`
@@ -100,9 +100,9 @@ Run `/project-manager` or invoke the Project Manager agent to perform this check
 - `.proto` file updated if a gRPC endpoint was added
 - FluentMigrator migration if schema changed
 
-**Gate**: `dotnet build` passes with zero warnings. PR raised against `main` following `GIT-WORKFLOW.md`.
+**Gate**: `dotnet build` passes with zero warnings. PR raised against `main` following `git-workflow.md`.
 
-> **Raising the PR**: Use `/raise-pr` to execute the full git workflow — sub-task issue creation, branch, commit with issue reference, push, and PR with `Closes #<issue>`. See `GIT-WORKFLOW.md` for the full workflow and conventions.
+> **Raising the PR**: Use `/raise-pr` to execute the full git workflow — sub-task issue creation, branch, commit with issue reference, push, and PR with `Closes #<issue>`. See `git-workflow.md` for the full workflow and conventions.
 
 ---
 
@@ -224,4 +224,4 @@ Use these to generate boilerplate instead of repeating manual steps:
 
 ---
 
-After completing all 8 steps, proceed to `MONITORING.md`.
+After completing all 8 steps, proceed to `04-monitor-and-learn.md`.

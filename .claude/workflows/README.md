@@ -12,13 +12,13 @@ PRODUCT-DISCOVERY → FEATURE-DISCOVERY → DEVELOPMENT → MONITORING
 
 | Workflow | File | When to run | Primary agents |
 |----------|------|-------------|----------------|
-| **Product Discovery** | `PRODUCT-DISCOVERY.md` | Once at product inception (or major pivot) — covers the whole product | Product Manager, Product Designer, Architect, Project Manager |
-| **Feature Discovery** | `DISCOVERY.md` | Before any code is written — for every new service or feature | Product Manager, Product Designer, Architect, Project Manager |
-| **Development** | `DEVELOPMENT.md` | After Feature Discovery sign-off — to build and deploy the feature | Senior Developer, DevOps Engineer |
-| **Monitoring** | `MONITORING.md` | After every deployment — to verify health and measure value | DevOps Engineer, Product Manager |
-| **Git Workflow** | `GIT-WORKFLOW.md` | Every change — cross-cutting, applies at any workflow step that produces a PR | All agents |
+| **Product Discovery** | `01-product-discovery.md` | Once at product inception (or major pivot) — covers the whole product | Product Manager, Product Designer, Architect, Project Manager |
+| **Feature Discovery** | `02-feature-discovery.md` | Before any code is written — for every new service or feature | Product Manager, Product Designer, Architect, Project Manager |
+| **Development** | `03-build-and-deploy.md` | After Feature Discovery sign-off — to build and deploy the feature | Senior Developer, DevOps Engineer |
+| **Monitoring** | `04-monitor-and-learn.md` | After every deployment — to verify health and measure value | DevOps Engineer, Product Manager |
+| **Git Workflow** | `git-workflow.md` | Every change — cross-cutting, applies at any workflow step that produces a PR | All agents |
 
-> **Product vs Feature Discovery**: Product Discovery runs once and answers "Should we build this product?" — it produces the master PRD, design system, system-level architecture, and all GitHub milestones. Feature Discovery runs before each service build and answers "Should we add this feature now?" — it scopes to a single bounded context and creates sprint-level issues. See `PRODUCT-DISCOVERY.md` for a full comparison table.
+> **Product vs Feature Discovery**: Product Discovery runs once and answers "Should we build this product?" — it produces the master PRD, design system, system-level architecture, and all GitHub milestones. Feature Discovery runs before each service build and answers "Should we add this feature now?" — it scopes to a single bounded context and creates sprint-level issues. See `01-product-discovery.md` for a full comparison table.
 
 ---
 
@@ -213,4 +213,4 @@ docs/
 
 ## Deprecated
 
-`WORKFLOW.md` — superseded by `DEVELOPMENT.md`. See that file for the redirect note.
+`WORKFLOW.md` — superseded by `03-build-and-deploy.md`. See that file for the redirect note.

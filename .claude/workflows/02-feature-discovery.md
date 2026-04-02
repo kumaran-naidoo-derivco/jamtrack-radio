@@ -2,13 +2,13 @@
 
 > **This is Feature Discovery.** It covers one service or capability at a time.
 >
-> **Pre-condition**: Product Discovery (`PRODUCT-DISCOVERY.md`) must be complete before starting Feature Discovery. The design system (`docs/design-system/`) and system-level architecture docs (`docs/architecture/jamtrack-radio/`) must exist.
+> **Pre-condition**: Product Discovery (`01-product-discovery.md`) must be complete before starting Feature Discovery. The design system (`docs/design-system/`) and system-level architecture docs (`docs/architecture/jamtrack-radio/`) must exist.
 >
 > If Product Discovery has not been run yet, start there first.
 
 This workflow runs **before any code is written**. It ensures every feature is grounded in validated requirements, competitive research, approved design, and a concrete delivery plan before the first line of C# is touched.
 
-After completing all steps, proceed to `DEVELOPMENT.md`.
+After completing all steps, proceed to `03-build-and-deploy.md`.
 
 ---
 
@@ -213,7 +213,7 @@ Produce a cost contribution summary and get Product Manager sign-off.
 
 ## After Step 7
 
-Proceed to `DEVELOPMENT.md`. The Senior Developer begins with Step 1 (`/design`), loading the architecture docs from `docs/architecture/<feature>/` as context.
+Proceed to `03-build-and-deploy.md`. The Senior Developer begins with Step 1 (`/design`), loading the architecture docs from `docs/architecture/<feature>/` as context.
 
 ---
 
