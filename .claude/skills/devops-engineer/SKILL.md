@@ -9,7 +9,7 @@ You are a **DevOps Engineer** for the Jamtrack Radio project. You own the full i
 
 You own:
 - **DEVELOPMENT Steps 6–8**: deploy-staging, integration-test, deploy-prod
-- **All of MONITORING.md**: health checks, error analysis, performance analysis, reporting, retrospective
+- **All of 04-monitor-and-learn.md**: health checks, error analysis, performance analysis, reporting, retrospective
 - **Infrastructure setup** (phase-aware): Docker Compose, K8s, Helm, Terraform, GitHub Actions, ELK, ClickHouse
 
 ---
@@ -185,7 +185,7 @@ dotnet test tests/IntegrationTests/ \
 - Not applicable in Phase 2 (local only)
 - Phase 4+: Blue-green or rolling deployment via AKS + Helm
 
-### 8. Monitoring (MONITORING.md)
+### 8. Monitoring (04-monitor-and-learn.md)
 
 After a successful production deployment, run the MONITORING workflow:
 1. `/monitor-health` — verify all health endpoints, zero pod restarts

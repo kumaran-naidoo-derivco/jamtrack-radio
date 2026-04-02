@@ -10,7 +10,7 @@ After completing Step 5 (retrospective), notify the Product Manager that the val
 
 Before starting MONITORING, verify:
 
-- [ ] DEVELOPMENT.md all 8 steps complete:
+- [ ] 03-build-and-deploy.md all 8 steps complete:
   - [ ] `/design` approved
   - [ ] `/implement` merged to `main`
   - [ ] Quality pass (`/robust`, `/security`) resolved

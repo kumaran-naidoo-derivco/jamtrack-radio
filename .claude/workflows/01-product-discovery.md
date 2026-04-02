@@ -2,13 +2,13 @@
 
 > **This is Product Discovery.** Run it **once** at product inception (or revisit at a major pivot). It establishes the product baseline — master PRD, design system, system-level architecture, and all GitHub milestones — that every Feature Discovery cycle inherits from.
 >
-> After completing Product Discovery, proceed to **Feature Discovery** (`DISCOVERY.md`) for the first service.
+> After completing Product Discovery, proceed to **Feature Discovery** (`02-feature-discovery.md`) for the first service.
 
 ---
 
 ## Product Discovery vs Feature Discovery
 
-| Dimension | Product Discovery (this file) | Feature Discovery (`DISCOVERY.md`) |
+| Dimension | Product Discovery (this file) | Feature Discovery (`02-feature-discovery.md`) |
 |-----------|------------------------------|-------------------------------------|
 | When | Once at inception; revisited at major pivots | Before every new service or significant feature |
 | Scope | Whole product — all services, all personas | One service or capability |
@@ -231,7 +231,7 @@ Cross-view consistency check across the entire system. Consolidated TCO summary.
 
 **Product Discovery is complete.**
 
-Proceed to **Feature Discovery** (`DISCOVERY.md`) for the first service. Recommended first service: **Identity Service** — all other services depend on authenticated users.
+Proceed to **Feature Discovery** (`02-feature-discovery.md`) for the first service. Recommended first service: **Identity Service** — all other services depend on authenticated users.
 
 When starting Feature Discovery, the Architect should load `docs/architecture/jamtrack-radio/software-arch.md` as context so the feature-level design stays consistent with the system baseline.
 
