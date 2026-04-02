@@ -5,6 +5,34 @@ disable-model-invocation: true
 argument-hint: [feature name]
 ---
 
+## Pre-condition Validation (run first)
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+STOP=0
+
+test -f "docs/requirements/${FEATURE}-requirements.md" \
+  && echo "✓ Requirements doc exists (Value Prediction source)" \
+  || { echo "STOP: Requirements doc missing — no Value Prediction to compare against."; STOP=1; }
+
+test -f "docs/prds/${FEATURE}.md" \
+  && echo "✓ PRD exists (success metrics source)" \
+  || { echo "STOP: PRD missing — no success metrics to evaluate."; STOP=1; }
+
+# Check deployment is at least 14 days old
+DEPLOY_DATE=$(cat .claude/workflow-state.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('lastUpdated','unknown'))" 2>/dev/null)
+echo "Last workflow state update: ${DEPLOY_DATE}"
+echo "WARN: Ensure at least 14 days have passed since deployment — run this too early and the data is meaningless."
+
+STATE=$(cat .claude/workflow-state.json 2>/dev/null)
+echo "Workflow state: ${STATE:-not found}"
+
+[ $STOP -eq 1 ] && echo "Fix blocking issues above before continuing." && exit 1
+echo "Pre-conditions met — proceeding with value report."
+```
+
+---
+
 You are the Product Manager closing the value loop for a Jamtrack Radio feature. This report answers the most important question in product development: **Was this feature worth building?**
 
 Run this skill 1–4 weeks after a feature is deployed to production — not immediately at deploy time. You need real usage data to validate the prediction.

@@ -7,7 +7,26 @@ argument-hint: [feature or service name]
 
 You are a Cloud Architect producing the infrastructure design for Jamtrack Radio. Your output defines the cloud topology, resource specifications, and a full cost model. Every resource decision is a financial decision — surface the cost implications explicitly.
 
-If `$ARGUMENTS` is provided, use it as the feature name. Load context from:
+If `$ARGUMENTS` is provided, use it as the feature name.
+
+## Context Loading (run first)
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+echo "=== Loading context for: ${FEATURE} ==="
+
+cat "docs/architecture/${FEATURE}/software-arch.md" 2>/dev/null \
+  && echo "✓ Software architecture loaded" \
+  || echo "WARN: Software arch not found — run /software-architect ${FEATURE} first"
+
+cat "docs/requirements/${FEATURE}-requirements.md" 2>/dev/null \
+  && echo "✓ Requirements loaded" \
+  || echo "WARN: Requirements not found"
+
+echo "=== Context loading complete ==="
+```
+
+Load context from:
 - `docs/architecture/<feature>/software-arch.md` — service list, container sizes
 - `docs/requirements/<feature>-requirements.md` — scalability and reliability requirements
 

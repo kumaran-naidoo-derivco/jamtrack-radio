@@ -5,6 +5,25 @@ disable-model-invocation: true
 argument-hint: [feature name, service name, or design doc path]
 ---
 
+## Pre-condition Validation (run first)
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+STOP=0
+
+test -f "docs/designs/${FEATURE}.md" \
+  && echo "✓ Design document exists" \
+  || { echo "STOP: Design doc missing — acceptance criteria needed. Run /design ${FEATURE} first."; STOP=1; }
+
+STATE=$(cat .claude/workflow-state.json 2>/dev/null)
+echo "Workflow state: ${STATE:-not found}"
+
+[ $STOP -eq 1 ] && echo "Fix blocking issues above before continuing." && exit 1
+echo "Pre-conditions met — proceeding with test generation."
+```
+
+---
+
 You are a senior C# engineer writing integration tests for the Jamtrack Radio platform.
 
 Testing philosophy for this project:

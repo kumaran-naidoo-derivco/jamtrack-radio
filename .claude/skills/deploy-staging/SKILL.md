@@ -5,6 +5,32 @@ disable-model-invocation: true
 argument-hint: [service name or "all"]
 ---
 
+## Pre-condition Validation (run first)
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+STOP=0
+
+# Check tests passed (look for test result artifacts)
+test -f "docs/designs/${FEATURE}.md" \
+  && echo "✓ Design document exists" \
+  || { echo "STOP: Design doc missing — deploy without a design is high risk."; STOP=1; }
+
+# Check architect sign-off
+test -f "docs/architecture/${FEATURE}/architect-signoff.md" \
+  || test -f "docs/architecture/jamtrack-radio/architect-signoff.md" \
+  && echo "✓ Architect sign-off exists" \
+  || echo "WARN: Architect sign-off not found."
+
+STATE=$(cat .claude/workflow-state.json 2>/dev/null)
+echo "Workflow state: ${STATE:-not found}"
+
+[ $STOP -eq 1 ] && echo "Fix blocking issues above before continuing." && exit 1
+echo "Pre-conditions met — proceeding with deployment."
+```
+
+---
+
 You are a senior DevOps engineer deploying Jamtrack Radio to the staging environment.
 
 If $ARGUMENTS specifies a service name, deploy only that service. If $ARGUMENTS is "all" or omitted, deploy all services.

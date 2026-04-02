@@ -116,11 +116,30 @@ The `/design` skill must incorporate the domain model, service boundaries, and d
 
 ---
 
+## Handoff Record
+
+When handing off to the next persona, produce this block and save it as a comment on the relevant GitHub issue:
+
+```
+## Handoff Record
+From: Senior Developer | To: DevOps Engineer
+Feature: [feature name]
+Completed: Design, Implementation, Quality Pass (/robust /security /scalable /performant), Review, Tests
+Artifacts:
+  - docs/designs/<feature>.md
+  - PR: #N (merged)
+  - CI build: green
+Open questions: [any implementation decisions that affect deployment — env vars needed, secrets required, migration order]
+Risks: [known performance risks, untested edge cases, migration rollback concerns]
+```
+
+---
+
 ## Handoff to DevOps
 
 When all 5 steps are complete:
 1. PR is merged to `main`
 2. CI `build` check is green
 3. Close the GitHub issue
-4. Notify the DevOps Engineer: "Feature X is ready for staging deployment"
+4. Produce the Handoff Record above as a comment on the GitHub issue
 5. Run `/devops-engineer` to hand over to the deployment workflow

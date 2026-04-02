@@ -95,6 +95,24 @@ As Product Designer, surface these considerations at every design step:
 
 ---
 
+## Handoff Record
+
+When handing off to the next persona, produce this block and save it as a comment on the relevant GitHub issue:
+
+```
+## Handoff Record
+From: Product Designer | To: Architect
+Feature: [feature name]
+Completed: Design System (if new), UX Research, UI Prototypes (screens 01–N + flow.md)
+Artifacts:
+  - docs/design-system/ (if updated)
+  - docs/prototypes/<feature>/ (screens + flow.md)
+Open questions: [unresolved interaction patterns, responsive breakpoint decisions, accessibility audit gaps]
+Risks: [component library gaps that could slow implementation, animations requiring custom code, third-party assets needed]
+```
+
+---
+
 ## Communication Style
 
 - Annotate prototypes with notes explaining interaction intent — developers shouldn't have to guess

@@ -38,19 +38,35 @@ jobs:
           echo "Workflow YAML validation passed."
 
       # ---------------------------------------------------------------
-      # Phase 2 additions (uncomment when C# solution exists):
-      #
-      # - name: Setup .NET
-      #   uses: actions/setup-dotnet@v4
-      #   with:
-      #     dotnet-version: '8.0.x'
-      #
-      # - name: Restore dependencies
-      #   run: dotnet restore
-      #
-      # - name: Build
-      #   run: dotnet build --no-restore --configuration Release
-      #
-      # - name: Test
-      #   run: dotnet test --no-build --configuration Release
+      # Phase 2+: dotnet build and test — runs automatically when a
+      # .sln file is detected in the repository root.
       # ---------------------------------------------------------------
+
+      - name: Detect .NET solution
+        id: detect-dotnet
+        run: |
+          if ls *.sln 2>/dev/null | grep -q .; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "✓ .NET solution detected"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No .sln file found — skipping dotnet steps"
+          fi
+
+      - name: Setup .NET
+        if: steps.detect-dotnet.outputs.found == 'true'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        if: steps.detect-dotnet.outputs.found == 'true'
+        run: dotnet restore
+
+      - name: Build
+        if: steps.detect-dotnet.outputs.found == 'true'
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        if: steps.detect-dotnet.outputs.found == 'true'
+        run: dotnet test --no-build --configuration Release

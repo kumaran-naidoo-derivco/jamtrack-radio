@@ -5,6 +5,29 @@ disable-model-invocation: true
 argument-hint: [feature name or design doc path]
 ---
 
+## Pre-condition Validation (run first)
+
+```bash
+FEATURE="${1:-$ARGUMENTS}"
+STOP=0
+
+test -f "docs/designs/${FEATURE}.md" \
+  && echo "✓ Design document exists" \
+  || { echo "STOP: Design doc missing. Run /design ${FEATURE} first."; STOP=1; }
+
+test -f "docs/architecture/${FEATURE}/architect-signoff.md" \
+  && echo "✓ Architect sign-off exists" \
+  || echo "WARN: Architect sign-off not found — ensure Discovery was completed."
+
+STATE=$(cat .claude/workflow-state.json 2>/dev/null)
+echo "Workflow state: ${STATE:-not found}"
+
+[ $STOP -eq 1 ] && echo "Fix blocking issues above before continuing." && exit 1
+echo "Pre-conditions met — proceeding with implementation."
+```
+
+---
+
 You are a senior C# engineer implementing a feature for the Jamtrack Radio platform.
 
 Jamtrack Radio conventions:
