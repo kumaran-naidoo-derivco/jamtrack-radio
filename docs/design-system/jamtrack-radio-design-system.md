@@ -6,6 +6,17 @@
 
 ---
 
+## Changelog
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0 | 2026-03-21 | Product Designer | Initial design system — brand identity, colour palette, typography, spacing, components |
+| 1.1 | 2026-03-21 | Product Designer | Added `TrackCard` component, refined focus state colours for WCAG AA compliance |
+
+> **Versioning policy**: Increment the minor version for new tokens, components, or behaviour changes. Increment the major version when a breaking change requires updates to existing prototype files. `/design-review` should reference the version in effect when the prototype was built.
+
+---
+
 ## 1. Brand Identity
 
 | Attribute | Value |

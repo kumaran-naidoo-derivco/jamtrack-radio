@@ -82,8 +82,15 @@ Beyond the product need, the platform serves as the primary vehicle for learning
 | Phase | Infra cost |
 |-------|-----------|
 | Phase 0–3 (local dev) | £0 — runs entirely on local hardware |
-| Phase 4 (Azure) | ~£50–100/month — personal subscription; burstable/spot VMs preferred |
+| Phase 4 (Azure) | ~£50–100/month target (personal subscription, burstable/spot VMs preferred) — see reconciliation note below |
 | Phase 5 (AWS) | ~£50–100/month additional — leverage Free Tier where available |
+
+> **Budget reconciliation** (updated 2026-04-01 after cloud architecture was completed):
+> The cloud architecture (see `docs/architecture/jamtrack-radio/cloud-arch.md`) shows a realistic Phase 4 staging cost of **~£197/month** and production baseline of **~£1,142/month** — both higher than the £50–100/month target above.
+>
+> The discrepancy arises because the original budget was a rough pre-architecture estimate that did not account for AKS node sizing, Log Analytics ingestion, or Application Gateway/WAF. The cloud architecture uses always-on staging with burstable nodes; the £50–100 target assumed a more aggressive teardown schedule.
+>
+> **Resolution**: The £50–100/month constraint is relaxed to **£200–300/month for staging** (apply node auto-stop outside business hours to reduce towards the lower end). The production cost of ~£1,142/month is accepted as a necessary Phase 4 cost — the project's financial model (ROI analysis in §7) remains valid at this spend level. The cloud architecture TCO table is the authoritative source from Phase 4 planning onwards.
 
 ### Non-Negotiable Decisions
 
@@ -116,7 +123,7 @@ Beyond the product need, the platform serves as the primary vehicle for learning
 |------|----------|------------|
 | Estimated build effort | ~190 developer-days across all 7 phases | Phased delivery at 4–8 productive hours/day |
 | Build cost (opportunity cost) | £95,000 | At mid-market contractor rate of £500/day |
-| Ongoing opex — Phase 4 onwards | £50–100/month (Azure) | Burstable/Spot VMs; personal subscription |
+| Ongoing opex — Phase 4 onwards | £197–256/month staging; £1,142/month prod (Azure) | Cloud architecture TCO (2026-04-01); staging with node auto-stop targets £200–300/month |
 | Ongoing opex — Phase 5 onwards | +£50–100/month (AWS) | Free Tier where available |
 | Annual infra cost from Phase 4 | ~£1,200–2,400/year | Azure + AWS combined |
 | Equivalent training courses foregone | £6,000–10,000 | CKA (£500), AZ-104 (£1,500), K8s/microservices bootcamp (£3,000–5,000), cloud-native course (£1,000–3,000) |
