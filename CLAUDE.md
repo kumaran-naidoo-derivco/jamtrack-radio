@@ -38,15 +38,18 @@ You are **Kintsugi**, a software development coach. Your role is to upskill the 
 | Phase 0 | Environment Setup | ✅ Complete (19/19) |
 | Phase 1 | Repo Documentation & Templates | ✅ Complete (10/10) |
 | Phase 2 | Local Dev Environment (C# + Postgres) | 🔄 In Progress |
-| Phase 3 | Docker & Local K8s | ⏳ Not started |
-| Phase 4 | Azure Deployment | ⏳ Not started |
-| Phase 5 | AWS Deployment | ⏳ Not started |
-| Phase 6 | Monitoring & Observability | ⏳ Not started |
-| Phase 7 | Final Docs & Packaging | ⏳ Not started |
+| Phase 3 | Azure VM Hosting | ⏳ Not started |
+| Phase 4 | Feature Completion (Playlist, Storage, API Gateway) | ⏳ Not started |
+| Phase 5 | Containerisation (Docker + ACR) | ⏳ Not started |
+| Phase 6 | Azure Container Apps (ACA) | ⏳ Not started |
+| Phase 7 | Azure Kubernetes Service (AKS) | ⏳ Not started |
+| Phase 8 | AWS Deployment (EKS) | ⏳ Not started |
+| Phase 9 | Monitoring & Observability (ELK + ClickHouse) | ⏳ Not started |
+| Phase 10 | Final Docs & Packaging | ⏳ Not started |
 
 ## Up Next
 
-- **Phase 2, Task 2.4**: Product Discovery — Architecture (Steps 5a–5d), Architect Sign-off (Step 6), and Project Plan (Step 7)
+- **Phase 2, Task 2.5**: Identity Service — Feature Discovery, Design, Implementation, Tests
 
 ## Key Decisions
 

@@ -4,29 +4,31 @@
 **Author**: Kintsugi (Cloud Architect)
 **Status**: Accepted
 **Skill**: `/cloud-architect jamtrack-radio` — DISCOVERY Step 5b
-**Inputs**: `software-arch.md` (6 services defined), `jamtrack-radio-requirements.md` (budget: £50–100/month Azure from Phase 4)
+**Inputs**: `software-arch.md` (6 services defined), `jamtrack-radio-requirements.md` (budget: £50–100/month target; reconciled to £200–300/month staging)
 
 ---
 
 ## 1. Phase-Aware Infrastructure Overview
 
-| Component | Phase 2 (local) | Phase 3 (local K8s) | Phase 4+ (Azure) |
-|-----------|-----------------|---------------------|------------------|
-| Compute | Docker Compose | Rancher Desktop K8s | Azure Kubernetes Service (AKS) |
-| Container registry | Local Docker | Local Docker | Azure Container Registry (ACR) |
-| Database | Docker PostgreSQL 16 | Docker PostgreSQL 16 | Azure Database for PostgreSQL Flexible Server |
-| Secrets | `.env.local` (gitignored) | K8s Secrets | Azure Key Vault |
-| Ingress | `localhost` ports | Traefik (Rancher Desktop) | Azure Application Gateway + WAF v2 |
-| DNS | — | — | Azure DNS |
-| Monitoring | stdout logs | stdout logs | ELK on AKS + ClickHouse |
-| Blob storage | Local filesystem mock | Azure Blob (remote) or local MinIO | Azure Blob Storage (Hot tier) |
-| Service mesh / sidecar | Dapr (local) | Dapr (K8s mode) | Dapr (K8s mode on AKS) |
-| Pub/sub broker | Redis (Docker) | Redis (Docker/K8s) | Azure Service Bus (Standard) |
-| Secrets vault | `.env.local` | K8s Secrets | Azure Key Vault |
+| Component | Phase 2 (local) | Phase 3 (Azure VMs) | Phase 5 (Docker + ACR) | Phase 6 (ACA) | Phase 7+ (AKS) |
+|-----------|-----------------|---------------------|----------------------|---------------|----------------|
+| Compute | `dotnet run` | Azure Linux VMs (B1s/B2s) | Docker on VMs | Azure Container Apps | Azure Kubernetes Service |
+| Container registry | — | — | Azure Container Registry (Basic) | ACR | ACR |
+| Database | Docker PostgreSQL 16 | Azure Database for PostgreSQL Flexible Server | Same (Flex Server) | Same (Flex Server) | Same (Flex Server) |
+| Secrets | `.env.local` (gitignored) | Azure Key Vault + VM Managed Identity | Key Vault + Managed Identity | ACA Key Vault references | Workload Identity + Key Vault |
+| Ingress | `localhost` ports | Nginx reverse proxy on VM | Nginx on VM | ACA built-in HTTPS ingress | Application Gateway + WAF v2 |
+| DNS | — | — | — | ACA managed domain | Azure DNS |
+| Monitoring | stdout logs | stdout + journalctl | stdout logs | ACA Log Analytics | ELK on AKS + ClickHouse |
+| Blob storage | Local filesystem mock | Azure Blob Storage (Hot LRS) | Same | Same | Same |
+| Service mesh / sidecar | Dapr (local) | Dapr CLI on VM | Dapr CLI in container | ACA built-in Dapr | Dapr (K8s mode on AKS) |
+| Pub/sub broker | Redis (Docker) | Redis (Docker on VM) | Redis (Docker on VM) | Azure Service Bus (Standard) | Azure Service Bus |
+| Est. monthly cost | £0 | ~£37–50 | ~£50 | ~£55–70 | ~£60–100 (spot nodes) |
+
+> **Phase 4** (Feature Completion) uses the same Azure VM infrastructure as Phase 3 — it adds services, not infrastructure changes.
 
 ---
 
-## 2. Azure Network Topology Diagram (Phase 4+)
+## 2. Azure Network Topology Diagram (Phase 7+ / AKS)
 
 Hub-spoke VNet topology. Internet traffic enters via Application Gateway + WAF v2, routes through the AKS subnet, and connects to the data tier via private endpoints. Azure services outside the VNet authenticate via Managed Identity.
 
@@ -70,7 +72,36 @@ Each namespace has a `ResourceQuota` to cap CPU and memory, and a default-deny `
 
 ## 5. Cost Estimate Table
 
-### Dev / Staging (monthly, Phase 4+)
+### Phase 3 — Azure VMs (monthly)
+
+| Resource | SKU / Config | Monthly cost |
+|----------|-------------|-------------|
+| Linux VMs (2× Standard_B1s) | Burstable, Ubuntu 22.04 LTS | ~£12 |
+| PostgreSQL Flexible Server | Burstable B_Standard_B1ms | ~£12 |
+| Azure Key Vault — Standard | Key operations | ~£1 |
+| Public IP (Basic, static) | | ~£3 |
+| OS disks (2× Premium SSD P4 30GB) | | ~£8 |
+| Bandwidth egress (dev traffic) | | ~£1 |
+| **Phase 3 total** | | **~£37/month** |
+
+> Upgrade app VM to Standard_B2s (~£12/month) if B1s is too small for 3 services. Total ~£50/month.
+
+### Phase 6 — Azure Container Apps (monthly)
+
+| Resource | SKU / Config | Monthly cost |
+|----------|-------------|-------------|
+| Container Apps (×6) | Consumption plan, scale-to-zero | ~£5–15 |
+| Log Analytics Workspace | Pay-per-GB (2 GB/day) | ~£30 |
+| Azure Service Bus — Standard | Per operation | ~£8 |
+| PostgreSQL Flexible Server | Burstable B_Standard_B1ms | ~£12 |
+| Azure Container Registry — Basic | 10 GB included | ~£4.50 |
+| Azure Key Vault — Standard | | ~£1 |
+| Azure Blob Storage (audio) — Hot LRS | 100 GB | ~£2 |
+| **Phase 6 total** | | **~£55–70/month** |
+
+> ACA Consumption plan charges per vCPU-second and GiB-second. With scale-to-zero, idle services cost £0. Dev workloads are low cost.
+
+### Phase 7 — AKS Staging (monthly)
 
 | Resource | SKU / Config | Monthly cost |
 |----------|-------------|-------------|
@@ -85,7 +116,7 @@ Each namespace has a `ResourceQuota` to cap CPU and memory, and a default-deny `
 
 > **Note**: This is below the £326 in the skill template because staging node pools are burstable B-series (lower cost). Apply the 30% buffer from the financial lens: **~£256/month worst case**.
 
-### Production — Baseline (monthly, Phase 4+)
+### Production — Baseline (monthly, Phase 7+)
 
 | Resource | SKU / Config | Monthly cost |
 |----------|-------------|-------------|
@@ -109,28 +140,33 @@ Each namespace has a `ResourceQuota` to cap CPU and memory, and a default-deny `
 
 | Scenario | Monthly | Annual | Notes |
 |----------|---------|--------|-------|
-| Development (Phase 2–3) | £0 | £0 | Local only |
-| Staging (Phase 4+) | £197–256 | £2,364–3,072 | Always-on |
-| Production baseline (Phase 4+) | £1,142 | £13,704 | |
+| Development (Phase 2) | £0 | £0 | Local only |
+| Azure VMs (Phase 3–4) | ~£37–50 | ~£450–600 | `terraform destroy` when not developing |
+| Docker + ACR on VMs (Phase 5) | ~£50 | ~£600 | Adds ACR Basic to VM cost |
+| ACA (Phase 6) | ~£55–70 | ~£660–840 | Scale-to-zero; VMs decommissioned |
+| AKS staging (Phase 7+) | £197–256 | £2,364–3,072 | Always-on; apply auto-shutdown |
+| AKS production baseline (Phase 7+) | £1,142 | £13,704 | |
 | Production at 2× | £1,295 | £15,540 | |
 | Production at 10× | £1,700 | £20,400 | |
-| **Phase 4 Year 1 total** | | **~£16,068–17,000** | Staging + prod baseline |
 
-> **Budget check**: The personal budget constraint is £50–100/month (requirements §3). This architecture significantly exceeds it at full Phase 4 deployment. **Mitigation**: Phase 4 development runs on staging only (£197–256/month with auto-shutdown — see §7). Production-grade sizing applies only if the platform is used for live streaming.
+> **Budget check**: The personal budget is £50–100/month (requirements §3, reconciled to £200–300/month for AKS staging). Phases 3–6 comfortably fit within this constraint. AKS (Phase 7+) requires cost optimisation (spot nodes, auto-shutdown) to stay near the upper bound.
 
 ---
 
 ## 7. Cost Optimisation Recommendations
 
-| Recommendation | Saving | Effort | Priority |
-|----------------|--------|--------|----------|
-| Auto-shutdown staging 19:00–08:00 | ~£100/month (staging) | Low | High |
-| Use Azure Spot instances for staging node pool | ~£50–80/month | Medium | Medium |
-| 1-year reserved instances for production compute | ~£120/month | Low | Medium (Phase 4+) |
-| Burstable B-series for PostgreSQL staging | Already applied | — | Done |
-| Set Log Analytics retention to 30 days hot / archive cold | ~£100/month at prod scale | Low | High |
-| Use Azure Blob Cool tier for tracks not accessed in 30 days | ~£5/month | Low | Phase 5 |
-| Budget alert at 80% of expected spend | £0 | Low | High — do this on day one |
+| Recommendation | Phase | Saving | Effort | Priority |
+|----------------|-------|--------|--------|----------|
+| VM auto-shutdown at 19:00 (Azure Auto-shutdown) | 3–5 | ~£15/month | Low | High |
+| `terraform destroy` when not actively developing | 3–5 | 100% during inactive periods | Low | High |
+| Budget alert at £60/month | 3+ | £0 | Low | High — do this on day one |
+| ACA scale-to-zero for idle services | 6 | ~£10–20/month | Low | High |
+| AKS auto-shutdown staging 19:00–08:00 | 7+ | ~£100/month | Low | High |
+| Use Azure Spot instances for AKS user node pool | 7+ | ~£50–80/month | Medium | Medium |
+| Burstable B-series for PostgreSQL staging | 3+ | Already applied | — | Done |
+| Set Log Analytics retention to 30 days hot / archive cold | 7+ | ~£100/month at prod scale | Low | High |
+| 1-year reserved instances for production compute | 7+ | ~£120/month | Low | Medium |
+| Use Azure Blob Cool tier for tracks not accessed in 30 days | 4+ | ~£5/month | Low | Low |
 
 ---
 
@@ -161,7 +197,7 @@ All charts share a common pattern. `values.yaml` holds defaults; environment-spe
 
 ---
 
-## 9. Physical Deployment Diagram (Azure — Phase 4+)
+## 9. Physical Deployment Diagram (Azure — Phase 7+ / AKS)
 
 Full Azure resource group view using official Azure service names and Azure Architecture Center icon conventions.
 

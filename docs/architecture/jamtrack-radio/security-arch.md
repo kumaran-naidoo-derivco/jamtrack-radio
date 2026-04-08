@@ -26,7 +26,7 @@ Shows every trust boundary, data classification zone, and authentication mechani
 | User-private | Confidential | Listening history, stream events, display name | Access control, user data isolation |
 | PII | Restricted | Email addresses, IP addresses, OAuth subjects | GDPR controls, hashed in logs, pseudonymised in analytics |
 | Credentials | Secret | Password hashes, refresh token hashes, TOTP seeds | BCrypt / SHA-256 / AES-256; never logged; Key Vault at Phase 4 |
-| Signing keys | Secret | RS256 private key | Key Vault (Phase 4+); K8s Secret (Phase 3); `.env.local` (Phase 2) |
+| Signing keys | Secret | RS256 private key | Key Vault + Managed Identity (Phase 3+); Workload Identity (Phase 7); `.env.local` (Phase 2) |
 
 ---
 
@@ -64,12 +64,12 @@ Shows every trust boundary, data classification zone, and authentication mechani
 | Secrets in environment | `.env.local` gitignored; never in `appsettings.json` | Phase 2 | £0 | Information disclosure |
 | Generic error responses | `ProblemDetails` middleware suppresses stack traces | Phase 2 | £0 | Information disclosure |
 | Scrub sensitive fields in logs | `Serilog.Destructuring` — exclude `email`, `password`, `token` | Phase 2 | £0 | Information disclosure |
-| K8s Secrets for credentials | Replace `.env.local` with K8s Secrets | Phase 3 | £0 | Information disclosure |
-| Network policies (default-deny) | K8s NetworkPolicy per namespace | Phase 3 | £0 | Spoofing, escalation |
-| Azure Key Vault | RS256 private key, DB connection strings | Phase 4 | ~£1/month | Information disclosure |
-| WAF (OWASP ruleset) | Azure Application Gateway WAF v2 | Phase 4 | ~£183/month | Tampering, DoS |
-| Managed Identity | All AKS → Azure service auth via Entra ID workload identity | Phase 4 | £0 | Information disclosure — no credential secrets in pods |
-| Audit logging to ELK | Serilog structured events → Log Analytics | Phase 4 | Log storage cost | Repudiation |
+| Azure Key Vault + Managed Identity | RS256 private key, DB connection strings; VM Managed Identity for access | Phase 3 | ~£1/month | Information disclosure |
+| Network Security Groups (NSGs) | Subnet-level firewall rules on VNet | Phase 3 | £0 | Spoofing, escalation |
+| WAF (OWASP ruleset) | Azure Application Gateway WAF v2 | Phase 7 | ~£183/month | Tampering, DoS |
+| Workload Identity | AKS pod → Azure service auth via Entra ID federated credentials | Phase 7 | £0 | Information disclosure — no credential secrets in pods |
+| Network policies (default-deny) | K8s NetworkPolicy per namespace | Phase 7 | £0 | Spoofing, escalation |
+| Audit logging to ELK | Serilog structured events → Log Analytics | Phase 6+ (ACA Log Analytics), Phase 9 (ELK) | Log storage cost | Repudiation |
 | Signed container images | Cosign + Azure Container Registry trust policy | Phase 5 | £0 | Tampering — supply chain |
 | mTLS between services | Dapr mTLS (built-in) | Phase 5 | Operational cost | Spoofing — internal network |
 
@@ -96,7 +96,7 @@ Shows every trust boundary, data classification zone, and authentication mechani
 **JWT design:**
 - Access token expiry: **15 minutes**
 - Refresh token expiry: **90 days** — stored as SHA-256 hash in `refresh_tokens` table
-- Signing: **RS256** — private key in Key Vault (Phase 4+), K8s Secret (Phase 3), `.env.local` (Phase 2)
+- Signing: **RS256** — private key in Key Vault + Managed Identity (Phase 3+), Workload Identity (Phase 7), `.env.local` (Phase 2)
 - Claims: `sub` (userId), `email`, `roles[]`, `iat`, `exp`, `jti`
 - TOTP: optional; enabled per user; seed encrypted with AES-256-GCM before storage; encryption key in Key Vault
 
@@ -111,11 +111,11 @@ Shows every trust boundary, data classification zone, and authentication mechani
 | A03 | Injection | ✅ Controlled | Dapper parameterised queries; `FluentValidation` on all inputs |
 | A04 | Insecure Design | ✅ In progress | This document — STRIDE threat model + controls matrix |
 | A05 | Security Misconfiguration | ⚠️ Monitor | No default credentials; no stack traces in prod; `X-Powered-By` removed |
-| A06 | Vulnerable Components | ⚠️ Monitor | Dependabot enabled; `dotnet-outdated` in CI (Phase 3) |
+| A06 | Vulnerable Components | ⚠️ Monitor | Dependabot enabled; `dotnet-outdated` in CI (Phase 2+) |
 | A07 | Identity & Auth Failures | ✅ Controlled | Rate limiting; RS256 JWT; short expiry; refresh token rotation; TOTP |
 | A08 | Software & Data Integrity | ⚠️ Phase 5 | Signed container images (Cosign + ACR); SBOM generation in CI |
-| A09 | Security Logging & Monitoring | ⚠️ Phase 4 | Structured Serilog events; ELK alerts on `login_failed` spikes |
-| A10 | SSRF | ✅ N/A (Phase 2) | No user-controllable URLs at Phase 2; evaluate at Phase 4 for webhook features |
+| A09 | Security Logging & Monitoring | ⚠️ Phase 6+ | Structured Serilog events; ACA Log Analytics (Phase 6); ELK alerts on `login_failed` spikes (Phase 9) |
+| A10 | SSRF | ✅ N/A (Phase 2) | No user-controllable URLs at Phase 2; evaluate at Phase 7 for webhook features |
 
 ---
 
@@ -127,8 +127,8 @@ Shows every trust boundary, data classification zone, and authentication mechani
 | Rate limiting | ~2h dev time | High (brute force on login) | High | High | Must do — Phase 2 |
 | User data isolation | ~1h per endpoint | Medium (curious users) | High | High | Must do — Phase 2 |
 | TOTP 2FA | ~1 day dev time | Medium (account takeover) | High | High | Must do — Phase 2 |
-| Azure Key Vault | ~£1/month | Medium (secret exposure) | Critical | High | Phase 4 — do on first Azure deploy |
-| WAF | ~£183/month | Medium (OWASP attacks) | High | High | Phase 4 |
+| Azure Key Vault | ~£1/month | Medium (secret exposure) | Critical | High | Phase 3 — do on first Azure deploy |
+| WAF | ~£183/month | Medium (OWASP attacks) | High | High | Phase 7 |
 | mTLS between services | Operational overhead | Low (internal VNet attack) | High | Medium | Phase 5 — defer |
 | HSM for JWT signing | £750+/month | Very low | Critical | Medium | Defer indefinitely — oversized for Jamtrack Radio scale |
-| Penetration test | £5,000–10,000 | — | — | — | Phase 4 go-live if real users |
+| Penetration test | £5,000–10,000 | — | — | — | Phase 7 go-live if real users |

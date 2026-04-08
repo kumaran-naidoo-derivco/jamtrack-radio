@@ -22,5 +22,5 @@
     "value-report": false
   },
   "lastUpdated": "2026-04-01",
-  "notes": "Product Discovery (Steps 1-7) complete for jamtrack-radio. Feature Discovery begins with identity-service."
+  "notes": "Product Discovery (Steps 1-7) complete for jamtrack-radio. Feature Discovery begins with identity-service. Phase structure restructured 2026-04-07: VMs (Phase 3) → ACA (Phase 6) → AKS (Phase 7). Old Phase 3 (Docker & Local K8s) removed."
 }
