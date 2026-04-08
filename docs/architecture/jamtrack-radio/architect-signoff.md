@@ -47,7 +47,7 @@ No cross-service DB reads. Cross-service references use UUID values only (no rel
 | `token_hash` | Secret | SHA-256 hash — raw token never stored | `RefreshToken` entity; `RefreshTokenCommand` |
 | `email` | PII — Restricted | Hashed in logs; GDPR right to erasure | Serilog destructuring; soft-delete + hard-delete pipeline |
 | `storage_ref`, `artwork_ref` | Confidential | Authenticated blob access; no public URLs | `Streaming Service` validates ownership via gRPC before streaming |
-| RS256 private key | Secret | Key Vault (Phase 4+), K8s Secret (Phase 3) | `LoginCommand` — `IdentityGrpcService` |
+| RS256 private key | Secret | Key Vault + Managed Identity (Phase 3+), Workload Identity (Phase 7) | `LoginCommand` — `IdentityGrpcService` |
 
 All classified data has a corresponding control. No secret data is unprotected. ✅
 
@@ -58,9 +58,9 @@ All classified data has a corresponding control. No secret data is unprotected. 
 | Boundary | Authentication | Authorisation | Encryption |
 |----------|---------------|--------------|------------|
 | Internet → API Gateway | HTTPS TLS 1.3 | n/a (public entry) | TLS termination at App Gateway |
-| API Gateway → Services | JWT Bearer validation middleware | Route-level role check | gRPC TLS (Phase 3+) |
+| API Gateway → Services | JWT Bearer validation middleware | Route-level role check | gRPC TLS (Phase 3+ over VNet) |
 | API Gateway → Streaming | JWT Bearer validation | Track ownership validation | HTTPS |
-| Services → PostgreSQL | SSL connection | DB credentials from K8s Secret / Key Vault | Encrypted at rest (Azure-managed) |
+| Services → PostgreSQL | SSL connection | DB credentials from Key Vault (Phase 3+) | Encrypted at rest (Azure-managed) |
 | Services → Azure Key Vault | Managed Identity | RBAC: `Key Vault Secrets User` role | HTTPS |
 | Services → Azure Blob | Managed Identity | RBAC: `Storage Blob Data Contributor` | HTTPS |
 | Dapr sidecar ↔ Service | localhost (same pod) | — | mTLS between sidecars (Phase 5) |
@@ -71,10 +71,16 @@ Every boundary has authentication + encryption defined. ✅
 
 ## Total Cost of Ownership (TCO) — Aggregated
 
-### Development (Phase 2–3): £0/month
+### Development (Phase 2): £0/month
 All services run locally. No cloud infrastructure cost.
 
-### Staging (Phase 4+): ~£197–256/month
+### Azure VMs (Phase 3–5): ~£37–50/month
+Services deploy to Azure VMs with managed PostgreSQL and Key Vault. Use `terraform destroy` when not actively developing to minimise cost.
+
+### Azure Container Apps (Phase 6): ~£55–70/month
+Services move to ACA with scale-to-zero. VMs decommissioned.
+
+### AKS Staging (Phase 7+): ~£197–256/month
 
 | Source | Monthly |
 |--------|---------|
@@ -84,7 +90,7 @@ All services run locally. No cloud infrastructure cost.
 | **Staging total (base)** | **~£198/month** |
 | + 30% buffer | **~£258/month** |
 
-### Production — Baseline (Phase 4+): ~£1,143/month
+### Production — Baseline (Phase 7+): ~£1,143/month
 
 | Source | Monthly |
 |--------|---------|
@@ -99,14 +105,15 @@ All services run locally. No cloud infrastructure cost.
 
 | Scenario | Monthly | Annual |
 |----------|---------|--------|
-| Development (Phase 2–3) | £0 | £0 |
-| Staging (Phase 4+) | ~£198–258 | ~£2,376–3,096 |
-| Production baseline (Phase 4+) | ~£1,159 | ~£13,908 |
+| Development (Phase 2) | £0 | £0 |
+| Azure VMs (Phase 3–5) | ~£37–50 | ~£450–600 |
+| ACA (Phase 6) | ~£55–70 | ~£660–840 |
+| AKS Staging (Phase 7+) | ~£198–258 | ~£2,376–3,096 |
+| AKS Production baseline (Phase 7+) | ~£1,159 | ~£13,908 |
 | Production 2× load | ~£1,316 | ~£15,792 |
 | Production 10× load | ~£1,727 | ~£20,724 |
-| **Phase 4 Year 1 total** | | **~£16,284–17,004** |
 
-**Budget note**: The requirements budget of £50–100/month applies to **Phase 4 development** (staging + build activity), not live production. Running staging with auto-shutdown and burstable nodes keeps within £100/month (see cloud-arch §7 — auto-shutdown saves ~£100/month).
+**Budget note**: Phases 3–6 comfortably fit within the £50–100/month budget. AKS (Phase 7+) requires cost optimisation (spot nodes, auto-shutdown — see cloud-arch §7) to stay near the upper bound.
 
 ---
 
@@ -114,8 +121,9 @@ All services run locally. No cloud infrastructure cost.
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| Dapr adds complexity in Phase 2 before value is evident | High | Low | Implement gRPC direct calls first; introduce Dapr at Phase 3 |
-| Budget overrun in Phase 4 (prod vs staging sizing confusion) | Medium | Medium | Auto-shutdown staging; burstable SKUs; Azure Cost Management budget alert from day one |
+| Dapr adds complexity in Phase 2 before value is evident | High | Low | Implement gRPC direct calls first; introduce Dapr at Phase 3 (VM) |
+| Budget overrun in Phase 7 (prod vs staging sizing confusion) | Medium | Medium | Auto-shutdown staging; burstable SKUs; Azure Cost Management budget alert from day one |
+| ACA → AKS migration complexity | Medium | Medium | Ensure service mesh and networking behaviour is equivalent between ACA and AKS; test Dapr component portability before decommissioning ACA |
 | `storage_ref` set asynchronously — track upload appears incomplete to user | Medium | Medium | Return upload status as `pending` until `StorageObjectCreated` event received; poll endpoint or webhook |
 | Key rotation complexity — RS256 private key | Low | High | JWKS endpoint from day one; never hardcode key in application |
 | pg_trgm full-text search insufficient at 10,000+ tracks | Low | Low | Evaluate at Phase 6; Elasticsearch already in ELK stack as fallback |
