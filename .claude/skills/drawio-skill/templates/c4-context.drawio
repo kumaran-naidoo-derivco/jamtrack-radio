@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2026-03-26" agent="Claude" version="21.0.0" type="device">
+<mxfile host="app.diagrams.net" modified="2026-04-21" agent="Claude" version="21.0.0" type="device">
   <diagram name="C4 Context" id="c4-context-template">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
@@ -7,7 +7,8 @@
 
         <!-- ═══════════════════════════════════════════════════════════ -->
         <!-- C4 CONTEXT DIAGRAM TEMPLATE                                -->
-        <!-- Replace placeholder labels with your system/actor names   -->
+        <!-- Pattern: title+stereotype labels + child annotation notes  -->
+        <!-- Edges: orthogonalEdgeStyle + explicit exit/entry           -->
         <!-- ═══════════════════════════════════════════════════════════ -->
 
         <!-- Title bar -->
@@ -23,14 +24,22 @@
 
         <!-- ─── ACTORS (left column) ─────────────────────────────── -->
 
-        <!-- Primary User -->
-        <mxCell id="actor-primary" value="[Primary User]&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555555;&quot;&gt;&lt;&lt;Person&gt;&gt;&lt;/font&gt;&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Describe the user role&lt;/font&gt;" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="1">
+        <!-- Primary User — title + stereotype only -->
+        <mxCell id="actor-primary" value="[Primary User]&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#AACCFF;&quot;&gt;&lt;&lt;Person&gt;&gt;&lt;/font&gt;" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="80" y="310" width="140" height="120" as="geometry" />
+        </mxCell>
+        <!-- Primary User annotation note -->
+        <mxCell id="actor-primary_note" value="Describe the user role" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="actor-primary">
+          <mxGeometry x="0" y="124" width="140" height="20" as="geometry" />
         </mxCell>
 
         <!-- Secondary User (optional — delete if not needed) -->
-        <mxCell id="actor-secondary" value="[Secondary User]&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#AACCFF;&quot;&gt;&lt;&lt;Person&gt;&gt;&lt;/font&gt;&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Describe the user role&lt;/font&gt;" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="80" y="480" width="140" height="120" as="geometry" />
+        <mxCell id="actor-secondary" value="[Secondary User]&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#AACCFF;&quot;&gt;&lt;&lt;Person&gt;&gt;&lt;/font&gt;" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="490" width="140" height="120" as="geometry" />
+        </mxCell>
+        <!-- Secondary User annotation note -->
+        <mxCell id="actor-secondary_note" value="Describe the user role" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="actor-secondary">
+          <mxGeometry x="0" y="124" width="140" height="20" as="geometry" />
         </mxCell>
 
         <!-- ─── SYSTEM BOUNDARY ───────────────────────────────────── -->
@@ -38,74 +47,101 @@
           <mxGeometry x="300" y="200" width="500" height="400" as="geometry" />
         </mxCell>
 
-        <!-- Core system box (inside boundary) -->
-        <mxCell id="system-core" value="&lt;b&gt;[System Name]&lt;/b&gt;&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#AACCFF;&quot;&gt;&lt;&lt;Software System&gt;&gt;&lt;/font&gt;&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Short description of what&#xa;this system does&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5A9E;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="system-boundary">
-          <mxGeometry x="150" y="130" width="200" height="120" as="geometry" />
+        <!-- Core system box — title + stereotype only (inside boundary) -->
+        <mxCell id="system-core" value="&lt;b&gt;[System Name]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#AACCFF;&quot;&gt;&lt;&lt;Software System&gt;&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5A9E;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="system-boundary">
+          <mxGeometry x="150" y="140" width="200" height="90" as="geometry" />
+        </mxCell>
+        <!-- Core system annotation note -->
+        <mxCell id="system-core_note" value="Short description of what this system does" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="system-core">
+          <mxGeometry x="0" y="94" width="200" height="20" as="geometry" />
         </mxCell>
 
         <!-- ─── EXTERNAL SYSTEMS (right column) ──────────────────── -->
 
-        <!-- External System A -->
-        <mxCell id="ext-system-a" value="&lt;b&gt;[External System A]&lt;/b&gt;&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#999999;&quot;&gt;&lt;&lt;External System&gt;&gt;&lt;/font&gt;&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Short description&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#777777;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="900" y="250" width="160" height="100" as="geometry" />
+        <!-- External System A — title + stereotype only -->
+        <mxCell id="ext-system-a" value="&lt;b&gt;[External System A]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#999999;&quot;&gt;&lt;&lt;External System&gt;&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#777777;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="900" y="270" width="160" height="70" as="geometry" />
+        </mxCell>
+        <!-- External System A annotation note -->
+        <mxCell id="ext-system-a_note" value="Short description" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="ext-system-a">
+          <mxGeometry x="0" y="74" width="160" height="20" as="geometry" />
         </mxCell>
 
         <!-- External System B (optional — delete if not needed) -->
-        <mxCell id="ext-system-b" value="&lt;b&gt;[External System B]&lt;/b&gt;&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#999999;&quot;&gt;&lt;&lt;External System&gt;&gt;&lt;/font&gt;&#xa;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Short description&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#777777;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="900" y="420" width="160" height="100" as="geometry" />
+        <mxCell id="ext-system-b" value="&lt;b&gt;[External System B]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#999999;&quot;&gt;&lt;&lt;External System&gt;&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#777777;fontColor=#FFFFFF;align=center;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="900" y="460" width="160" height="70" as="geometry" />
+        </mxCell>
+        <!-- External System B annotation note -->
+        <mxCell id="ext-system-b_note" value="Short description" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="ext-system-b">
+          <mxGeometry x="0" y="74" width="160" height="20" as="geometry" />
         </mxCell>
 
         <!-- ─── RELATIONSHIPS ─────────────────────────────────────── -->
 
         <!-- Primary user → system -->
-        <mxCell id="e-primary-to-sys" value="[Describe interaction]" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;fontColor=#444444;fontSize=10;" edge="1" parent="1" source="actor-primary" target="system-core">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e-primary-to-sys" value="[Describe interaction]" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="actor-primary" target="system-core">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
 
-        <!-- Secondary user → system -->
-        <mxCell id="e-secondary-to-sys" value="[Describe interaction]" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;fontColor=#444444;fontSize=10;" edge="1" parent="1" source="actor-secondary" target="system-core">
-          <mxGeometry relative="1" as="geometry" />
+        <!-- Secondary user → system (enters left side near-bottom, not corner) -->
+        <mxCell id="e-secondary-to-sys" value="[Describe interaction]" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;entryX=0;entryY=0.8;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="actor-secondary" target="system-boundary">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
 
-        <!-- System → External A -->
-        <mxCell id="e-sys-to-ext-a" value="[Describe interaction]&#xa;[protocol / format]" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;fontColor=#444444;fontSize=10;" edge="1" parent="1" source="system-core" target="ext-system-a">
-          <mxGeometry relative="1" as="geometry" />
+        <!-- System → External A (exits right near-top, enters left-centre of A) -->
+        <mxCell id="e-sys-to-ext-a" value="[Describe interaction]&lt;br&gt;[protocol / format]" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.3;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="system-boundary" target="ext-system-a">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
 
-        <!-- System → External B -->
-        <mxCell id="e-sys-to-ext-b" value="[Describe interaction]&#xa;[protocol / format]" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;fontColor=#444444;fontSize=10;" edge="1" parent="1" source="system-core" target="ext-system-b">
-          <mxGeometry relative="1" as="geometry" />
+        <!-- System → External B (exits right near-bottom, enters left-centre of B) -->
+        <mxCell id="e-sys-to-ext-b" value="[Describe interaction]&lt;br&gt;[protocol / format]" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.7;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#666666;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="system-boundary" target="ext-system-b">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="14" />
+          </mxGeometry>
         </mxCell>
 
         <!-- ─── LEGEND ────────────────────────────────────────────── -->
         <mxCell id="legend-bg" value="" style="rounded=0;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="40" y="720" width="320" height="110" as="geometry" />
+          <mxGeometry x="40" y="700" width="400" height="140" as="geometry" />
         </mxCell>
         <mxCell id="legend-title" value="Legend" style="text;fontSize=11;fontStyle=1;align=left;" vertex="1" parent="1">
-          <mxGeometry x="55" y="725" width="100" height="18" as="geometry" />
+          <mxGeometry x="55" y="706" width="100" height="18" as="geometry" />
         </mxCell>
+        <!-- Row 1: Person -->
         <mxCell id="legend-person-box" value="" style="shape=mxgraph.c4.person2;fillColor=#08427B;strokeColor=#073B6F;" vertex="1" parent="1">
-          <mxGeometry x="55" y="748" width="28" height="28" as="geometry" />
+          <mxGeometry x="55" y="728" width="28" height="28" as="geometry" />
         </mxCell>
         <mxCell id="legend-person-lbl" value="Person (user / actor)" style="text;fontSize=10;align=left;" vertex="1" parent="1">
-          <mxGeometry x="92" y="752" width="160" height="18" as="geometry" />
+          <mxGeometry x="92" y="733" width="180" height="18" as="geometry" />
         </mxCell>
+        <!-- Row 2: Internal system -->
         <mxCell id="legend-sys-box" value="" style="rounded=1;fillColor=#1168BD;strokeColor=#0E5A9E;" vertex="1" parent="1">
-          <mxGeometry x="55" y="784" width="28" height="16" as="geometry" />
+          <mxGeometry x="55" y="762" width="28" height="16" as="geometry" />
         </mxCell>
         <mxCell id="legend-sys-lbl" value="Internal software system" style="text;fontSize=10;align=left;" vertex="1" parent="1">
-          <mxGeometry x="92" y="784" width="160" height="18" as="geometry" />
+          <mxGeometry x="92" y="764" width="180" height="18" as="geometry" />
         </mxCell>
+        <!-- Row 3: External system -->
         <mxCell id="legend-ext-box" value="" style="rounded=1;fillColor=#999999;strokeColor=#777777;" vertex="1" parent="1">
-          <mxGeometry x="55" y="806" width="28" height="16" as="geometry" />
+          <mxGeometry x="55" y="786" width="28" height="16" as="geometry" />
         </mxCell>
         <mxCell id="legend-ext-lbl" value="External system" style="text;fontSize=10;align=left;" vertex="1" parent="1">
-          <mxGeometry x="92" y="806" width="160" height="18" as="geometry" />
+          <mxGeometry x="92" y="787" width="180" height="18" as="geometry" />
+        </mxCell>
+        <!-- Row 4: Annotation note hint -->
+        <mxCell id="legend-note" value="Grey text below each shape = annotation note (moves with shape)" style="text;fontSize=9;fontColor=#666666;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="55" y="812" width="360" height="18" as="geometry" />
         </mxCell>
 
         <!-- Footer -->
         <mxCell id="footer" value="" style="rounded=0;fillColor=#1a1a2e;strokeColor=#1a1a2e;" vertex="1" parent="1">
-          <mxGeometry x="40" y="836" width="1020" height="4" as="geometry" />
+          <mxGeometry x="40" y="844" width="1020" height="4" as="geometry" />
         </mxCell>
 
       </root>
