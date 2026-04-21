@@ -34,33 +34,51 @@
 
         <!-- ─── INGRESS / API GATEWAY ─────────────────────────────── -->
         <!-- Replace the Azure icon path for your actual gateway type  -->
-        <mxCell id="apigw" value="&lt;b&gt;[API Gateway]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;&lt;&lt;Container&gt;&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;YARP / NGINX / App Gateway&lt;br&gt;TLS termination · routing · auth&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
+        <!-- Title + stereotype only — implementation detail in annotation note -->
+        <mxCell id="apigw" value="&lt;b&gt;[API Gateway]&lt;/b&gt;&lt;br&gt;&lt;&lt;Container&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
           <mxGeometry x="80" y="280" width="180" height="100" as="geometry" />
         </mxCell>
+        <!-- Annotation note — moves with parent -->
+        <mxCell id="apigw_note" value="YARP / NGINX · TLS termination · routing · auth" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="apigw">
+          <mxGeometry x="0" y="104" width="180" height="20" as="geometry" />
+        </mxCell>
         <!-- Azure icon badge — Application Gateway -->
-        <mxCell id="apigw_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/networking/Application_Gateway.svg;" vertex="1" parent="apigw">
+        <mxCell id="apigw_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/networking/Application_Gateways.svg;" vertex="1" parent="apigw">
           <mxGeometry x="152" y="4" width="24" height="24" as="geometry" />
         </mxCell>
 
         <!-- ─── SERVICE ROW ────────────────────────────────────────── -->
-        <!-- Service A -->
-        <mxCell id="svc-a" value="&lt;b&gt;[Service A]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;&lt;&lt;Container: ASP.NET Core&gt;&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Describe responsibility&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
+        <!-- Service A — title + stereotype only -->
+        <mxCell id="svc-a" value="&lt;b&gt;[Service A]&lt;/b&gt;&lt;br&gt;&lt;&lt;Container: ASP.NET Core&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
           <mxGeometry x="380" y="120" width="160" height="90" as="geometry" />
         </mxCell>
-
-        <!-- Service B -->
-        <mxCell id="svc-b" value="&lt;b&gt;[Service B]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;&lt;&lt;Container: ASP.NET Core&gt;&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Describe responsibility&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
-          <mxGeometry x="380" y="280" width="160" height="90" as="geometry" />
+        <mxCell id="svc-a_note" value="Describe responsibility" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="svc-a">
+          <mxGeometry x="0" y="94" width="160" height="20" as="geometry" />
         </mxCell>
 
-        <!-- Service C -->
-        <mxCell id="svc-c" value="&lt;b&gt;[Service C]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;&lt;&lt;Container: ASP.NET Core&gt;&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Describe responsibility&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
+        <!-- Service B — title + stereotype only -->
+        <mxCell id="svc-b" value="&lt;b&gt;[Service B]&lt;/b&gt;&lt;br&gt;&lt;&lt;Container: ASP.NET Core&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
+          <mxGeometry x="380" y="280" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-b_note" value="Describe responsibility" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="svc-b">
+          <mxGeometry x="0" y="94" width="160" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Service C — title + stereotype only -->
+        <mxCell id="svc-c" value="&lt;b&gt;[Service C]&lt;/b&gt;&lt;br&gt;&lt;&lt;Container: ASP.NET Core&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
           <mxGeometry x="380" y="450" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-c_note" value="Describe responsibility" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="svc-c">
+          <mxGeometry x="0" y="94" width="160" height="20" as="geometry" />
         </mxCell>
 
         <!-- ─── MESSAGE BUS (optional) ─────────────────────────────── -->
-        <mxCell id="msgbus" value="&lt;b&gt;[Message Bus]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;&lt;&lt;Container: Dapr/Service Bus&gt;&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Pub/sub event routing&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
+        <!-- Title + stereotype only -->
+        <mxCell id="msgbus" value="&lt;b&gt;[Message Bus]&lt;/b&gt;&lt;br&gt;&lt;&lt;Container: Dapr/Service Bus&gt;&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=middle;align=center;fontSize=11;" vertex="1" parent="system-boundary">
           <mxGeometry x="620" y="280" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="msgbus_note" value="Pub/sub event routing" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;" vertex="1" parent="msgbus">
+          <mxGeometry x="0" y="94" width="160" height="20" as="geometry" />
         </mxCell>
         <!-- Azure icon badge — Service Bus -->
         <mxCell id="msgbus_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/integration/Service_Bus.svg;" vertex="1" parent="msgbus">
@@ -89,73 +107,96 @@
         <mxCell id="cache" value="&lt;b&gt;[Cache]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#555;&quot;&gt;&lt;&lt;Database: Redis&gt;&gt;&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#fff2cc;strokeColor=#d6b656;align=center;fontSize=11;" vertex="1" parent="system-boundary">
           <mxGeometry x="870" y="440" width="120" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="cache_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/databases/Azure_Cache_for_Redis.svg;" vertex="1" parent="cache">
+        <mxCell id="cache_icon" value="" style="aspect=fixed;html=1;align=center;image;pointerEvents=0;image=img/lib/azure2/databases/Cache_Redis.svg;" vertex="1" parent="cache">
           <mxGeometry x="92" y="4" width="24" height="24" as="geometry" />
         </mxCell>
 
         <!-- ─── RELATIONSHIPS ──────────────────────────────────────── -->
 
         <!-- User → Gateway -->
-        <mxCell id="e-user-gw" value="HTTPS" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;" edge="1" parent="1" source="actor-user" target="apigw">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e-user-gw" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="actor-user" target="apigw">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
 
-        <!-- Gateway → Services -->
-        <mxCell id="e-gw-svc-a" value="gRPC / HTTP" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;" edge="1" parent="system-boundary" source="apigw" target="svc-a">
-          <mxGeometry relative="1" as="geometry" />
+        <!-- Gateway → Services (fanned out — 3 edges on right face: exitY=0.25/0.5/0.75) -->
+        <mxCell id="e-gw-svc-a" value="gRPC / HTTP" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.25;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;labelBackgroundColor=none;" edge="1" parent="system-boundary" source="apigw" target="svc-a">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e-gw-svc-b" value="gRPC / HTTP" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;" edge="1" parent="system-boundary" source="apigw" target="svc-b">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e-gw-svc-b" value="gRPC / HTTP" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;labelBackgroundColor=none;" edge="1" parent="system-boundary" source="apigw" target="svc-b">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e-gw-svc-c" value="gRPC / HTTP" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;" edge="1" parent="system-boundary" source="apigw" target="svc-c">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- Service B → Message Bus (publish) -->
-        <mxCell id="e-svcb-bus" value="publish" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#d79b00;fontSize=10;" edge="1" parent="system-boundary" source="svc-b" target="msgbus">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- Message Bus → Service C (subscribe) -->
-        <mxCell id="e-bus-svcc" value="subscribe" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;dashed=1;dashPattern=6 4;strokeColor=#d79b00;fontSize=10;" edge="1" parent="system-boundary" source="msgbus" target="svc-c">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e-gw-svc-c" value="gRPC / HTTP" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.75;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#555555;fontSize=10;labelBackgroundColor=none;" edge="1" parent="system-boundary" source="apigw" target="svc-c">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
 
-        <!-- Services → Databases -->
-        <mxCell id="e-svca-dba" value="SQL (Dapper)" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;fontSize=10;" edge="1" parent="system-boundary" source="svc-a" target="db-a">
-          <mxGeometry relative="1" as="geometry" />
+        <!-- Service B → Message Bus (publish)
+             exitY=0.35 fans out from svc-b right face (svc-b→db-b uses 0.65 below).
+             Label offset y=-14 lifts label above the line, clearing any shape underneath. -->
+        <mxCell id="e-svcb-bus" value="publish" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.35;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#d79b00;fontSize=10;labelBackgroundColor=none;" edge="1" parent="system-boundary" source="svc-b" target="msgbus">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e-svcb-dbb" value="SQL (Dapper)" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;fontSize=10;" edge="1" parent="system-boundary" source="svc-b" target="db-b">
-          <mxGeometry relative="1" as="geometry" />
+
+        <!-- Message Bus → Service C (subscribe)
+             exitY=0.65 on msgbus left face (clear of any other edge on that face).
+             entryY=0.65 on svc-c right face (avoids the entryY=0.5 used by gateway). -->
+        <mxCell id="e-bus-svcc" value="subscribe" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=0;exitY=0.65;entryX=1;entryY=0.65;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;dashed=1;dashPattern=6 4;strokeColor=#d79b00;fontSize=10;labelBackgroundColor=none;" edge="1" parent="system-boundary" source="msgbus" target="svc-c">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="e-svcc-cache" value="StackExchange.Redis" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;fontSize=10;" edge="1" parent="system-boundary" source="svc-c" target="cache">
-          <mxGeometry relative="1" as="geometry" />
+
+        <!-- Services → Databases
+             svc-b: exitY=0.65 fans out on right face (exitY=0.35 is the bus edge above). -->
+        <mxCell id="e-svca-dba" value="SQL (Dapper)" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;fontSize=10;labelBackgroundColor=none;" edge="1" parent="system-boundary" source="svc-a" target="db-a">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-svcb-dbb" value="SQL (Dapper)" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.65;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#b85450;fontSize=10;labelBackgroundColor=none;" edge="1" parent="system-boundary" source="svc-b" target="db-b">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-svcc-cache" value="StackExchange.Redis" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#d6b656;fontSize=10;labelBackgroundColor=none;" edge="1" parent="system-boundary" source="svc-c" target="cache">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
         </mxCell>
 
         <!-- ─── LEGEND ──────────────────────────────────────────────── -->
         <mxCell id="legend-bg" value="" style="rounded=0;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="40" y="820" width="480" height="60" as="geometry" />
+          <mxGeometry x="40" y="820" width="530" height="70" as="geometry" />
         </mxCell>
         <mxCell id="legend-title" value="Legend" style="text;fontSize=11;fontStyle=1;align=left;" vertex="1" parent="1">
-          <mxGeometry x="55" y="825" width="60" height="16" as="geometry" />
+          <mxGeometry x="55" y="826" width="60" height="16" as="geometry" />
         </mxCell>
         <mxCell id="leg-svc" value="" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="55" y="847" width="20" height="14" as="geometry" />
+          <mxGeometry x="55" y="852" width="20" height="14" as="geometry" />
         </mxCell>
         <mxCell id="leg-svc-lbl" value="Microservice" style="text;fontSize=10;align=left;" vertex="1" parent="1">
-          <mxGeometry x="82" y="847" width="90" height="14" as="geometry" />
+          <mxGeometry x="82" y="852" width="90" height="14" as="geometry" />
         </mxCell>
         <mxCell id="leg-db" value="" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="185" y="847" width="20" height="14" as="geometry" />
+          <mxGeometry x="195" y="852" width="20" height="14" as="geometry" />
         </mxCell>
         <mxCell id="leg-db-lbl" value="Database (PostgreSQL)" style="text;fontSize=10;align=left;" vertex="1" parent="1">
-          <mxGeometry x="212" y="847" width="130" height="14" as="geometry" />
+          <mxGeometry x="222" y="852" width="130" height="14" as="geometry" />
         </mxCell>
         <mxCell id="leg-bus" value="" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
-          <mxGeometry x="355" y="847" width="20" height="14" as="geometry" />
+          <mxGeometry x="375" y="852" width="20" height="14" as="geometry" />
         </mxCell>
         <mxCell id="leg-bus-lbl" value="Message Bus / Cache" style="text;fontSize=10;align=left;" vertex="1" parent="1">
-          <mxGeometry x="382" y="847" width="130" height="14" as="geometry" />
+          <mxGeometry x="402" y="852" width="140" height="14" as="geometry" />
         </mxCell>
 
       </root>

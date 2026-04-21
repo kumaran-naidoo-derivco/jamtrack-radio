@@ -25,7 +25,7 @@ The SVG is exported with an explicit white background so it renders as a self-co
 ```markdown
 ![Diagram title](diagrams/name.drawio.svg)
 
-> _Edit: open [`name.drawio`](diagrams/name.drawio) in VS Code with the Draw.io Integration extension, then re-export as `.drawio.svg`._
+> _Edit: open [`name.drawio.svg`](diagrams/name.drawio.svg) directly in VS Code with the [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) extension — it opens `.drawio.svg` files natively. No separate `.drawio` file needed._
 ```
 
 ## Export `.drawio` → `.drawio.svg` (Docker)
@@ -148,7 +148,7 @@ Rounded rectangle carries the readable label; a 24×24 Azure SVG icon child sits
 <!-- Azure icon badge — top-right corner, non-interactive -->
 <mxCell id="apigw_icon" value=""
   style="aspect=fixed;html=1;align=center;image;pointerEvents=0;
-         image=img/lib/azure2/networking/Application_Gateway.svg;"
+         image=img/lib/azure2/networking/Application_Gateways.svg;"
   vertex="1" parent="apigw">
   <mxGeometry x="132" y="4" width="24" height="24" as="geometry" />
 </mxCell>
@@ -173,18 +173,96 @@ Rounded rectangle carries the readable label; a 24×24 Azure SVG icon child sits
 
 **Common Azure icon paths (`img/lib/azure2/`):**
 
+> Paths verified against VS Code draw.io extension v1.9.0 bundled assets. Use these exact names — filenames are case-sensitive and the VS Code extension and draw.io Electron ship slightly different sets.
+
 | Service | Path |
 |---------|------|
-| Application Gateway | `networking/Application_Gateway.svg` |
+| Application Gateway | `networking/Application_Gateways.svg` |
 | Kubernetes (AKS) | `containers/Kubernetes_Services.svg` |
 | PostgreSQL Flexible Server | `databases/Azure_Database_PostgreSQL_Server.svg` |
-| Redis Cache | `databases/Azure_Cache_for_Redis.svg` |
-| Blob Storage | `storage/Blob_Storage.svg` |
+| Redis Cache | `databases/Cache_Redis.svg` |
+| Blob / Storage Account | `storage/Storage_Accounts.svg` |
 | Key Vault | `security/Key_Vaults.svg` |
-| Entra ID / Azure AD | `identity/Azure_Active_Directory.svg` |
+| Entra ID / Azure AD | `identity/Azure_AD_B2C.svg` |
 | Log Analytics | `manage_monitor/Log_Analytics_Workspaces.svg` |
 | Service Bus | `integration/Service_Bus.svg` |
 | Container Registry | `containers/Container_Registries.svg` |
+
+---
+
+### Component with Annotation Note (preferred pattern for multi-line labels)
+
+When a component label contains more than 2 lines of detail, the text overflows the shape bounds and renders as a floating white box. The fix is a two-part pattern: the **shape label** carries only the service name + stereotype (1–2 lines, always fits), and a **child annotation note** carries the implementation detail as small grey text just below the shape. The child automatically moves with the parent — the same mechanism as the Azure icon badge.
+
+```xml
+<!-- Main shape — title + stereotype only (fits cleanly inside box) -->
+<mxCell id="apigw" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;"
+  style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;
+         verticalAlign=middle;align=center;fontSize=11;"
+  vertex="1" parent="1">
+  <mxGeometry x="100" y="100" width="160" height="60" as="geometry" />
+</mxCell>
+
+<!-- Annotation note — child of apigw, auto-moves with parent
+     x=0       keeps same left edge as parent
+     y=height+4  positions 4 px below the shape bottom
+     width=parentWidth  aligns annotation to parent width -->
+<mxCell id="apigw_note" value="YARP Reverse Proxy · ASP.NET Core 8"
+  style="text;html=1;strokeColor=none;fillColor=none;align=center;
+         verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;"
+  vertex="1" parent="apigw">
+  <mxGeometry x="0" y="64" width="160" height="20" as="geometry" />
+</mxCell>
+```
+
+**Annotation geometry rules:**
+
+| Dimension | Value | Notes |
+|---|---|---|
+| `x` | `0` | Aligns left edge to parent shape |
+| `y` | `parentHeight + 4` | 4 px gap below the shape bottom |
+| `width` | `parentWidth` | Same width as parent for centred text |
+| `height` | `20` (1 line) or `36` (2 lines) | Expand for longer annotations |
+
+**Annotation style rules:**
+- `fontSize=9;fontColor=#666666` — subdued grey, clearly secondary to the shape label
+- `fillColor=none;strokeColor=none` — no background, no border (invisible container)
+- `align=center;verticalAlign=top` — centred text, top-anchored in the note cell
+- Use `·` (middle dot U+00B7) as a separator between items on the same line
+- **Never** use `labelBackgroundColor=#ffffff` on shape labels — it creates an opaque white box. Omit this attribute entirely.
+
+**For image-based Azure icon shapes** (75×65 px, `image=img/lib/azure2/...`):
+The shape's `value=""` attribute renders as a label *below* the 65px icon bounds (same region as a child note at y=68). To avoid overlap, **set `value=""` on the icon shape and use a single child label cell** that contains both the bold service name and the grey description as HTML:
+
+```xml
+<!-- Icon shape — value="" avoids label/note overlap -->
+<mxCell id="appgw" value=""
+  style="aspect=fixed;html=1;points=[];align=center;image;
+         image=img/lib/azure2/networking/Application_Gateways.svg;"
+  vertex="1" parent="1">
+  <mxGeometry x="120" y="100" width="75" height="65" as="geometry" />
+</mxCell>
+
+<!-- Combined label: bold name + grey description in one child cell.
+     x=-28 centres the 130px-wide label under the 75px icon.
+     y=68  positions it 3px below the icon bottom edge. -->
+<mxCell id="appgw_lbl"
+  value="&lt;b&gt;Azure Application Gateway&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#666666;&quot;&gt;WAF v2 · TLS 1.3 termination&lt;/font&gt;"
+  style="text;html=1;strokeColor=none;fillColor=none;align=center;
+         verticalAlign=top;whiteSpace=wrap;fontSize=11;"
+  vertex="1" parent="appgw">
+  <mxGeometry x="-28" y="68" width="130" height="36" as="geometry" />
+</mxCell>
+```
+
+Icon label geometry: `x=-28, y=68, width=130, height=36`
+
+| Dimension | Value | Notes |
+|---|---|---|
+| `x` | `-28` | Shifts left so 130px label is centred under 75px icon |
+| `y` | `68` | 3px gap below the 65px icon height |
+| `width` | `130` | Wider than icon to fit multi-word service names |
+| `height` | `36` | 2 lines at 18px each (bold name + grey description) |
 
 ---
 
@@ -228,33 +306,111 @@ Rounded rectangle carries the readable label; a 24×24 Azure SVG icon child sits
 
 ### Connectors & Arrows
 
+> **Routing rule**: Always include `edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto` on every connector. This routes lines in right-angle segments that navigate *around* shapes rather than through them. Add explicit `exitX/exitY/entryX/entryY` when auto-routing still crosses a shape.
+
 ```xml
-<!-- Basic Arrow -->
-<mxCell id="unique-id" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#666666;" edge="1" parent="1" source="source-id" target="target-id">
+<!-- Basic Arrow (default — use for all connectors) -->
+<mxCell id="unique-id" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#555555;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
   <mxGeometry relative="1" as="geometry" />
 </mxCell>
 
 <!-- Bidirectional Arrow -->
-<mxCell id="unique-id" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1">
-  <mxGeometry relative="1" as="geometry">
-    <mxPoint x="200" y="200" as="sourcePoint" />
-    <mxPoint x="400" y="200" as="targetPoint" />
-  </mxGeometry>
+<mxCell id="unique-id" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;startArrow=block;startFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#555555;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
+  <mxGeometry relative="1" as="geometry" />
 </mxCell>
 
-<!-- Flex Arrow (Block Arrow) -->
-<mxCell id="unique-id" value="" style="shape=flexArrow;endArrow=classic;html=1;fillColor=#FFB800;strokeColor=#cc9400;width=20;endSize=8;" edge="1" parent="1">
-  <mxGeometry relative="1" as="geometry">
-    <mxPoint x="200" y="200" as="sourcePoint" />
-    <mxPoint x="400" y="200" as="targetPoint" />
-  </mxGeometry>
+<!-- Dashed Line (async / optional dependency) -->
+<mxCell id="unique-id" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;html=1;dashed=1;dashPattern=8 8;strokeColor=#999999;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
+  <mxGeometry relative="1" as="geometry" />
 </mxCell>
 
-<!-- Dashed Line -->
-<mxCell id="unique-id" value="" style="endArrow=classic;html=1;dashed=1;dashPattern=8 8;strokeColor=#999999;" edge="1" parent="1">
+<!-- Flex Arrow (Block Arrow — emphasis / bulk data) -->
+<mxCell id="unique-id" value="" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;shape=flexArrow;endArrow=block;html=1;fillColor=#FFB800;strokeColor=#cc9400;width=20;endSize=8;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
+```
+
+#### Routing attributes — preventing line crossings
+
+| Attribute | Value | Effect |
+|---|---|---|
+| `edgeStyle` | `orthogonalEdgeStyle` | Right-angle bends — lines route *around* shapes, not through them |
+| `orthogonalLoop` | `1` | Prevents routing collapse when source and target are on the same side |
+| `jettySize` | `auto` | Auto-calculates stub length for clean right-angle bends at connection points |
+| `exitX` / `exitY` | `0`–`1` | Which side of the source shape the line leaves from |
+| `entryX` / `entryY` | `0`–`1` | Which side of the target shape the line arrives at |
+| `exitDx` / `entryDx` | `0` | Horizontal offset from the anchor (default 0) |
+
+**Common exit/entry combinations:**
+
+| Direction | `exitX;exitY` | `entryX;entryY` | Use case |
+|---|---|---|---|
+| Left → Right | `1;0.5` | `0;0.5` | Standard LTR data flow |
+| Right → Left | `0;0.5` | `1;0.5` | Reverse / response flow |
+| Top → Bottom | `0.5;1` | `0.5;0` | Vertical layer diagrams |
+| Bottom → Top | `0.5;0` | `0.5;1` | Upward flow |
+
+**No-corners rule**: Never let both coordinates sit at an extreme simultaneously — that places the connector at the corner of the shape, which looks bad. When pinning a line to a specific side, keep the *other* coordinate between `0.2` and `0.8`.
+
+| ✗ Corner (avoid) | ✓ On-side (use instead) |
+|---|---|
+| `exitX=1;exitY=1` (bottom-right corner) | `exitX=1;exitY=0.8` (right side, near bottom) |
+| `entryX=0;entryY=0` (top-left corner) | `entryX=0;entryY=0.2` (left side, near top) |
+| `exitX=0.5;exitY=1` | ✓ OK — centre of bottom edge, not a corner |
+| `entryX=1;entryY=0.5` | ✓ OK — centre of right edge, not a corner |
+
+Rule of thumb: a connector is at a corner when **both** values are in `{0, 1}`. If only one is, you're on a face — that's fine.
+
+**Fan-out rule — multiple edges on the same face**: When two or more edges leave (or arrive at) the same face of a shape from the same exit/entry point, they overlap until draw.io can route them apart. Fan out their `exitY` (or `entryY`) values across the face so each edge gets its own departure point.
+
+| Edges on same face | Suggested `exitY` (or `entryY`) values |
+|---|---|
+| 2 edges | `0.35` and `0.65` |
+| 3 edges | `0.25`, `0.5`, `0.75` |
+| 4 edges | `0.2`, `0.4`, `0.6`, `0.8` |
+
+```xml
+<!-- ✗ All three overlap at exitY=0.5 of the gateway -->
+<mxCell id="e-gw-a" ... style="...exitX=1;exitY=0.5;..." source="apigw" target="svc-a" />
+<mxCell id="e-gw-b" ... style="...exitX=1;exitY=0.5;..." source="apigw" target="svc-b" />
+<mxCell id="e-gw-c" ... style="...exitX=1;exitY=0.5;..." source="apigw" target="svc-c" />
+
+<!-- ✓ Fanned out — each edge has its own exit point on the right face -->
+<mxCell id="e-gw-a" ... style="...exitX=1;exitY=0.25;entryX=0;entryY=0.5;..." source="apigw" target="svc-a" />
+<mxCell id="e-gw-b" ... style="...exitX=1;exitY=0.5;entryX=0;entryY=0.5;..." source="apigw" target="svc-b" />
+<mxCell id="e-gw-c" ... style="...exitX=1;exitY=0.75;entryX=0;entryY=0.5;..." source="apigw" target="svc-c" />
+```
+
+**Edge label positioning — preventing labels from landing on shapes**: By default, draw.io places the edge label at the geometric midpoint of the routed line. If that midpoint falls over a shape, the label renders on top of the box. Fix with `<mxPoint as="offset">` inside the geometry — it shifts the label in absolute pixels from its calculated position. A negative `y` lifts the label above the line; positive pushes it below.
+
+```xml
+<!-- Label shifted 14px above the midpoint — clears any shape underneath -->
+<mxCell id="e-svcb-bus" value="publish"
+  style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;
+         exitX=1;exitY=0.35;entryX=0;entryY=0.5;
+         endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#d79b00;fontSize=10;"
+  edge="1" parent="system-boundary" source="svc-b" target="msgbus">
   <mxGeometry relative="1" as="geometry">
-    <mxPoint x="200" y="200" as="sourcePoint" />
-    <mxPoint x="400" y="200" as="targetPoint" />
+    <mxPoint as="offset" x="0" y="-14" />
+  </mxGeometry>
+</mxCell>
+```
+
+Rules for label offsets:
+- **Apply `y="-14"` to every labeled edge** — even when no shape is nearby. It shifts the text above the line centre so the stroke doesn't visually cut through the characters, making labels readable without a background box.
+- Use `y="14"` when layout requires the label to appear below the line instead (e.g. two parallel edges that need labels on opposite sides).
+- Use `x` offset to slide the label along the edge when the midpoint is too close to a shape boundary.
+- Do **not** use `labelBackgroundColor=#ffffff` — it creates an opaque white box. Set `labelBackgroundColor=none` explicitly on every edge.
+
+When auto-routing still crosses a shape, add explicit waypoints to route around it:
+
+```xml
+<mxCell id="e3" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=0;entryX=0.5;entryY=0;endArrow=block;endFill=1;html=1;strokeColor=#555555;" edge="1" parent="1" source="a" target="b">
+  <mxGeometry relative="1" as="geometry">
+    <Array as="points">
+      <mxPoint x="200" y="100" />  <!-- waypoint above the obstructing shape -->
+      <mxPoint x="500" y="100" />
+    </Array>
   </mxGeometry>
 </mxCell>
 ```
@@ -333,6 +489,17 @@ Light BG:  fillColor=#f0f4f8;strokeColor=#0066CC
 
 See `references/branding.md` for full customisation instructions.
 
+## Templates
+
+Four ready-to-use templates are in `templates/`. Copy and customise — all follow the patterns documented above.
+
+| File | Diagram type | Key patterns used |
+|---|---|---|
+| `c4-context.drawio` | C4 Context — actors, system boundary, external systems | `mxgraph.c4.person2` shapes, annotation notes, orthogonal edges |
+| `microservice-containers.drawio` | C4 Containers — API gateway, services, message bus, databases | Rectangle+badge, annotation notes, fan-out edges, label offset |
+| `data-flow.drawio` | Data flow — sync (top row) + async (bottom row) | Lane separators, explicit waypoints, jump arcs |
+| `azure-cloud.drawio` | Azure cloud topology — VNet, compute, data, managed services | Image-based azure2 icons, `value=""` + combined child label, fanned + waypoint edges |
+
 ## Diagram Patterns
 
 ### Architecture Diagram Layout
@@ -345,6 +512,46 @@ See `references/branding.md` for full customisation instructions.
 6. **Arrows** showing data/control flow
 7. **Legend** in corner explaining colors/symbols
 8. **Footer** with metadata
+
+### Component Spacing Rules
+
+**Minimum horizontal gap between a shape and the shape it connects to must be at least 140px.**
+
+This ensures edge labels have enough horizontal run to render above the line without encroaching on either shape. At `fontSize=10`, a typical label like "INSERT / SELECT" or "SQL / Dapper" is ~90–110px wide; 140px gives ~15–25px clearance on each side.
+
+| Connected pair | Minimum gap |
+|---|---|
+| Service → its database (direct horizontal edge) | 140px |
+| Service → Message Bus / Cache | 140px |
+| Gateway → first service | 120px (shorter labels like "HTTP") |
+| Service → service (routes via waypoints, not direct) | Can be tighter — label is on the routed segment above/below shapes |
+
+**Calculating gap:** `gap = target.x − (source.x + source.width)`.
+
+Example — Service A (x=340, w=150) → DB A (x=630, w=100): gap = 630 − 490 = **140px** ✓
+
+**When to use waypoints instead of increasing gap:**
+If two services need a direct label-bearing edge but overlap prevention would push shapes too far right, route the edge above or below (via `exitY=0;entryY=0` with an `Array as="points"` above all shapes) and place the label on the overhead segment. This avoids blowing out the page width.
+
+### Legend Spacing Rules
+
+Space legend rows **22–26 px apart** (measuring from the top of one row to the top of the next). Never share the same `y` value between two separate cells.
+
+**Vertical legend (C4 Context pattern):**
+```
+legend-bg:  y=T,  height = 8 + 18 (title) + N×24 (rows) + 8 = ~140px for 4 rows
+title:      y = T + 6
+row 1 box:  y = T + 28   (28px box centres at y+42)
+row 1 lbl:  y = T + 33   (vertically aligned with box centre)
+row 2 box:  y = T + 56   (22px gap after row 1 ends — row 1 box is 28px tall → ends T+56)
+row 2 lbl:  y = T + 58
+row 3+:     continue at +24 increments
+note:       y = T + last_row_top + 24
+```
+
+**Horizontal legend (single row):** all items at the same `y`, spaced ~140px apart along the x axis. Background height ≥ 70px (title row + item row + 8px padding each side).
+
+**Rule**: always check that `item_y + item_height < legend_bg_y + legend_bg_height` — if an item overflows the background, increase `height` on `legend-bg`.
 
 ### Layered Architecture (Top to Bottom)
 
