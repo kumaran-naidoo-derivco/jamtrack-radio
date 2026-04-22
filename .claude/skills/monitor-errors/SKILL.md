@@ -40,7 +40,7 @@ docker compose logs --since 1h identity-service 2>&1 | \
 
 ---
 
-## Phase 4+ — ELK (Kibana KQL)
+## Phase 9+ — ELK (Kibana KQL)
 
 Open Kibana → Discover → select `jamtrack-*` index.
 
@@ -72,7 +72,7 @@ messageTemplate: "Login failed*" OR messageTemplate: "JWT validation failed*"
 
 ---
 
-## Phase 4+ — ClickHouse Queries
+## Phase 9+ — ClickHouse Queries
 
 ```sql
 -- Error count by service, last 2 hours vs. previous 2 hours

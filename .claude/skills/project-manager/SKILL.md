@@ -122,5 +122,5 @@ Risks: [oversized tasks that weren't split, blocked issues, timeline risks ident
 Examples:
 - `Phase 2 — Identity Service`
 - `Phase 2 — Track Service`
-- `Phase 3 — K8s Migration`
-- `Phase 4 — Azure Deployment`
+- `Phase 3 — Azure VM Deployment`
+- `Phase 7 — AKS Deployment`

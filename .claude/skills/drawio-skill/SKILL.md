@@ -63,13 +63,13 @@ rmdir "${DIAGRAMS_DIR}/svg-export" 2>/dev/null || true
 **Batch export all `.drawio` files in a folder:**
 ```bash
 DIAGRAMS_DIR="<absolute-path-to-diagrams-folder>"
-FILES=(context containers domain-identity er-diagram data-flow)  # no extension
+FILES=(diagram-a diagram-b diagram-c)  # one entry per .drawio file in your folder, no extension
 
 # Step 1 — Ensure <mxfile> wrapper (needed if file starts with bare <mxGraphModel>)
 python3 << 'PYEOF'
 import os, uuid
 diagrams_dir = "<absolute-path-to-diagrams-folder>"
-files = ["context", "containers", "domain-identity", "er-diagram", "data-flow"]
+files = ["diagram-a", "diagram-b", "diagram-c"]  # one entry per .drawio file in your folder
 for name in files:
     path = f"{diagrams_dir}/{name}.drawio"
     c = open(path, encoding="utf-8").read().strip()
@@ -138,7 +138,7 @@ Rounded rectangle carries the readable label; a 24×24 Azure SVG icon child sits
 
 ```xml
 <!-- Component rectangle -->
-<mxCell id="apigw" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;&lt;br&gt;YARP · ASP.NET Core 8"
+<mxCell id="svc-hub" value="&lt;b&gt;Hub Service&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;&lt;br&gt;Framework · runtime"
   style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;
          verticalAlign=middle;align=center;fontSize=11;"
   vertex="1" parent="1">
@@ -146,10 +146,10 @@ Rounded rectangle carries the readable label; a 24×24 Azure SVG icon child sits
 </mxCell>
 
 <!-- Azure icon badge — top-right corner, non-interactive -->
-<mxCell id="apigw_icon" value=""
+<mxCell id="svc-hub_icon" value=""
   style="aspect=fixed;html=1;align=center;image;pointerEvents=0;
          image=img/lib/azure2/networking/Application_Gateways.svg;"
-  vertex="1" parent="apigw">
+  vertex="1" parent="svc-hub">
   <mxGeometry x="132" y="4" width="24" height="24" as="geometry" />
 </mxCell>
 ```
@@ -188,6 +188,12 @@ Rounded rectangle carries the readable label; a 24×24 Azure SVG icon child sits
 | Service Bus | `integration/Service_Bus.svg` |
 | Container Registry | `containers/Container_Registries.svg` |
 
+> ⚠️ **Anti-patterns — never do these:**
+> - **Never use `shape=mxgraph.azure2.*` styles with an embedded `value="<b>Label</b>"`** — the stencil renderer and the draw.io label renderer conflict: labels get a white background box and overflow the 75px shape bounds. Use the *rounded rectangle + badge icon* pattern or the *image icon + child label* pattern documented above.
+> - **Never set `labelBackgroundColor=#ffffff`** on any cell (shape or edge). It creates an opaque white box over the diagram. Omit `labelBackgroundColor` entirely, or set `labelBackgroundColor=none` on edges.
+> - **Blob/Storage icon path is `storage/Storage_Accounts.svg`** — not `Blob_Storage.svg` (that path does not exist in the azure2 library and renders as a broken/missing icon).
+> - **Dapr Pub/Sub**: use `integration/Service_Bus.svg` — no native Dapr icon exists in the azure2 library; Azure Service Bus is the closest match.
+
 ---
 
 ### Component with Annotation Note (preferred pattern for multi-line labels)
@@ -196,21 +202,21 @@ When a component label contains more than 2 lines of detail, the text overflows 
 
 ```xml
 <!-- Main shape — title + stereotype only (fits cleanly inside box) -->
-<mxCell id="apigw" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;"
+<mxCell id="svc-hub" value="&lt;b&gt;Hub Service&lt;/b&gt;&lt;br&gt;&lt;&lt;component&gt;&gt;"
   style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;
          verticalAlign=middle;align=center;fontSize=11;"
   vertex="1" parent="1">
   <mxGeometry x="100" y="100" width="160" height="60" as="geometry" />
 </mxCell>
 
-<!-- Annotation note — child of apigw, auto-moves with parent
+<!-- Annotation note — child of svc-hub, auto-moves with parent
      x=0       keeps same left edge as parent
      y=height+4  positions 4 px below the shape bottom
      width=parentWidth  aligns annotation to parent width -->
-<mxCell id="apigw_note" value="YARP Reverse Proxy · ASP.NET Core 8"
+<mxCell id="svc-hub_note" value="Implementation detail · framework · runtime"
   style="text;html=1;strokeColor=none;fillColor=none;align=center;
          verticalAlign=top;whiteSpace=wrap;fontSize=9;fontColor=#666666;"
-  vertex="1" parent="apigw">
+  vertex="1" parent="svc-hub">
   <mxGeometry x="0" y="64" width="160" height="20" as="geometry" />
 </mxCell>
 ```
@@ -306,26 +312,28 @@ Icon label geometry: `x=-28, y=68, width=130, height=36`
 
 ### Connectors & Arrows
 
-> **Routing rule**: Always include `edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto` on every connector. This routes lines in right-angle segments that navigate *around* shapes rather than through them. Add explicit `exitX/exitY/entryX/entryY` when auto-routing still crosses a shape.
+> **Routing rule**: Always include `edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;jumpStyle=arc;jumpSize=10` on every connector. This routes lines in right-angle segments that navigate *around* shapes rather than through them, AND renders a small arc ("jump") wherever one edge crosses another so the two lines stay visually distinguishable. Add explicit `exitX/exitY/entryX/entryY` when auto-routing still crosses a shape.
+>
+> **Why `jumpStyle` matters**: in any non-trivial diagram, orthogonal edges *will* cross each other at some point. Without a jump style, two crossing lines fuse into a `+` shape at the intersection and the reader cannot tell which segments belong to which edge. `jumpStyle=arc;jumpSize=10` draws a 10px semicircular hop where each crossing occurs — the top line clearly arcs over the bottom one.
 
 ```xml
 <!-- Basic Arrow (default — use for all connectors) -->
-<mxCell id="unique-id" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#555555;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
+<mxCell id="unique-id" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;jumpStyle=arc;jumpSize=10;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#555555;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
   <mxGeometry relative="1" as="geometry" />
 </mxCell>
 
 <!-- Bidirectional Arrow -->
-<mxCell id="unique-id" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;startArrow=block;startFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#555555;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
+<mxCell id="unique-id" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;jumpStyle=arc;jumpSize=10;endArrow=block;endFill=1;startArrow=block;startFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#555555;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
   <mxGeometry relative="1" as="geometry" />
 </mxCell>
 
 <!-- Dashed Line (async / optional dependency) -->
-<mxCell id="unique-id" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;html=1;dashed=1;dashPattern=8 8;strokeColor=#999999;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
+<mxCell id="unique-id" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;jumpStyle=arc;jumpSize=10;endArrow=block;endFill=1;html=1;dashed=1;dashPattern=8 8;strokeColor=#999999;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
   <mxGeometry relative="1" as="geometry" />
 </mxCell>
 
 <!-- Flex Arrow (Block Arrow — emphasis / bulk data) -->
-<mxCell id="unique-id" value="" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;shape=flexArrow;endArrow=block;html=1;fillColor=#FFB800;strokeColor=#cc9400;width=20;endSize=8;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
+<mxCell id="unique-id" value="" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;jumpStyle=arc;jumpSize=10;shape=flexArrow;endArrow=block;html=1;fillColor=#FFB800;strokeColor=#cc9400;width=20;endSize=8;labelBackgroundColor=none;" edge="1" parent="1" source="source-id" target="target-id">
   <mxGeometry relative="1" as="geometry" />
 </mxCell>
 ```
@@ -370,15 +378,15 @@ Rule of thumb: a connector is at a corner when **both** values are in `{0, 1}`. 
 | 4 edges | `0.2`, `0.4`, `0.6`, `0.8` |
 
 ```xml
-<!-- ✗ All three overlap at exitY=0.5 of the gateway -->
-<mxCell id="e-gw-a" ... style="...exitX=1;exitY=0.5;..." source="apigw" target="svc-a" />
-<mxCell id="e-gw-b" ... style="...exitX=1;exitY=0.5;..." source="apigw" target="svc-b" />
-<mxCell id="e-gw-c" ... style="...exitX=1;exitY=0.5;..." source="apigw" target="svc-c" />
+<!-- ✗ All three overlap at exitY=0.5 of the source -->
+<mxCell id="e-gw-a" ... style="...exitX=1;exitY=0.5;..." source="svc-hub" target="svc-a" />
+<mxCell id="e-gw-b" ... style="...exitX=1;exitY=0.5;..." source="svc-hub" target="svc-b" />
+<mxCell id="e-gw-c" ... style="...exitX=1;exitY=0.5;..." source="svc-hub" target="svc-c" />
 
 <!-- ✓ Fanned out — each edge has its own exit point on the right face -->
-<mxCell id="e-gw-a" ... style="...exitX=1;exitY=0.25;entryX=0;entryY=0.5;..." source="apigw" target="svc-a" />
-<mxCell id="e-gw-b" ... style="...exitX=1;exitY=0.5;entryX=0;entryY=0.5;..." source="apigw" target="svc-b" />
-<mxCell id="e-gw-c" ... style="...exitX=1;exitY=0.75;entryX=0;entryY=0.5;..." source="apigw" target="svc-c" />
+<mxCell id="e-gw-a" ... style="...exitX=1;exitY=0.25;entryX=0;entryY=0.5;..." source="svc-hub" target="svc-a" />
+<mxCell id="e-gw-b" ... style="...exitX=1;exitY=0.5;entryX=0;entryY=0.5;..." source="svc-hub" target="svc-b" />
+<mxCell id="e-gw-c" ... style="...exitX=1;exitY=0.75;entryX=0;entryY=0.5;..." source="svc-hub" target="svc-c" />
 ```
 
 **Edge label positioning — preventing labels from landing on shapes**: By default, draw.io places the edge label at the geometric midpoint of the routed line. If that midpoint falls over a shape, the label renders on top of the box. Fix with `<mxPoint as="offset">` inside the geometry — it shifts the label in absolute pixels from its calculated position. A negative `y` lifts the label above the line; positive pushes it below.
@@ -386,7 +394,7 @@ Rule of thumb: a connector is at a corner when **both** values are in `{0, 1}`. 
 ```xml
 <!-- Label shifted 14px above the midpoint — clears any shape underneath -->
 <mxCell id="e-svcb-bus" value="publish"
-  style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;
+  style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;jumpStyle=arc;jumpSize=10;
          exitX=1;exitY=0.35;entryX=0;entryY=0.5;
          endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1;strokeColor=#d79b00;fontSize=10;"
   edge="1" parent="system-boundary" source="svc-b" target="msgbus">
@@ -401,11 +409,98 @@ Rules for label offsets:
 - Use `y="14"` when layout requires the label to appear below the line instead (e.g. two parallel edges that need labels on opposite sides).
 - Use `x` offset to slide the label along the edge when the midpoint is too close to a shape boundary.
 - Do **not** use `labelBackgroundColor=#ffffff` — it creates an opaque white box. Set `labelBackgroundColor=none` explicitly on every edge.
+- **Converging edge label overlap**: when multiple edges from the same node fan out to targets at similar x positions, `y="-14"` alone is not enough — all labels land at similar coordinates. Fix by varying the `x` offset: `x="-40"` pulls the label toward the source, `x="0"` centres it, `x="40"` pushes it toward the target. Combine with `exitY` fan-out so each edge departs from a distinct point on the face.
+
+**Exit face selection — lines must never cross shapes**: Choose `exitX/exitY` and `entryX/entryY` based on the relative position of the target so the line travels directly without backtracking through an obstacle:
+
+| Target is... | Use | Avoid |
+|---|---|---|
+| Directly below | `exitY=1` (bottom), `entryY=0` (top) | Exiting from top or right |
+| Directly above | `exitY=0`, `entryY=1` | Exiting from bottom |
+| To the right | `exitX=1`, `entryX=0` | Exiting from left |
+| To the left | `exitX=0`, `entryX=1` | Exiting from right |
+| Diagonal (down-right) | `exitX=1;exitY=1` (bottom-right corner) | Centre-bottom then sharp turn |
+
+If the direct path crosses an intermediate shape, exit from a **different face** and use waypoints to navigate a clear corridor. Compute waypoints against the bounding boxes of all shapes in the path and stay at least 10px outside any bbox.
+
+**Routing around an intermediate shape — staircase and L-route patterns:**
+
+```
+Shared-bus fan-out (preferred when all N edges are unlabeled):
+  All edges share the same exit point AND the same horizontal bus y value.
+  Lines overlap perfectly on the bus; each branches down to its target at
+  its own x. Renders as a single trunk with hanging branches.
+
+  Hub shape bottom-centre at (Cx, Cy); N targets on the row below
+  with top-centre x values X1, X2, … XN; pick bus y in the gap between
+  Cy and target-top (e.g. (Cy + target_top) / 2):
+    every edge: exitX=0.5; exitY=1; entryX=0.5; entryY=0;
+                waypoints (Cx, BusY), (Xi, BusY)
+
+  Only use staircase (below) when edges carry distinct labels that must be
+  visually separated, or when the bus y would otherwise force labels to
+  stack.
+
+Staircase fan-out (use when edges are labeled so each needs its own segment):
+  All edges share the same bottom-centre exit on the source shape (Cx, Cy).
+  Each turns at its own intermediate y level before heading to its target.
+  Stagger y levels by ~6px so segments never share space and labels don't
+  collide.
+
+  Hub shape bottom-centre at (Cx, Cy); N targets on the row below
+  with top-centre x values X1, X2, … XN:
+    edge i (1-based): exitX=0.5; exitY=1; entryX=0.5; entryY=0;
+                      waypoints (Cx, Cy + 6·i), (Xi, Cy + 6·i)
+
+L-route (source must bypass an intermediate obstacle to reach target):
+  NOTE: if the obstacle is a sibling container (namespace, zone, swimlane)
+  rather than a load-bearing vertex shape, FIRST try moving the container
+  (see Rule 7). L-routing around a container that should have been moved
+  produces unnecessary waypoints and reads as a design smell. Use L-route
+  only when the obstacle genuinely cannot be relocated.
+
+  Exit from the face away from the obstacle → travel along a safe corridor
+  just outside the obstacle's bbox → turn and approach the target from a
+  clear face.
+
+  Source right face at x = R; target is below and to the right; an
+  intermediate obstacle has bbox [Ox1 – Ox2, Oy1 – Oy2]:
+    exitX=1; exitY=0.5  (exit source right face)
+    WP1  (Ox2 + 20,  Oy2 + 40)   ← vertical corridor, 20px past obstacle right
+    WP2  (Tx,        Oy2 + 40)   ← horizontal run, 40px below obstacle bottom
+    entry (Tx, Ty)               ← clear top/left entry on target
+
+N-lane corridor (fan-out from one source to a COLUMN of N targets):
+  The dual of staircase fan-out: where staircase distributes N edges across
+  staggered y levels into a row of targets, the corridor distributes them
+  across staggered x levels into a column of targets.
+
+  Source right face at x = R; N targets stacked vertically, each with left-
+  centre at (Tx, Yi). Pick N nearby x values L1 < L2 < … < LN (5–6px apart)
+  for each edge's vertical segment, so the vertical runs never overlap:
+
+  For edge i (1-based), with target left-centre (Tx, Yi):
+    exitX=1; exitY=yi          (stagger source exits so starts don't overlap)
+    entryX=0; entryY=0.5
+    waypoints (Li, Yexit_i), (Li, Yi)
+
+  Example with 4 targets and L1..L4 = R+10, R+16, R+22, R+28:
+    edge 1 → target at Y1:  WPs (L1, Yexit_1), (L1, Y1)
+    edge 2 → target at Y2:  WPs (L2, Yexit_2), (L2, Y2)
+    edge 3 → target at Y3:  WPs (L3, Yexit_3), (L3, Y3)
+    edge 4 → target at Y4:  WPs (L4, Yexit_4), (L4, Y4)
+
+  Use this when targets have DIFFERENT labels. When all N edges share the
+  SAME label, bundle them instead (see Rule 2aa) — a corridor with four
+  identical labels is visual noise.
+```
+
+> ⚠️ **Never rely on auto-routing to avoid shape crossings.** draw.io's orthogonal router routes around container group cells but it does NOT detect vertex shapes as obstacles — it will happily draw a straight line through an icon or a service box. Always trace the path manually and add waypoints when any segment intersects a vertex shape's bounding box.
 
 When auto-routing still crosses a shape, add explicit waypoints to route around it:
 
 ```xml
-<mxCell id="e3" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=0;entryX=0.5;entryY=0;endArrow=block;endFill=1;html=1;strokeColor=#555555;" edge="1" parent="1" source="a" target="b">
+<mxCell id="e3" value="label" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=0;entryX=0.5;entryY=0;endArrow=block;endFill=1;html=1;strokeColor=#555555;" edge="1" parent="1" source="a" target="b">
   <mxGeometry relative="1" as="geometry">
     <Array as="points">
       <mxPoint x="200" y="100" />  <!-- waypoint above the obstructing shape -->
@@ -414,6 +509,218 @@ When auto-routing still crosses a shape, add explicit waypoints to route around 
   </mxGeometry>
 </mxCell>
 ```
+
+## Layout & Spacing Rules
+
+> These rules apply to every new diagram and every edit. The most common cause of an unreadable diagram is not the shapes or the edges but the **spacing** — layouts designed against shape bounding boxes instead of their rendered visual footprints look "squashed" no matter how carefully the edges are routed. Always size canvases, containers, and gaps against the rules below.
+
+### Rule 1 — Effective visual footprint
+
+A shape's *bounding box* (the `w × h` on its `mxGeometry`) is NOT the same as its *visual footprint* (the space it occupies on the rendered canvas, including child labels, notes, and badge icons).
+
+| Pattern | Bbox | Visual footprint | Notes |
+|---|---|---|---|
+| Plain rounded rectangle (label inside) | `w × h` | `w × h` | Self-contained — use the bbox directly |
+| Rounded rect + badge icon + inline note | `w × h` | `w × h` | Notes merged inside via HTML `<br>` — self-contained |
+| Image icon + child label at `(-28, 68, 130, 36)` | `75 × 65` | `~130 × 104` | Label extends 28px left, 55px right; extends ~39px below the icon bottom |
+
+Always plan layouts against the **visual footprint**, not the bbox. For image icons, reserve 40px below the icon for the label tail, and allow the 130px label to overflow ~28px left and ~27.5px right of the icon column.
+
+### Rule 2 — Minimum row / column pitch
+
+**Row pitch** = vertical distance between successive rows (top of row A → top of row B).
+
+| Row content | Min pitch |
+|---|---|
+| Plain rectangles, no edge labels between rows | row height + 50 |
+| Plain rectangles, labeled edges between rows | row height + 80 |
+| Image icons + child labels (rendered height ~104) | 160 |
+| Image icons + labels + labeled edges between rows | 200 |
+
+**Column pitch** = horizontal distance between successive shapes in the same row.
+
+| Column content | Min pitch |
+|---|---|
+| Plain rectangles, no edge labels | shape width + 40 |
+| Plain rectangles, labeled edge between them | shape width + max(120, label width + 40) |
+| Image icons (75w) with 130w labels | 170 (gives ~20px clearance between label boxes) |
+
+### Rule 2a — Shapes per row (structural readability)
+
+A diagram with more than **4 shapes on the same row** at standard sizes (150–200px wide) gets cramped fast, because every horizontal gap now has to hold an edge label. At 5+ shapes per row, label overflow onto adjacent shapes becomes unavoidable without either shrinking the shapes (which hurts readability) or widening the canvas to an unreasonable size.
+
+> Prefer **stacking onto extra rows** over packing one row tightly. Let the canvas grow vertically — canvas size is free, but overlapping labels are not. If a flow has 5+ shapes, split into two parallel rows (e.g. "source domain" on top, "target domain" on bottom, event bus between them) rather than a single wide row.
+
+### Rule 2aa — Bundle identical-label edges from one source
+
+When a single source shape has multiple edges with the **same label** going to different targets (e.g. three "Managed Identity" connections from one service to three Azure resources), do NOT draw three near-parallel lines with three copies of the same label — it reads as clutter and the lines crowd each other.
+
+Instead, **bundle** them: all edges share the same exit point on the source AND the same first waypoint, so they visually merge into a single trunk before branching to each target. Put the label on only ONE of the edges; remove (`value=""`) it from the others.
+
+```
+Source shape with right face at x=R, bundled trunk endpoint at (T, Ymid):
+
+  Edge 1 (carries label):  exit (R, Ymid) → waypoint (T, Ymid) → waypoint (T, Y1) → entry target-1
+  Edge 2 (value=""):       exit (R, Ymid) → waypoint (T, Ymid) → waypoint (T, Y2) → entry target-2
+  Edge 3 (value=""):       exit (R, Ymid) → waypoint (T, Ymid) → waypoint (T, Y3) → entry target-3
+
+  All three exits are identical → draw.io renders them as one line from source to (T, Ymid).
+  After the shared waypoint each edge peels off to its own target.
+  Only edge 1 shows the label, positioned by offset toward the shared trunk segment.
+```
+
+If the label belongs to *all* edges equally, pick the one whose midpoint lands nearest the shared trunk so the label visually attaches to the bundled line. Use an x-offset (`x="-60"` or similar) to pull the label toward the trunk side of the edge.
+
+### Rule 2b — Parallel edges between the same pair of shapes
+
+When two edges run between the same source and target (e.g. an INSERT and a later UPDATE), place them on different exit/entry y values with **enough vertical separation to clear the label rows**.
+
+- Minimum separation: `exitY` values at least 40% apart (e.g. `0.25` and `0.75`, not `0.35` and `0.65`)
+- Minimum shape height: 100px so that a 40% separation is at least 40px of vertical offset
+- Combine with x-offset on each label (`x="-40"` for one, `x="40"` for the other) so labels do not stack vertically on top of each other
+
+If the parallel edges still look cluttered, the two boxes are too close — widen the gap between them.
+
+### Rule 2c — Multi-line labels for long text
+
+An edge label longer than ~15 characters will overflow most horizontal gaps. Use HTML line breaks (`&lt;br&gt;`) to split long labels into two short lines:
+
+| Raw label (33 chars, ~220px) | Multi-line variant (16 chars/line, ~110px wide) |
+|---|---|
+| `8. subscribe: StorageObjectCreated` | `8. subscribe:<br>StorageObjectCreated` |
+| `4. gRPC: Store (blob bytes)` | `4. gRPC: Store<br>(blob bytes)` |
+| `9. gRPC: SetStorageRef (async)` | `9. gRPC:<br>SetStorageRef (async)` |
+
+Multi-line labels are twice as tall (~32px) but half as wide. In a vertical edge they fit alongside a short vertical segment; in a horizontal edge they fit inside a narrower gap.
+
+### Rule 3 — Container sizing
+
+A container (subnet, zone, system boundary, swimlane) must be sized to hold the **visual footprints** of its children plus padding, not just their bboxes.
+
+Formula: `container.h ≥ Σ(child visual heights) + (n+1) × 25px vertical padding`
+
+For a zone or subnet holding a single row of 75×65 icons with labels:
+
+```
+min height = 30  (zone title area)
+           + 20  (top padding)
+           + 65  (icon)
+           +  3  (gap)
+           + 36  (child label)
+           + 25  (bottom padding)
+           = 179px — round to 180px
+```
+
+For a stack of 4 such zones: total height ≥ 4 × 180 + 3 × 20 (inter-zone gap) = 780px before adding the outer title row.
+
+### Rule 4 — Edge label gap
+
+An edge label renders at the geometric midpoint of the routed line by default. If the label is longer than the segment it lands on, it visually overflows onto adjacent shapes.
+
+Before placing a label:
+
+- Estimate rendered width: at 10pt, `len(text) × 6.5 + 10` pixels is a close upper bound.
+- The segment the label falls on must be **≥ label width + 20px clearance**.
+
+When the segment is too short, fixes in order of preference:
+
+1. **Widen the source/target gap in the layout** (preferred) — the label content is the user-chosen description and should stay as the author wrote it. Move shapes apart so the label fits.
+2. **Move the label onto a longer segment** via `<mxPoint as="offset" x="...">` — useful when the edge has multiple segments and one is long enough.
+3. **Split to two lines** with `&lt;br&gt;` (Rule 2c) — halves the width at the cost of doubling the height. Use when widening isn't possible (e.g. fixed container).
+4. **Shorten the label** (last resort) — loses information; only acceptable for labels like `3. INSERT track (storage_ref=NULL)` → `3. INSERT track` where the trailing detail duplicates something the reader can infer.
+
+**Worked example (abstract):** a 33-character label like `N. VERB resource (detail=value)` renders at ~225px. An edge whose shortest segment is only 80px cannot hold it. Widen the segment to ≥ 250px by moving source and target apart — that is the preferred fix.
+
+### Rule 5 — Canvas sizing (shapes drive the canvas, not vice versa)
+
+The canvas is an **output** of the layout, not an input. Lay out shapes with proper spacing first (Rules 1–4), then size the canvas to contain them with 30–50px margin on all sides.
+
+```
+canvas_width  = (rightmost_edge + right_label_overflow)
+              - (leftmost_edge  - left_label_overflow)
+              + 80px total margin
+```
+
+Do NOT start from a predetermined canvas size (e.g. "let's fit this in 1200×800") and squeeze shapes to fit. If the layout needs 1800×1000 to be readable, the canvas is 1800×1000. A compressed canvas is the #1 cause of the "squashed" complaint.
+
+> **When in doubt, err generous.** Empty canvas is free; cramped shapes are not. It's always easier to trim unused margin later than to rescue a design that started too cramped.
+
+### Rule 5a — Shape size must fit its label content
+
+A rectangle's width and height must be big enough to render its label text without truncation or wrapping artifacts.
+
+Rough sizing at `fontSize=11` (default):
+
+| Label content | Min width | Min height |
+|---|---|---|
+| 1 line, ≤15 chars | 120 | 40 |
+| 1 line, 16–25 chars | 180 | 40 |
+| 2 lines (title + stereotype) | 140 | 60 |
+| 3 lines (title + stereotype + grey note) | 160 | 90 |
+| 4 lines (pod name + role + port + framework) | 110 | 90 (compact stack) |
+
+A deployment-pod label like `<b>Service Name</b><br>Role :PORT` on two lines needs at least ~110px width to avoid awkward character truncation. A 60×60 pod is too small — use 100×80 minimum.
+
+> If the label does not fit at the chosen shape size, EITHER grow the shape OR shorten the label — never let the rendered text overflow the shape bounds.
+
+### Rule 6 — Nested shape positioning
+
+Shapes inside containers must be positioned so their **visual footprint** stays inside the container, with padding.
+
+For a child at relative `(x, y)` with visual footprint `w × h`:
+
+- `x ≥ 20` (left padding)
+- `x + w ≤ container.width − 20` (right padding)
+- `y ≥ 30` (top padding — space for container title)
+- `y + h ≤ container.height − 20` (bottom padding)
+
+For image-icon children the visual footprint extends 39px below the icon bbox and 28px to its left / 27.5px to its right; check those extremes, not just the icon bbox.
+
+In rows of multiple nested shapes, distribute x positions so `Σ(visual widths) + Σ(gaps) ≤ container inner width`.
+
+> **Cross-reference**: the fan-out rule and exit-face selection above are edge-routing concerns. They assume the underlying layout already respects the spacing rules on this page. If a diagram feels crowded *despite* correct routing, the fix is almost always here — widen rows, columns, or the canvas itself.
+
+### Rule 7 — Sibling containers must not block primary edge corridors
+
+When a primary shape inside a subnet/zone (e.g. a central service pod, an API gateway) has edges to targets outside that subnet, those edges travel through a **corridor** — the spatial region between the primary shape and the boundary of its parent container. Do NOT place *other* sibling containers (secondary namespaces, environment boxes, metadata swimlanes) inside this corridor — they force every edge to re-route around them.
+
+**Symptom**: edges cross through a secondary container shape, or need 3+ waypoints just to escape the enclosing subnet.
+
+**Fix**: move the blocking container, not the edges. Two structural patterns work:
+
+1. **Vertical stacking** — stack all sibling containers full-width of the parent, one above the other. The left and right edges of every stacked container are clear, so the corridor opens up on both sides.
+2. **Edge-of-parent anchoring** — put secondary containers flush against one edge of the parent (top or bottom). Leave the opposite edge free as the corridor.
+
+```
+✗ Anti-pattern — ns_staging blocks the corridor:
+
+  aks_subnet ┌────────────────────────────────────────┐
+             │ ns_prod [pods]            ns_staging   │
+             │  ┌──────────────────┐     ┌─────────┐  │
+             │  │ apigw ── 3 edges ┼─────┼ XXXXXXX │  │ ← edges cross ns_staging
+             │  └──────────────────┘     └─────────┘  │
+             │                           ns_system    │
+             │                           ┌─────────┐  │
+             │                           │ XXXXXXX │  │
+             │                           └─────────┘  │
+             └────────────────────────────────────────┘
+
+✓ Vertical stacking — corridor clear:
+
+  aks_subnet ┌────────────────────────────────────────┐
+             │ ns_prod (full width)                   │
+             │  ┌──────────────────────────────────┐  │
+             │  │ apigw ───────── 3 edges ─────────┼──┼──→ right-column targets
+             │  │ [pods...]                        │  │
+             │  └──────────────────────────────────┘  │
+             │ ns_staging (full width, below)         │
+             │ ns_system  (full width, below staging) │
+             └────────────────────────────────────────┘
+```
+
+Only resort to edge re-routing (waypoints above/below the blocking container — the L-route pattern) when the container genuinely cannot be moved. Examples where the container IS load-bearing: zone stacking in a STRIDE trust-boundary diagram (zone order encodes trust gradient), rack layout in a physical diagram (physical position IS the information).
+
+> **Move the container first. Route around only as a last resort.** A diagram whose primary flow is obstructed by secondary containers is mis-laid-out. Fix the layout; don't patch the edges.
 
 ### Text Elements
 

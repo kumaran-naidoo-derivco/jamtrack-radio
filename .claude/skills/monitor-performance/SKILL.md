@@ -48,7 +48,7 @@ Note: Phase 2 has limited performance data (single-node Docker). Use as a direct
 
 ---
 
-## Phase 4+ — ClickHouse Latency Queries
+## Phase 9+ — ClickHouse Latency Queries
 
 ```sql
 -- p50, p95, p99 latency by service, post-deploy vs. pre-deploy
@@ -128,7 +128,7 @@ LIMIT 20;
 
 ---
 
-## Phase 4+ — Kibana APM (if configured)
+## Phase 9+ — Kibana APM (if configured)
 
 Navigate to APM → select service → Latency tab:
 - Compare "before" and "after" deployment marker

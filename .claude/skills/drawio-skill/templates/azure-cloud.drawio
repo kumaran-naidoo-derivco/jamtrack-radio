@@ -1,0 +1,243 @@
+<mxfile host="app.diagrams.net" modified="2026-04-21" agent="Claude" version="21.0.0" type="device">
+  <diagram name="Azure Cloud Architecture" id="azure-cloud-template">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- AZURE CLOUD ARCHITECTURE TEMPLATE                             -->
+        <!-- Pattern: azure2 image-based icons, value="" + child labels,   -->
+        <!--          VNet boundary, fanned edges, managed identity (dashed)-->
+        <!--                                                               -->
+        <!-- Label pattern for icon shapes (avoids stencil/label overlap): -->
+        <!--   • Set value="" on the icon shape                            -->
+        <!--   • Add child cell id_lbl: bold name + grey description       -->
+        <!--     at x=-28, y=68, width=130, height=36                      -->
+        <!--                                                               -->
+        <!-- Edge patterns:                                                -->
+        <!--   • Solid arrow  = synchronous / direct call                 -->
+        <!--   • Dashed arrow = Managed Identity / async / future phase    -->
+        <!--   • Fan-out: multiple edges on same face use y=0.35/0.65      -->
+        <!--   • Waypoints: exit top (y=0) with Array points to route      -->
+        <!--     above data layer; exit bottom (y=1) to route below        -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <!-- Title bar -->
+        <mxCell id="title-bar" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0066CC;strokeColor=#0066CC;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="title-text" value="[System Name] — Azure Cloud Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="55" y="25" width="600" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="title-tag" value="[Region: australiaeast]  [VNet: 10.0.0.0/16]" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;fontSize=10;fontColor=#CCDDFF;" vertex="1" parent="1">
+          <mxGeometry x="800" y="25" width="550" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ─── INTERNET (outside VNet) ───────────────────────────── -->
+        <mxCell id="internet" value="Internet" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;verticalAlign=middle;align=center;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="55" y="390" width="90" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ─── AZURE VIRTUAL NETWORK BOUNDARY ────────────────────── -->
+        <mxCell id="vnet-boundary" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEF7FF;strokeColor=#0078D4;strokeWidth=2;dashed=0;fontSize=12;fontStyle=1;fontColor=#0078D4;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="185" y="160" width="1130" height="590" as="geometry" />
+        </mxCell>
+        <mxCell id="vnet-label" value="Azure Virtual Network  (10.0.0.0/16)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="200" y="168" width="300" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ─── COMPUTE SUBNET LABEL ──────────────────────────────── -->
+        <mxCell id="subnet-compute-label" value="Ingress / Compute  (10.0.1.0/24)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=9;fontStyle=2;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="220" y="200" width="300" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- ─── DATA SUBNET LABEL ─────────────────────────────────── -->
+        <mxCell id="subnet-data-label" value="Data  (10.0.2.0/24)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=9;fontStyle=2;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="680" y="200" width="200" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- ─── AZURE ICON SHAPES ─────────────────────────────────────
+             Label pattern: value="" on the shape, child label cell at
+             x=-28, y=68, width=130, height=36 (bold name + grey note).
+             Icon images: img/lib/azure2/<category>/<Service>.svg
+             All icon shapes: width=75, height=65
+        ─────────────────────────────────────────────────────────────── -->
+
+        <!-- Application Gateway -->
+        <mxCell id="appgw" value="" style="aspect=fixed;html=1;points=[];align=center;image;image=img/lib/azure2/networking/Application_Gateways.svg;" vertex="1" parent="1">
+          <mxGeometry x="280" y="390" width="75" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="appgw_lbl" value="&lt;b&gt;[Application Gateway]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#666666;&quot;&gt;WAF v2 · TLS 1.3 termination&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="appgw">
+          <mxGeometry x="-28" y="68" width="130" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- AKS / App Service (compute) -->
+        <mxCell id="aks" value="" style="aspect=fixed;html=1;points=[];align=center;image;image=img/lib/azure2/containers/Kubernetes_Services.svg;" vertex="1" parent="1">
+          <mxGeometry x="470" y="390" width="75" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="aks_lbl" value="&lt;b&gt;[AKS / App Service]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#666666;&quot;&gt;[Service count] services · Dapr sidecars&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="aks">
+          <mxGeometry x="-28" y="68" width="130" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- PostgreSQL (data layer) -->
+        <mxCell id="pg" value="" style="aspect=fixed;html=1;points=[];align=center;image;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" vertex="1" parent="1">
+          <mxGeometry x="700" y="300" width="75" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="pg_lbl" value="&lt;b&gt;[PostgreSQL]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#666666;&quot;&gt;Flexible Server · Private Endpoint&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="pg">
+          <mxGeometry x="-28" y="68" width="130" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- Redis Cache (data layer) -->
+        <mxCell id="redis" value="" style="aspect=fixed;html=1;points=[];align=center;image;image=img/lib/azure2/databases/Cache_Redis.svg;" vertex="1" parent="1">
+          <mxGeometry x="700" y="480" width="75" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="redis_lbl" value="&lt;b&gt;[Redis Cache]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#666666;&quot;&gt;Private Endpoint · Dapr pub/sub&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="redis">
+          <mxGeometry x="-28" y="68" width="130" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- Key Vault (managed services) -->
+        <mxCell id="kv" value="" style="aspect=fixed;html=1;points=[];align=center;image;image=img/lib/azure2/security/Key_Vaults.svg;" vertex="1" parent="1">
+          <mxGeometry x="960" y="220" width="75" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="kv_lbl" value="&lt;b&gt;[Key Vault]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#666666;&quot;&gt;RS256 key · app secrets&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="kv">
+          <mxGeometry x="-28" y="68" width="130" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- Blob Storage (managed services) -->
+        <mxCell id="blob" value="" style="aspect=fixed;html=1;points=[];align=center;image;image=img/lib/azure2/storage/Storage_Accounts.svg;" vertex="1" parent="1">
+          <mxGeometry x="960" y="400" width="75" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="blob_lbl" value="&lt;b&gt;[Blob Storage]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#666666;&quot;&gt;Hot LRS · audio + static assets&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="blob">
+          <mxGeometry x="-28" y="68" width="130" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- Log Analytics (managed services) -->
+        <mxCell id="monitor" value="" style="aspect=fixed;html=1;points=[];align=center;image;image=img/lib/azure2/manage_monitor/Log_Analytics_Workspaces.svg;" vertex="1" parent="1">
+          <mxGeometry x="960" y="580" width="75" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="monitor_lbl" value="&lt;b&gt;[Log Analytics]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#666666;&quot;&gt;Azure Monitor · structured logs&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="monitor">
+          <mxGeometry x="-28" y="68" width="130" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- ─── EDGES ──────────────────────────────────────────────────
+             Naming: e-<source>-<target>
+             Solid  = synchronous service call
+             Dashed = Managed Identity / telemetry / optional
+        ─────────────────────────────────────────────────────────────── -->
+
+        <!-- Internet → App Gateway -->
+        <mxCell id="e-inet-appgw" value="HTTPS :443" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#555555;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="internet" target="appgw">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- App Gateway → AKS -->
+        <mxCell id="e-appgw-aks" value="HTTP" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#555555;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="appgw" target="aks">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AKS → PostgreSQL (fanned — exitY=0.35 on right face) -->
+        <mxCell id="e-aks-pg" value="SQL / Dapper" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.35;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#b85450;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="aks" target="pg">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AKS → Redis (fanned — exitY=0.65 on right face) -->
+        <mxCell id="e-aks-redis" value="StackExchange.Redis" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.65;entryX=0;entryY=0.5;endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.5;strokeColor=#d6b656;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="aks" target="redis">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AKS → Key Vault (dashed — Managed Identity)
+             Exit AKS top → waypoints above data layer → enter KV top.
+             AKS top-centre: (507, 390). KV top-centre: (997, 220).
+             Waypoints at y=180 route above VNet label area. -->
+        <mxCell id="e-aks-kv" value="Managed Identity" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=0;entryX=0.5;entryY=0;endArrow=open;endFill=0;html=1;rounded=0;strokeWidth=1.5;dashed=1;dashPattern=8 4;strokeColor=#999999;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="aks" target="kv">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+            <Array as="points">
+              <mxPoint x="507" y="190" />
+              <mxPoint x="997" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AKS → Blob Storage (dashed — Managed Identity)
+             Exit AKS right at y=0.5 → but needs to clear PostgreSQL/Redis.
+             Instead route via KV waypoint level and enter Blob left-centre.
+             Simpler: exit AKS top, route at y=190, separate x from KV waypoint. -->
+        <mxCell id="e-aks-blob" value="Azure Blob SDK" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=open;endFill=0;html=1;rounded=0;strokeWidth=1.5;dashed=1;dashPattern=8 4;strokeColor=#999999;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="pg" target="blob">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="-14" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Note: AKS → Blob routed via pg for layout clarity.
+             For direct AKS → Blob, use the same waypoint pattern as AKS → KV
+             with a different y-offset to fan the lines apart. -->
+
+        <!-- AKS → Log Analytics (dashed — telemetry)
+             Exit AKS bottom → waypoints below Redis → enter Log Analytics bottom.
+             AKS bottom-centre: (507, 455). Monitor bottom-centre: (997, 645). -->
+        <mxCell id="e-aks-monitor" value="OpenTelemetry" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;entryX=0.5;entryY=1;endArrow=open;endFill=0;html=1;rounded=0;strokeWidth=1.5;dashed=1;dashPattern=8 4;strokeColor=#999999;fontColor=#444444;fontSize=10;labelBackgroundColor=none;" edge="1" parent="1" source="aks" target="monitor">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" x="0" y="14" />
+            <Array as="points">
+              <mxPoint x="507" y="720" />
+              <mxPoint x="997" y="720" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- PostgreSQL → Key Vault (Managed Identity for DB credentials) -->
+        <!-- Remove or adjust if your topology differs -->
+
+        <!-- ─── LEGEND ──────────────────────────────────────────────── -->
+        <mxCell id="legend-bg" value="" style="rounded=0;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="808" width="700" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="Legend" style="text;fontSize=11;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="55" y="814" width="60" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Row 1: Solid arrow = sync call -->
+        <mxCell id="leg-sync" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#555555;strokeWidth=2;labelBackgroundColor=none;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="55" y="842" as="sourcePoint" />
+            <mxPoint x="105" y="842" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg-sync-lbl" value="Synchronous call" style="text;fontSize=10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="112" y="835" width="130" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Row 1: Dashed = Managed Identity / async -->
+        <mxCell id="leg-mi" value="" style="endArrow=open;endFill=0;html=1;strokeColor=#999999;strokeWidth=1.5;dashed=1;dashPattern=8 4;labelBackgroundColor=none;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="260" y="842" as="sourcePoint" />
+            <mxPoint x="310" y="842" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg-mi-lbl" value="Managed Identity / async / future phase" style="text;fontSize=10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="318" y="835" width="220" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Row 2: Grey annotation note hint -->
+        <mxCell id="leg-note" value="Grey text below each icon = annotation note (moves with shape)" style="text;fontSize=9;fontColor=#666666;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="55" y="858" width="420" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Footer -->
+        <mxCell id="footer" value="" style="rounded=0;fillColor=#1a1a2e;strokeColor=#1a1a2e;" vertex="1" parent="1">
+          <mxGeometry x="40" y="890" width="1320" height="4" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

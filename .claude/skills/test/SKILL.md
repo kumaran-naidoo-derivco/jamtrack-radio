@@ -100,6 +100,8 @@ public sealed class ServiceApiFactory : WebApplicationFactory<Program>, IAsyncLi
       HttpHandler = Server.CreateHandler()
     });
 
+  public string ConnectionString => _db.ConnectionString;
+
   public async Task InitializeAsync() => await _db.InitializeAsync();
 
   public async Task DisposeAsync()

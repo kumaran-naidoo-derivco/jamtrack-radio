@@ -28,16 +28,19 @@ BASE_IDENTITY=localhost:5001
 BASE_TRACK=localhost:5002
 BASE_STREAM=http://localhost:5003
 
+# Capture email once — reused for both Register and Login
+E2E_EMAIL="e2e-$(date +%s)@jamtrack.io"
+
 # Step 1 — Register a new user
 REGISTER_RESPONSE=$(grpcurl -plaintext \
-  -d "{\"email\":\"e2e-$(date +%s)@jamtrack.io\",\"password\":\"E2ETest123!\"}" \
+  -d "{\"email\":\"$E2E_EMAIL\",\"password\":\"E2ETest123!\"}" \
   $BASE_IDENTITY jamtrack.identity.v1.IdentityService/Register)
 USER_ID=$(echo $REGISTER_RESPONSE | jq -r '.userId')
 echo "Registered userId: $USER_ID"
 
 # Step 2 — Login and get JWT
 LOGIN_RESPONSE=$(grpcurl -plaintext \
-  -d "{\"email\":\"e2e-$(date +%s)@jamtrack.io\",\"password\":\"E2ETest123!\"}" \
+  -d "{\"email\":\"$E2E_EMAIL\",\"password\":\"E2ETest123!\"}" \
   $BASE_IDENTITY jamtrack.identity.v1.IdentityService/Login)
 TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.token')
 echo "JWT obtained: ${TOKEN:0:20}..."
