@@ -93,9 +93,9 @@ Architecture decisions are financial decisions. Surface costs explicitly at ever
 
 **Jamtrack Radio phase cost gates**
 - Phase 2 = local only (£0 infra cost)
-- Phase 3 = local K8s (£0 infra cost, but operational complexity begins)
-- Phase 4 = Azure AKS (cost starts at ~£326/month staging; design decisions now have real financial consequences)
-- Every design must answer: "what changes at Phase 4?"
+- Phase 3 = Azure VMs (~£37–50/month; first real cloud costs, VNet and NSG complexity begins)
+- Phase 7 = AKS (~£60–100/month staging; K8s operational complexity and full Azure service costs)
+- Every design must answer: "what changes at Phase 3?"
 
 ---
 

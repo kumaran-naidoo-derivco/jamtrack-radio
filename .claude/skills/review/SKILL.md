@@ -139,8 +139,6 @@ If `/robust` or `/security` quality log entries are missing, raise a `BLOCKER` f
 
 ### 10. Test Coverage Gaps
 
-
-
 - [ ] Every acceptance criterion from the design document has a corresponding integration test.
 - [ ] Error paths (not-found, duplicate, validation failure, auth failure) are tested — not just the happy path.
 - [ ] No test that only asserts `Assert.NotNull(result)` without checking meaningful properties.

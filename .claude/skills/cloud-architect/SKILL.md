@@ -100,15 +100,15 @@ with Diagram("Diagram Title", show=False, filename="output-name", direction="TB"
 
 Show what infrastructure applies at each phase:
 
-| Component | Phase 2 (local) | Phase 3 (local K8s) | Phase 4+ (Azure) |
-|-----------|-----------------|---------------------|------------------|
-| Compute | Docker Compose | Rancher Desktop K8s | Azure AKS |
-| Container registry | Local Docker | Local Docker | Azure Container Registry (ACR) |
-| Database | Docker Postgres 16 | Docker Postgres 16 | Azure Database for PostgreSQL Flexible Server |
-| Secrets | `.env.local` (gitignored) | K8s Secrets | Azure Key Vault |
-| Ingress | `localhost` ports | Traefik (Rancher) | Azure Application Gateway / AGIC |
-| DNS | — | — | Azure DNS |
-| Monitoring | stdout logs | stdout logs | ELK on AKS + ClickHouse |
+| Component | Phase 2 (local) | Phase 3–4 (Azure VMs) | Phase 5–6 (Containers + ACA) | Phase 7+ (AKS) |
+|-----------|-----------------|----------------------|------------------------------|-----------------|
+| Compute | Docker Compose | Azure VMs + Nginx | Docker + Azure Container Apps | Azure AKS |
+| Container registry | Local Docker | Local Docker | Azure Container Registry (ACR) | Azure Container Registry (ACR) |
+| Database | Docker Postgres 16 | PostgreSQL on Azure VM | Azure Database for PostgreSQL Flexible Server | Azure Database for PostgreSQL Flexible Server |
+| Secrets | `.env.local` (gitignored) | `.env` on VM (gitignored) | Azure Key Vault | Azure Key Vault |
+| Ingress | `localhost` ports | Nginx reverse proxy | App Gateway / ACA ingress | Azure Application Gateway + WAF v2 |
+| DNS | — | Azure DNS (optional) | Azure DNS | Azure DNS |
+| Monitoring | stdout logs | stdout logs | stdout logs | ELK on AKS + ClickHouse |
 
 ### 2. Azure Network Topology Diagram (Phase 4+)
 

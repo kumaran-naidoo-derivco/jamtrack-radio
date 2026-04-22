@@ -155,10 +155,10 @@ For each service boundary, identify threats using the STRIDE model:
 | Rate limiting | `AspNetCoreRateLimit` (5 req/min on auth endpoints) | Phase 2 | £0 | DoS |
 | HTTPS only | `app.UseHttpsRedirection()` | Phase 2 | £0 | Information disclosure |
 | Parameterised queries | Dapper (default — no string concatenation) | Phase 2 | £0 | Tampering (SQLi) |
-| Secrets management | `.env.local` (gitignored) → Azure Key Vault (Phase 4) | Phase 2/4 | £0 → ~£1/month | Information disclosure |
-| WAF | Azure Application Gateway WAF v2 | Phase 4+ | ~£183/month | Tampering, DoS |
-| mTLS between services | Cert-manager + Istio service mesh | Phase 5+ | Operational cost | Spoofing, information disclosure |
-| Audit logging | Serilog structured events → ELK | Phase 4+ | Log storage cost | Repudiation |
+| Secrets management | `.env.local` (gitignored) → Azure Key Vault (Phase 6) | Phase 2/6 | £0 → ~£1/month | Information disclosure |
+| WAF | Azure Application Gateway WAF v2 | Phase 6+ | ~£183/month | Tampering, DoS |
+| mTLS between services | Cert-manager + Istio service mesh | Phase 7+ | Operational cost | Spoofing, information disclosure |
+| Audit logging | Serilog structured events → ELK | Phase 6+ | Log storage cost | Repudiation |
 
 ### 5. Authentication & Authorisation Map
 
@@ -188,8 +188,8 @@ For each service boundary, identify threats using the STRIDE model:
 | A05 | Security Misconfiguration | ⚠️ Monitor | No default credentials, no stack traces in prod |
 | A06 | Vulnerable Components | ⚠️ Monitor | `dotnet-outdated` + Dependabot |
 | A07 | Identity & Auth Failures | ✅ Controlled | Rate limiting, JWT, short expiry |
-| A08 | Software & Data Integrity | ⚠️ Phase 4 | Signed container images, Cosign (Phase 4+) |
-| A09 | Security Logging & Monitoring | ⚠️ Phase 4 | ELK structured logging (Phase 4+) |
+| A08 | Software & Data Integrity | ⚠️ Phase 5 | Signed container images, Cosign (Phase 5+) |
+| A09 | Security Logging & Monitoring | ⚠️ Phase 6 | ELK structured logging (Phase 6+) |
 | A10 | SSRF | ✅ N/A | No user-controllable URLs in Phase 2 |
 
 ### 7. Security Cost/Risk Tradeoff
@@ -200,9 +200,9 @@ For each significant security investment, document the tradeoff:
 |---------|------|-------------------|---------------|------------|---------|
 | BCrypt hashing | £0 dev time | High (credential stuffing) | Critical (password exposure) | Critical | Must do |
 | Rate limiting | 2 hours | High (brute force) | High (account takeover) | High | Must do |
-| Azure Key Vault | £1/month | Medium (secret exposure) | Critical (full compromise) | High | Do at Phase 4 |
-| WAF | £183/month | Medium (OWASP attacks) | High | High | Do at Phase 4 |
-| mTLS between services | High operational cost | Low (internal network attack) | High | Medium | Defer to Phase 5 |
+| Azure Key Vault | £1/month | Medium (secret exposure) | Critical (full compromise) | High | Do at Phase 6 |
+| WAF | £183/month | Medium (OWASP attacks) | High | High | Do at Phase 6 |
+| mTLS between services | High operational cost | Low (internal network attack) | High | Medium | Defer to Phase 7 |
 | HSM for JWT keys | £750+/month | Very low | Critical | Medium | Defer indefinitely (oversized for Jamtrack Radio) |
 
 ---
@@ -232,9 +232,10 @@ For each significant security investment, document the tradeoff:
 
 **Phase-appropriate control progression**
 - Phase 2 (local): BCrypt hashing, JWT, input validation, parameterised queries, no secrets in code
-- Phase 3 (local K8s): K8s RBAC, Network Policies (default-deny), non-root container security contexts
-- Phase 4 (Azure): Key Vault for all secrets, WAF on App Gateway, Managed Identity everywhere, HTTPS enforced, audit logging to ELK
-- Phase 5+: mTLS between services (Dapr or Istio), signed container images (Cosign), security scanning in CI (Trivy for images, Semgrep for code)
+- Phase 3 (Azure VMs): NSG subnet rules, Nginx TLS termination, SSH key authentication, .env files gitignored on VMs
+- Phase 5 (Containers): non-root container security contexts, Trivy image scanning in CI
+- Phase 6 (ACA): Key Vault for all secrets, Managed Identity everywhere, HTTPS enforced, audit logging to ELK
+- Phase 7+ (AKS): K8s RBAC, Network Policies (default-deny), WAF on App Gateway, mTLS between services (Dapr or Istio), signed container images (Cosign), Semgrep code scanning in CI
 
 ---
 
@@ -255,7 +256,7 @@ For each significant security investment, document the tradeoff:
 - **Deserialising untrusted input without type constraints**: `JsonSerializer.Deserialize<object>(input)`. Use strongly-typed deserialization targets only.
 
 **Secrets and configuration**
-- **Secrets in `appsettings.json`**: JWT signing keys, connection strings, or API keys committed to source control. Use environment variables (Phase 2), K8s Secrets (Phase 3), or Azure Key Vault (Phase 4+).
+- **Secrets in `appsettings.json`**: JWT signing keys, connection strings, or API keys committed to source control. Use environment variables / .env files (Phase 2–5), Azure Key Vault (Phase 6+).
 - **Secrets in environment variable names that get logged**: `DB_PASSWORD=secret` will appear in process listings and structured logs if startup config is emitted. Use secret references, not literal values in env vars that are logged.
 - **Encryption keys hardcoded in source**: AES keys or TOTP encryption keys in `appsettings.json` or `Constants.cs`. If the source is ever exposed, all encrypted data is compromised.
 

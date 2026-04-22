@@ -44,8 +44,9 @@ First, detect the current phase from `project-tasks/Phase-2.md` (or ask the user
 | Phase | Staging Target | Stack |
 |---|---|---|
 | Phase 2 | Local Docker Compose | `docker compose up` |
-| Phase 3 | Rancher Desktop (local K8s) | `kubectl` / `helm` |
-| Phase 4+ | Azure AKS — staging namespace | `az aks` / `helm` |
+| Phase 3–4 | Azure VMs (systemd services) | `ssh`, `systemctl`, `nginx` |
+| Phase 5–6 | Containers / Azure Container Apps | `docker`, `az containerapp` |
+| Phase 7+ | Azure AKS — staging namespace | `az aks` / `helm` |
 
 ---
 
@@ -122,9 +123,9 @@ docker compose up -d --no-build
 
 ---
 
-## Phase 3 — Rancher Desktop (Local K8s)
+## Phase 3 — Azure VMs
 
-> To be expanded in Phase 3. Steps will cover: `helm upgrade --install`, namespace verification, `kubectl rollout status`, health check via port-forward.
+> To be expanded in Phase 3. Steps will cover: SSH to VM, `systemctl restart <service>`, nginx config reload, health check via `curl http://<vm-ip>:PORT/health/ready`.
 
 ---
 

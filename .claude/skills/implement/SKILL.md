@@ -134,7 +134,7 @@ public sealed class RegisterUserHandler
 ### 3. Infrastructure Layer (`<Service>.Infrastructure`)
 
 - Implements every interface defined in Application.
-- Dapper queries use named parameters (`:param` for Npgsql). Never string-interpolate SQL.
+- Dapper queries use named parameters (`@param` style). Never string-interpolate SQL.
 - Connection is opened per operation via `IDbConnectionFactory` (injected). No shared connection state.
 - Map results to domain entities using Dapper's `Query<T>` — entities must have a parameterless private constructor for materialisation.
 - Passwords hashed with `BCrypt.Net-Next` in the `PasswordHasher` adapter.

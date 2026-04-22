@@ -51,34 +51,32 @@ Expected: All endpoints return `200`. No `unhealthy` containers. Migration logs 
 
 ---
 
-## Phase 3 — K8s (Rancher Desktop) Health Check
+## Phase 3 — Azure VM Health Check
 
 ```bash
-NAMESPACE=jamtrack-staging  # or jamtrack-prod
+VM_IP=<azure-vm-public-ip>
 
-# Check pod status (all should be Running, 0 restarts)
-kubectl get pods -n $NAMESPACE -o wide
+# Check service status via systemd
+ssh azureuser@$VM_IP "systemctl is-active identity-service track-service streaming-service"
 
-# Check for restart loops
-kubectl get pods -n $NAMESPACE --no-headers | awk '{if ($4 > 0) print "RESTART WARNING: " $1 " has " $4 " restarts"}'
+# Test health endpoints
+curl -s -o /dev/null -w "%{http_code}" http://$VM_IP:5001/health/live && echo " identity /live"
+curl -s -o /dev/null -w "%{http_code}" http://$VM_IP:5001/health/ready && echo " identity /ready"
+curl -s -o /dev/null -w "%{http_code}" http://$VM_IP:5002/health/live && echo " track /live"
+curl -s -o /dev/null -w "%{http_code}" http://$VM_IP:5002/health/ready && echo " track /ready"
+curl -s -o /dev/null -w "%{http_code}" http://$VM_IP:5003/health/live && echo " streaming /live"
+curl -s -o /dev/null -w "%{http_code}" http://$VM_IP:5003/health/ready && echo " streaming /ready"
 
-# Test health endpoints via port-forward
-kubectl port-forward -n $NAMESPACE svc/identity-service 15001:80 &
-sleep 2
-curl -s -o /dev/null -w "%{http_code}" http://localhost:15001/health/ready && echo " identity /ready"
-kill %1
+# Check recent service logs
+ssh azureuser@$VM_IP "journalctl -u identity-service --since '10 minutes ago'"
 
-# Check recent events for warnings/errors
-kubectl get events -n $NAMESPACE --sort-by='.lastTimestamp' | tail -20
-
-# Check migration job status
-kubectl get jobs -n $NAMESPACE
-kubectl logs -n $NAMESPACE job/db-migration --tail=30
+# Verify migration completed
+ssh azureuser@$VM_IP "journalctl -u db-migrator --since '30 minutes ago' | tail -20"
 ```
 
 ---
 
-## Phase 4+ — Azure AKS Health Check
+## Phase 7+ — Azure AKS Health Check
 
 ```bash
 NAMESPACE=jamtrack-prod  # or jamtrack-staging
@@ -136,7 +134,7 @@ git checkout <previous-tag>
 docker compose up -d
 ```
 
-Rollback procedure (Phase 3+):
+Rollback procedure (Phase 7+):
 ```bash
 helm rollback <release-name> -n $NAMESPACE
 kubectl rollout status deployment/<service> -n $NAMESPACE

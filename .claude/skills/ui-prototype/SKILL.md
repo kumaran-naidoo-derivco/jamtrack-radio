@@ -151,17 +151,16 @@ File naming:
 
 ---
 
-## Example Screens (Identity Service)
+## Example Screens (Jamtrack Radio — Identity Feature)
 
-For reference, screens for a login/register flow:
-1. `01-welcome.html` — landing with sign in / sign up CTAs
+The actual Phase 2 identity screens (in `docs/prototypes/jamtrack-radio/`):
+1. `01-welcome.html` — landing with sign in / create account CTAs
 2. `02-register.html` — registration form (email, password, display name)
-3. `03-verify-email.html` — "check your inbox" confirmation screen
-4. `04-login.html` — login form
-5. `05-forgot-password.html` — password reset request
-6. `06-reset-password.html` — new password form (from email link)
-7. `07-login-error.html` — invalid credentials error state
-8. `08-home.html` — post-login landing (stub — shows "you're in" state)
+3. `03-login.html` — login form; TOTP code step is inline (shown only when 2FA is enabled)
+4. `04-library.html` — library home screen (post-login landing)
+5. `09-account-settings.html` — 2FA setup: QR code display + verification code entry
+
+Note: password reset screens are deferred to Phase 3 — they require email delivery infrastructure (SMTP / SendGrid) not available until Azure VM deployment.
 
 ---
 

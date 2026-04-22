@@ -5,7 +5,11 @@ disable-model-invocation: true
 argument-hint: [system or feature name]
 ---
 
-# Draw.io Diagram Skill
+> **This skill is superseded by `/drawio`.** Use `/drawio` for all draw.io diagrams — it has the correct `.drawio.svg` file format, Docker export workflow, and project path conventions. The content below is kept as a draw.io XML reference only.
+
+---
+
+# Draw.io Diagram Skill (legacy reference)
 
 Create professional, editable diagram files in draw.io's native XML format.
 
